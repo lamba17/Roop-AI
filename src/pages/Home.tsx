@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UploadZone from '../components/UploadZone';
+import Logo from '../components/Logo';
 import { fileToBase64 } from '../utils/imageUtils';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -52,12 +53,7 @@ export default function Home() {
         padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         borderBottom: '1px solid #1e1e3a', background: '#080818',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 28 }}>✨</span>
-          <span style={{ fontSize: 22, fontWeight: 800, background: 'linear-gradient(135deg,#a855f7,#ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            ROOP AI
-          </span>
-        </div>
+        <Logo size="sm" />
         <button onClick={() => navigate('/progress')} className="btn-outline" style={{ fontSize: 12, padding: '8px 16px' }}>
           📊 Progress
         </button>
@@ -67,13 +63,9 @@ export default function Home() {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
         <div style={{ maxWidth: 520, width: '100%' }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <div style={{ fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: '#888', marginBottom: 12 }}>AI-Powered Skin Analysis</div>
-            <h1 style={{ margin: '0 0 14px', fontSize: 'clamp(28px,6vw,44px)', fontWeight: 800, lineHeight: 1.15 }}>
-              Your Personal{' '}
-              <span style={{ background: 'linear-gradient(135deg,#a855f7,#ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                Skin Coach
-              </span>
-            </h1>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+              <Logo size="lg" showTagline />
+            </div>
             <p style={{ fontSize: 15, color: '#888', lineHeight: 1.6, margin: 0 }}>
               Upload a selfie and get your Glow Score, personalized routine, product picks, and dermatologist insights — in seconds.
             </p>

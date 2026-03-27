@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { HistoryEntry } from '../types/analysis';
+import Logo from '../components/Logo';
 import GlowRing from '../components/GlowRing';
 import ScoreBar from '../components/ScoreBar';
 import RoutineChecklist from '../components/RoutineChecklist';
@@ -39,10 +40,7 @@ export default function Results() {
         padding: '18px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         borderBottom: '1px solid #1e1e3a', background: '#080818', position: 'sticky', top: 0, zIndex: 10,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 22 }}>✨</span>
-          <span style={{ fontSize: 18, fontWeight: 800, background: 'linear-gradient(135deg,#a855f7,#ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>ROOP AI</span>
-        </div>
+        <Logo size="sm" />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <a
             href={whatsappUrl}

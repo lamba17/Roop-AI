@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { HistoryEntry } from '../types/analysis';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
+import Logo from '../components/Logo';
 
 function glowColor(score: number) {
   if (score >= 75) return '#22c55e';
@@ -20,8 +21,7 @@ export default function Progress() {
         borderBottom: '1px solid #1e1e3a', background: '#080818', position: 'sticky', top: 0, zIndex: 10,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 22 }}>✨</span>
-          <span style={{ fontSize: 18, fontWeight: 800, background: 'linear-gradient(135deg,#a855f7,#ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>ROOP AI</span>
+          <Logo size="sm" />
         </div>
         <button onClick={() => navigate('/')} className="btn-primary" style={{ fontSize: 12, padding: '8px 16px' }}>
           + New Scan
