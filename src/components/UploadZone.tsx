@@ -46,6 +46,10 @@ export default function UploadZone({ onFile, preview }: UploadZoneProps) {
           <div style={{ fontSize: 13, color: '#a855f7', marginTop: 8 }}>Click to change photo</div>
         )}
       </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, padding: '8px 12px', background: 'rgba(245,158,11,0.08)', borderRadius: 8, border: '1px solid rgba(245,158,11,0.2)' }}>
+        <span style={{ fontSize: 14 }}>💡</span>
+        <span style={{ fontSize: 12, color: '#f59e0b' }}>For best results, use natural light and turn off flash before taking your selfie.</span>
+      </div>
       {error && <p style={{ color: '#ef4444', fontSize: 13, marginTop: 8 }}>{error}</p>}
       <input
         ref={inputRef}
