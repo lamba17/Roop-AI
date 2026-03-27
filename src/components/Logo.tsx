@@ -6,7 +6,7 @@ interface LogoProps {
 const SIZES = {
   sm: { imgSize: 36, fontSize: 18, tagSize: 10, gap: 8 },
   md: { imgSize: 48, fontSize: 22, tagSize: 11, gap: 10 },
-  lg: { imgSize: 160, fontSize: 38, tagSize: 15, gap: 0 },
+  lg: { imgSize: 280, fontSize: 38, tagSize: 15, gap: 0 },
 };
 
 export default function Logo({ size = 'md', showTagline = false }: LogoProps) {

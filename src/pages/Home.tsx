@@ -63,8 +63,8 @@ export default function Home() {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
         <div style={{ maxWidth: 520, width: '100%' }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-              <Logo size="lg" showTagline />
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+              <Logo size="lg" />
             </div>
             <p style={{ fontSize: 15, color: '#888', lineHeight: 1.6, margin: 0 }}>
               Upload a selfie and get your Glow Score, personalized routine, product picks, and dermatologist insights — in seconds.
