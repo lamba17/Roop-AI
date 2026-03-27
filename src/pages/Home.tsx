@@ -122,14 +122,16 @@ export default function Home() {
       >
         <Logo size="sm" />
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button
-            onClick={() => navigate('/progress')}
-            className="btn-outline"
-            style={{ fontSize: 13, padding: '8px 18px', gap: 6 }}
-          >
-            <span style={{ fontSize: 15 }}>📊</span>
-            Progress
-          </button>
+          {user && (
+            <button
+              onClick={() => navigate('/progress')}
+              className="btn-outline"
+              style={{ fontSize: 13, padding: '8px 18px', gap: 6 }}
+            >
+              <span style={{ fontSize: 15 }}>📊</span>
+              Progress
+            </button>
+          )}
           <UserMenu />
         </div>
       </header>
