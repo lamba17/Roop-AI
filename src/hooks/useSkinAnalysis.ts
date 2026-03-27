@@ -41,7 +41,7 @@ async function callApi(base64: string): Promise<SkinAnalysis> {
       'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       max_tokens: 1000,
       messages: [{
         role: 'user',
@@ -55,7 +55,11 @@ async function callApi(base64: string): Promise<SkinAnalysis> {
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error((err as { error?: { message?: string } }).error?.message ?? 'API error');
+    const apiMsg = (err as { error?: { message?: string } }).error?.message ?? '';
+    if (response.status === 529 || apiMsg.toLowerCase().includes('overload')) {
+      throw new Error('Anthropic servers are busy right now. Please wait a moment and try again.');
+    }
+    throw new Error(apiMsg || 'API error');
   }
 
   const data = await response.json() as { content?: Array<{ type: string; text?: string }> };
