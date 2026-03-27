@@ -9,6 +9,26 @@ import type { HistoryEntry } from '../types/analysis';
 
 const FREE_LIMIT = 10;
 
+const FEATURE_PILLS = [
+  { icon: '✦', label: 'Glow Score' },
+  { icon: '☽', label: 'Daily Routine' },
+  { icon: '◈', label: 'Product Picks' },
+  { icon: '◎', label: 'Mask Plan' },
+  { icon: '⚕', label: 'Derm Advice' },
+];
+
+/* Particles config: [size, left%, animDuration, animDelay, color] */
+const PARTICLES: Array<[number, number, number, number, string]> = [
+  [5,  8,  18, 0,   '#7c3aed'],
+  [3,  25, 24, 3,   '#db2777'],
+  [4,  55, 20, 6,   '#a855f7'],
+  [6,  72, 28, 1.5, '#db2777'],
+  [3,  88, 16, 9,   '#7c3aed'],
+  [4,  42, 22, 4.5, '#f59e0b'],
+];
+
+const TAGLINE = 'Your AI-Powered Skin Coach';
+
 export default function Home() {
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
@@ -47,67 +67,235 @@ export default function Home() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080818', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
-      <header style={{
-        padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        borderBottom: '1px solid #1e1e3a', background: '#080818',
-      }}>
+    <div
+      className="mesh-bg"
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Floating Particles */}
+      {PARTICLES.map(([size, left, dur, delay, color], i) => (
+        <span
+          key={i}
+          className="particle"
+          style={{
+            width: size,
+            height: size,
+            left: `${left}%`,
+            bottom: '-10px',
+            background: color,
+            animationDuration: `${dur}s`,
+            animationDelay: `${delay}s`,
+            boxShadow: `0 0 ${size * 3}px ${color}`,
+          }}
+        />
+      ))}
+
+      {/* Hero ambient glow */}
+      <div className="hero-glow" />
+
+      {/* ── Header ─────────────────────────────────────────────────────── */}
+      <header
+        className="header-glass"
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 40,
+          padding: '0 24px',
+          height: 64,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <Logo size="sm" />
-        <button onClick={() => navigate('/progress')} className="btn-outline" style={{ fontSize: 12, padding: '8px 16px' }}>
-          📊 Progress
+        <button
+          onClick={() => navigate('/progress')}
+          className="btn-outline"
+          style={{ fontSize: 13, padding: '8px 18px', gap: 6 }}
+        >
+          <span style={{ fontSize: 15 }}>📊</span>
+          Progress
         </button>
       </header>
 
-      {/* Hero */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
+      {/* ── Main Content ───────────────────────────────────────────────── */}
+      <main
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '48px 20px 60px',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
         <div style={{ maxWidth: 520, width: '100%' }}>
-          <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-              <Logo size="lg" />
+
+          {/* ── Hero Copy ─────────────────────────────────────────────── */}
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+
+            {/* Logo with pulse ring */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginBottom: 28,
+              }}
+            >
+              <div className="pulse-ring">
+                <Logo size="lg" />
+              </div>
             </div>
-            <p style={{ fontSize: 15, color: '#888', lineHeight: 1.6, margin: 0 }}>
-              Upload a selfie and get your Glow Score, personalized routine, product picks, and dermatologist insights — in seconds.
+
+            {/* Animated tagline — letter by letter */}
+            <h1
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: 'clamp(1.6rem, 5vw, 2.4rem)',
+                fontWeight: 700,
+                margin: '0 0 14px',
+                lineHeight: 1.2,
+                letterSpacing: '-0.3px',
+              }}
+            >
+              {TAGLINE.split('').map((ch, i) => (
+                <span
+                  key={i}
+                  style={{
+                    display: 'inline-block',
+                    animation: 'letter-reveal 0.5s ease both',
+                    animationDelay: `${i * 0.03}s`,
+                    whiteSpace: ch === ' ' ? 'pre' : undefined,
+                  }}
+                  className={i > 14 ? 'gradient-text' : undefined}
+                >
+                  {ch}
+                </span>
+              ))}
+            </h1>
+
+            <p
+              style={{
+                fontSize: 15,
+                color: 'rgba(248,248,255,0.55)',
+                lineHeight: 1.7,
+                margin: '0 auto',
+                maxWidth: 380,
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+                fontWeight: 400,
+                animation: 'fadeIn 0.8s ease 0.6s both',
+              }}
+            >
+              Upload a selfie — get your Glow Score, personalised routine,
+              product picks, mask schedule, and dermatologist insights in seconds.
             </p>
           </div>
 
-          <div className="card" style={{ marginBottom: 0 }}>
+          {/* ── Glass Upload Card ──────────────────────────────────────── */}
+          <div
+            className="glass-card"
+            style={{
+              animation: 'fadeInUp 0.7s cubic-bezier(0.25,0.46,0.45,0.94) 0.4s both',
+            }}
+          >
             <UploadZone onFile={handleFile} preview={preview} />
 
+            {/* Limit warning */}
             {limitReached && (
-              <div style={{ marginTop: 14, padding: '12px 16px', background: 'rgba(239,68,68,0.1)', borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)' }}>
-                <p style={{ margin: 0, fontSize: 13, color: '#ef4444' }}>
-                  Daily free limit reached (3/day). Upgrade to Premium for unlimited analyses.
+              <div
+                style={{
+                  marginTop: 14,
+                  padding: '12px 16px',
+                  background: 'rgba(239,68,68,0.08)',
+                  borderRadius: 12,
+                  border: '1px solid rgba(239,68,68,0.25)',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 10,
+                }}
+              >
+                <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
+                <p style={{ margin: 0, fontSize: 13, color: '#f87171', lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
+                  Daily free limit reached. Upgrade to Premium for unlimited analyses.
                 </p>
               </div>
             )}
 
+            {/* API Error */}
             {error && (
-              <div style={{ marginTop: 14, padding: '12px 16px', background: 'rgba(239,68,68,0.1)', borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)' }}>
-                <p style={{ margin: 0, fontSize: 13, color: '#ef4444' }}>{error}</p>
+              <div
+                style={{
+                  marginTop: 14,
+                  padding: '12px 16px',
+                  background: 'rgba(239,68,68,0.08)',
+                  borderRadius: 12,
+                  border: '1px solid rgba(239,68,68,0.25)',
+                }}
+              >
+                <p style={{ margin: 0, fontSize: 13, color: '#f87171', fontFamily: "'DM Sans', sans-serif" }}>{error}</p>
               </div>
             )}
 
+            {/* CTA Button */}
             <button
               onClick={handleAnalyze}
               disabled={!file || loading || limitReached}
-              className="btn-primary"
-              style={{ width: '100%', marginTop: 16, fontSize: 15, padding: '14px', justifyContent: 'center' }}
+              className="btn-glow"
+              style={{ width: '100%', marginTop: 18, fontSize: 16, padding: '15px', justifyContent: 'center' }}
             >
               {loading ? (
                 <>
-                  <span className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} />
-                  Analyzing your skin...
+                  <span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />
+                  Analysing your skin&hellip;
                 </>
-              ) : '✨ Analyze My Skin'}
+              ) : (
+                <>
+                  <span style={{ fontSize: 18 }}>✨</span>
+                  Analyse My Skin
+                </>
+              )}
             </button>
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 16 }}>
-              {['Glow Score', 'Daily Routine', 'Product Picks', 'Mask Plan'].map(f => (
-                <span key={f} style={{ fontSize: 11, color: '#555', letterSpacing: 0.5 }}>✓ {f}</span>
+            {/* Feature pills */}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                gap: 8,
+                marginTop: 18,
+              }}
+            >
+              {FEATURE_PILLS.map((p) => (
+                <span key={p.label} className="feature-pill">
+                  <span style={{ color: '#a855f7', fontSize: 11 }}>{p.icon}</span>
+                  {p.label}
+                </span>
               ))}
             </div>
           </div>
+
+          {/* ── Trust line ────────────────────────────────────────────── */}
+          <p
+            style={{
+              textAlign: 'center',
+              fontSize: 12,
+              color: 'rgba(248,248,255,0.25)',
+              marginTop: 20,
+              letterSpacing: 0.5,
+              fontFamily: "'DM Sans', sans-serif",
+              animation: 'fadeIn 0.8s ease 1s both',
+            }}
+          >
+            🔒 &nbsp;Your photo is never stored on our servers
+          </p>
         </div>
       </main>
     </div>

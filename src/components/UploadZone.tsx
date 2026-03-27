@@ -20,37 +20,195 @@ export default function UploadZone({ onFile, preview }: UploadZoneProps) {
 
   return (
     <div>
+      {/* Drop zone */}
       <div
+        className={dragOver ? 'upload-drag-active' : ''}
         onClick={() => inputRef.current?.click()}
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
-        onDrop={e => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
+        onDrop={e => {
+          e.preventDefault();
+          setDragOver(false);
+          const f = e.dataTransfer.files[0];
+          if (f) handleFile(f);
+        }}
         style={{
-          border: `2px dashed ${dragOver ? '#a855f7' : '#1e1e3a'}`,
-          borderRadius: 16, padding: 32, textAlign: 'center', cursor: 'pointer',
-          background: dragOver ? 'rgba(168,85,247,0.05)' : '#12122a',
-          transition: 'all 0.2s',
-          minHeight: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          border: `1.5px dashed ${dragOver ? 'rgba(168,85,247,0.8)' : 'rgba(124,58,237,0.35)'}`,
+          borderRadius: 20,
+          padding: preview ? 16 : 36,
+          textAlign: 'center',
+          cursor: 'pointer',
+          background: dragOver
+            ? 'rgba(124,58,237,0.10)'
+            : 'rgba(13,13,31,0.5)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          transition: 'all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)',
+          minHeight: 180,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 10,
+          boxShadow: dragOver
+            ? '0 0 30px rgba(124,58,237,0.2), inset 0 0 20px rgba(124,58,237,0.05)'
+            : 'none',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Subtle inner glow when dragging */}
+        {dragOver && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'radial-gradient(ellipse at center, rgba(124,58,237,0.12) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+
         {preview ? (
-          <img src={preview} alt="Preview" style={{ maxHeight: 240, borderRadius: 12, objectFit: 'cover', marginBottom: 12 }} />
+          <>
+            <img
+              src={preview}
+              alt="Preview"
+              style={{
+                maxHeight: 220,
+                maxWidth: '100%',
+                borderRadius: 14,
+                objectFit: 'cover',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 0 2px rgba(168,85,247,0.3)',
+              }}
+            />
+            <span
+              style={{
+                fontSize: 12,
+                color: '#a855f7',
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 500,
+                letterSpacing: 0.5,
+                marginTop: 4,
+              }}
+            >
+              ↑ Click to change photo
+            </span>
+          </>
         ) : (
           <>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>📸</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#e8e8f0', marginBottom: 6 }}>Upload Your Selfie</div>
-            <div style={{ fontSize: 13, color: '#888' }}>Drag & drop or click to browse · Max 5MB</div>
+            {/* Camera icon with float animation */}
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: 18,
+                background: 'rgba(124,58,237,0.12)',
+                border: '1px solid rgba(168,85,247,0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 28,
+                animation: 'float 4s ease-in-out infinite',
+                boxShadow: '0 0 20px rgba(124,58,237,0.15)',
+              }}
+            >
+              📸
+            </div>
+
+            <div>
+              <div
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: '#f8f8ff',
+                  marginBottom: 5,
+                  fontFamily: "'DM Sans', sans-serif",
+                  letterSpacing: '-0.2px',
+                }}
+              >
+                Upload Your Selfie
+              </div>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: 'rgba(248,248,255,0.4)',
+                  fontFamily: "'DM Sans', sans-serif",
+                }}
+              >
+                Drag & drop or click to browse · Max 5MB
+              </div>
+            </div>
+
+            {/* Supported formats */}
+            <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+              {['JPG', 'PNG', 'WEBP', 'HEIC'].map(fmt => (
+                <span
+                  key={fmt}
+                  style={{
+                    fontSize: 10,
+                    color: 'rgba(248,248,255,0.3)',
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 4,
+                    padding: '2px 6px',
+                    fontFamily: "'DM Sans', sans-serif",
+                    letterSpacing: 0.5,
+                  }}
+                >
+                  {fmt}
+                </span>
+              ))}
+            </div>
           </>
         )}
-        {preview && (
-          <div style={{ fontSize: 13, color: '#a855f7', marginTop: 8 }}>Click to change photo</div>
-        )}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, padding: '8px 12px', background: 'rgba(245,158,11,0.08)', borderRadius: 8, border: '1px solid rgba(245,158,11,0.2)' }}>
-        <span style={{ fontSize: 14 }}>💡</span>
-        <span style={{ fontSize: 12, color: '#f59e0b' }}>For best results, use natural light and turn off flash before taking your selfie.</span>
+
+      {/* Tip box */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          marginTop: 12,
+          padding: '10px 14px',
+          background: 'rgba(245,158,11,0.07)',
+          borderRadius: 12,
+          border: '1px solid rgba(245,158,11,0.18)',
+        }}
+      >
+        <span style={{ fontSize: 15, flexShrink: 0 }}>💡</span>
+        <span
+          style={{
+            fontSize: 12,
+            color: 'rgba(253,210,100,0.8)',
+            fontFamily: "'DM Sans', sans-serif",
+            lineHeight: 1.5,
+          }}
+        >
+          For best results, use natural light and look directly at the camera.
+        </span>
       </div>
-      {error && <p style={{ color: '#ef4444', fontSize: 13, marginTop: 8 }}>{error}</p>}
+
+      {/* Validation error */}
+      {error && (
+        <p
+          style={{
+            color: '#f87171',
+            fontSize: 13,
+            marginTop: 10,
+            padding: '8px 12px',
+            background: 'rgba(239,68,68,0.08)',
+            borderRadius: 8,
+            border: '1px solid rgba(239,68,68,0.2)',
+            fontFamily: "'DM Sans', sans-serif",
+          }}
+        >
+          {error}
+        </p>
+      )}
+
+      {/* Hidden input */}
       <input
         ref={inputRef}
         type="file"
