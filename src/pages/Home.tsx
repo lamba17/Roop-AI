@@ -246,10 +246,71 @@ export default function Home() {
               animation: 'fadeInUp 0.7s cubic-bezier(0.25,0.46,0.45,0.94) 0.4s both',
             }}
           >
-            <UploadZone onFile={handleFile} preview={preview} />
+            {!user ? (
+              /* Sign-in gate */
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  gap: 16,
+                  padding: '32px 16px',
+                }}
+              >
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 18,
+                    background: 'rgba(124,58,237,0.12)',
+                    border: '1px solid rgba(168,85,247,0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 28,
+                  }}
+                >
+                  🔒
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 700,
+                      color: '#f8f8ff',
+                      marginBottom: 6,
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    Sign in to analyse your skin
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      color: 'rgba(248,248,255,0.45)',
+                      fontFamily: "'DM Sans', sans-serif",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    Create a free account to get your Glow Score, personalised routine, and more.
+                  </div>
+                </div>
+                <button
+                  onClick={() => navigate('/signin')}
+                  className="btn-glow"
+                  style={{ fontSize: 15, padding: '13px 32px', justifyContent: 'center' }}
+                >
+                  <span style={{ fontSize: 16 }}>🔑</span>
+                  Sign In / Create Account
+                </button>
+              </div>
+            ) : (
+              <UploadZone onFile={handleFile} preview={preview} />
+            )}
 
             {/* Limit warning */}
-            {limitReached && (
+            {user && limitReached && (
               <div
                 style={{
                   marginTop: 14,
@@ -270,7 +331,7 @@ export default function Home() {
             )}
 
             {/* API Error */}
-            {error && (
+            {user && error && (
               <div
                 style={{
                   marginTop: 14,
@@ -285,7 +346,7 @@ export default function Home() {
             )}
 
             {/* CTA Button */}
-            <button
+            {user && <button
               onClick={handleAnalyze}
               disabled={!file || loading || limitReached}
               className="btn-glow"
@@ -302,7 +363,7 @@ export default function Home() {
                   Analyse My Skin
                 </>
               )}
-            </button>
+            </button>}
 
             {/* Feature pills */}
             <div
