@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UploadZone from '../components/UploadZone';
 import Logo from '../components/Logo';
+import UserMenu from '../components/UserMenu';
 import { fileToBase64 } from '../utils/imageUtils';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAuth } from '../lib/supabase';
 import type { HistoryEntry } from '../types/analysis';
 
 const FREE_LIMIT = 10;
@@ -35,7 +37,13 @@ export default function Home() {
   const [preview, setPreview] = useState<string | undefined>();
   const { analyze, loading, error } = useSkinAnalysis();
   const [history, setHistory] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const { user } = useAuth();
   const premium = localStorage.getItem('roop_premium') === 'true';
+
+  // Extract first name from Google profile or email
+  const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
+    ?? user?.email?.split('@')[0]
+    ?? null;
 
   const todayKey = new Date().toISOString().split('T')[0];
   const todayCount = history.filter(h => h.date.startsWith(todayKey)).length;
@@ -113,14 +121,17 @@ export default function Home() {
         }}
       >
         <Logo size="sm" />
-        <button
-          onClick={() => navigate('/progress')}
-          className="btn-outline"
-          style={{ fontSize: 13, padding: '8px 18px', gap: 6 }}
-        >
-          <span style={{ fontSize: 15 }}>📊</span>
-          Progress
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={() => navigate('/progress')}
+            className="btn-outline"
+            style={{ fontSize: 13, padding: '8px 18px', gap: 6 }}
+          >
+            <span style={{ fontSize: 15 }}>📊</span>
+            Progress
+          </button>
+          <UserMenu />
+        </div>
       </header>
 
       {/* ── Main Content ───────────────────────────────────────────────── */}
@@ -153,6 +164,34 @@ export default function Home() {
                 <Logo size="lg" />
               </div>
             </div>
+
+            {/* Welcome greeting for signed-in users */}
+            {firstName && (
+              <p
+                style={{
+                  fontSize: 14,
+                  color: 'rgba(248,248,255,0.55)',
+                  fontFamily: "'DM Sans', system-ui, sans-serif",
+                  fontWeight: 500,
+                  margin: '0 0 6px',
+                  animation: 'fadeIn 0.5s ease both',
+                  letterSpacing: 0.2,
+                }}
+              >
+                Welcome back,{' '}
+                <span
+                  style={{
+                    background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    fontWeight: 700,
+                  }}
+                >
+                  {firstName}!
+                </span>
+              </p>
+            )}
 
             {/* Animated tagline — letter by letter */}
             <h1

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { HistoryEntry } from '../types/analysis';
 import Logo from '../components/Logo';
@@ -9,6 +10,7 @@ import ProductCard from '../components/ProductCard';
 import DermatologistFinder from '../components/DermatologistFinder';
 import GlowChallenge from '../components/GlowChallenge';
 import FeedbackForm from '../components/FeedbackForm';
+import { useAuth, saveAnalysis } from '../lib/supabase';
 
 /* WhatsApp SVG icon */
 function WhatsAppIcon({ size = 18 }: { size?: number }) {
@@ -32,7 +34,22 @@ function SectionHeading({ label, children }: { label: string; children?: React.R
 export default function Results() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const entry = location.state?.entry as HistoryEntry | undefined;
+
+  // Persist analysis to Supabase if signed in
+  useEffect(() => {
+    if (!entry || !user) return;
+    const { analysis } = entry;
+    saveAnalysis({
+      user_id: user.id,
+      glow_score: analysis.glowScore,
+      skin_type: analysis.skinType,
+      concerns: analysis.concerns,
+    }).catch(() => {
+      // Silently fail — local history is the primary store
+    });
+  }, [entry, user]);
 
   if (!entry) {
     return (
