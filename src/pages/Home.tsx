@@ -6,7 +6,7 @@ import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { HistoryEntry } from '../types/analysis';
 
-const FREE_LIMIT = 3;
+const FREE_LIMIT = 10;
 
 export default function Home() {
   const navigate = useNavigate();
