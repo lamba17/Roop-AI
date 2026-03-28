@@ -88,6 +88,33 @@ export async function uploadSelfie(userId: string, file: File): Promise<string> 
   return data.publicUrl;
 }
 
+/* ── Subscriptions ────────────────────────────────────────────────────── */
+
+export interface Subscription {
+  user_id: string;
+  plan: 'monthly' | 'yearly';
+  razorpay_payment_id: string;
+  expires_at: string;
+}
+
+export async function saveSubscription(sub: Subscription): Promise<void> {
+  const { error } = await supabase
+    .from('subscriptions')
+    .upsert([sub], { onConflict: 'user_id' });
+  if (error) throw new Error(error.message);
+}
+
+export async function getSubscription(userId: string): Promise<Subscription | null> {
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', userId)
+    .gt('expires_at', new Date().toISOString())
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data as Subscription | null;
+}
+
 /* ── Analyses table ───────────────────────────────────────────────────── */
 
 export interface AnalysisRow {

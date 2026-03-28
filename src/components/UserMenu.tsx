@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, signOut } from '../lib/supabase';
+import { usePremium } from '../hooks/usePremium';
+import PremiumModal from './PremiumModal';
 
 function getInitials(name: string | undefined, email: string | undefined): string {
   if (name) {
@@ -17,6 +19,8 @@ export default function UserMenu() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [showPremium, setShowPremium] = useState(false);
+  const { premium, refresh } = usePremium(user);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -180,6 +184,40 @@ export default function UserMenu() {
             </p>
           </div>
 
+          {/* Upgrade / Premium badge */}
+          {premium ? (
+            <div style={{
+              padding: '6px 16px 10px',
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              <span style={{ fontSize: 13 }}>✦</span>
+              <span style={{
+                fontSize: 12, fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+                background: 'linear-gradient(135deg,#a855f7,#ec4899)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>Premium Active</span>
+            </div>
+          ) : (
+            <button
+              onClick={() => { setOpen(false); setShowPremium(true); }}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                padding: '9px 16px', background: 'rgba(168,85,247,0.08)',
+                border: 'none', borderBottom: '1px solid rgba(124,58,237,0.15)',
+                color: '#a855f7', fontSize: 13,
+                fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+                cursor: 'pointer', textAlign: 'left', transition: 'background 0.15s',
+                marginBottom: 4,
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,85,247,0.15)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168,85,247,0.08)'; }}
+            >
+              <span style={{ fontSize: 15 }}>✨</span>
+              Upgrade to Premium
+            </button>
+          )}
+
           {/* Sign out */}
           <button
             onClick={handleSignOut}
@@ -217,5 +255,13 @@ export default function UserMenu() {
         </div>
       )}
     </div>
+
+    {showPremium && user && (
+      <PremiumModal
+        user={user}
+        onClose={() => setShowPremium(false)}
+        onUpgraded={() => { setShowPremium(false); refresh(); }}
+      />
+    )}
   );
 }

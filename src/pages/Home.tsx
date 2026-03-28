@@ -7,6 +7,8 @@ import { fileToBase64 } from '../utils/imageUtils';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useAuth, uploadSelfie } from '../lib/supabase';
+import { usePremium } from '../hooks/usePremium';
+import PremiumModal from '../components/PremiumModal';
 import type { HistoryEntry } from '../types/analysis';
 
 const FREE_LIMIT = 3;
@@ -37,8 +39,9 @@ export default function Home() {
   const [preview, setPreview] = useState<string | undefined>();
   const { analyze, loading, error } = useSkinAnalysis();
   const [history, setHistory] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const [showPremium, setShowPremium] = useState(false);
   const { user } = useAuth();
-  const premium = localStorage.getItem('roop_premium') === 'true';
+  const { premium, refresh: refreshPremium } = usePremium(user);
 
   // Extract first name from Google profile or email
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
@@ -113,6 +116,15 @@ export default function Home() {
 
       {/* Hero ambient glow */}
       <div className="hero-glow" />
+
+      {/* Premium modal */}
+      {showPremium && user && (
+        <PremiumModal
+          user={user}
+          onClose={() => setShowPremium(false)}
+          onUpgraded={() => { setShowPremium(false); refreshPremium(); }}
+        />
+      )}
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <header
@@ -321,20 +333,21 @@ export default function Home() {
             {user && limitReached && (
               <div
                 style={{
-                  marginTop: 14,
-                  padding: '12px 16px',
-                  background: 'rgba(239,68,68,0.08)',
-                  borderRadius: 12,
-                  border: '1px solid rgba(239,68,68,0.25)',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
+                  marginTop: 14, padding: '14px 16px',
+                  background: 'rgba(168,85,247,0.07)', borderRadius: 12,
+                  border: '1px solid rgba(168,85,247,0.25)',
                 }}
               >
-                <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
-                <p style={{ margin: 0, fontSize: 13, color: '#f87171', lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
-                  Daily free limit reached. Upgrade to Premium for unlimited analyses.
+                <p style={{ margin: '0 0 10px', fontSize: 13, color: 'rgba(248,248,255,0.75)', lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
+                  ⚠️ You've used all <strong>3 free analyses</strong> for today.
                 </p>
+                <button
+                  onClick={() => setShowPremium(true)}
+                  className="btn-glow"
+                  style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '11px' }}
+                >
+                  ✨ Upgrade for Unlimited Analyses
+                </button>
               </div>
             )}
 
