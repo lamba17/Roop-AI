@@ -72,6 +72,22 @@ export function useAuth(): AuthState {
   return { user, loading };
 }
 
+/* ── Storage ──────────────────────────────────────────────────────────── */
+
+export async function uploadSelfie(userId: string, file: File): Promise<string> {
+  const ext = file.name.split('.').pop() ?? 'jpg';
+  const path = `${userId}/${Date.now()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from('selfies')
+    .upload(path, file, { upsert: false, contentType: file.type });
+
+  if (error) throw new Error(error.message);
+
+  const { data } = supabase.storage.from('selfies').getPublicUrl(path);
+  return data.publicUrl;
+}
+
 /* ── Analyses table ───────────────────────────────────────────────────── */
 
 export interface AnalysisRow {

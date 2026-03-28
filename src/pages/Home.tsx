@@ -6,10 +6,10 @@ import UserMenu from '../components/UserMenu';
 import { fileToBase64 } from '../utils/imageUtils';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { useAuth } from '../lib/supabase';
+import { useAuth, uploadSelfie } from '../lib/supabase';
 import type { HistoryEntry } from '../types/analysis';
 
-const FREE_LIMIT = 10;
+const FREE_LIMIT = 3;
 
 const FEATURE_PILLS = [
   { icon: '✦', label: 'Glow Score' },
@@ -56,16 +56,24 @@ export default function Home() {
   }
 
   async function handleAnalyze() {
-    if (!file) return;
+    if (!file || !user) return;
     const base64 = await fileToBase64(file);
     const result = await analyze(base64);
     if (!result) return;
+
+    // Upload selfie to Supabase Storage, fallback to blob URL if it fails
+    let imageUrl = preview!;
+    try {
+      imageUrl = await uploadSelfie(user.id, file);
+    } catch {
+      // Storage upload failed — continue with local blob URL
+    }
 
     const entry: HistoryEntry = {
       id: Date.now().toString(),
       date: new Date().toISOString(),
       score: result.glowScore,
-      imageUrl: preview!,
+      imageUrl,
       analysis: result,
     };
 
