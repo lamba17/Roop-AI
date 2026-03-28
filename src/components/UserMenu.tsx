@@ -79,6 +79,7 @@ export default function UserMenu() {
   const initials = getInitials(fullName, email);
 
   return (
+    <>
     <div ref={menuRef} style={{ position: 'relative' }}>
       {/* Avatar button */}
       <button
@@ -263,5 +264,6 @@ export default function UserMenu() {
         onUpgraded={() => { setShowPremium(false); refresh(); }}
       />
     )}
+    </>
   );
 }
