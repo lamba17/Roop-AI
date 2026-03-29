@@ -22,21 +22,20 @@ export function startLemonSqueezyCheckout(
   email: string,
   onError: (msg: string) => void,
 ): void {
-  const variantId = plan === 'monthly'
-    ? import.meta.env.VITE_LS_MONTHLY_VARIANT_ID as string
-    : import.meta.env.VITE_LS_YEARLY_VARIANT_ID as string;
+  // Lemon Squeezy uses a UUID-based checkout URL: /checkout/buy/{uuid}
+  const checkoutUuid = plan === 'monthly'
+    ? import.meta.env.VITE_LS_MONTHLY_UUID as string
+    : import.meta.env.VITE_LS_YEARLY_UUID as string;
 
-  const storeSlug = import.meta.env.VITE_LS_STORE_SLUG as string;
-
-  if (!variantId || !storeSlug) {
+  if (!checkoutUuid) {
     onError('Payment not configured. Please contact support.');
     return;
   }
 
   const successUrl = `${window.location.origin}/payment/success?provider=lemonsqueezy&plan=${plan}&userId=${userId}`;
 
-  // Build Lemon Squeezy hosted checkout URL
-  const url = new URL(`https://${storeSlug}.lemonsqueezy.com/buy/${variantId}`);
+  // Build Lemon Squeezy hosted checkout URL using UUID format
+  const url = new URL(`https://roop-ai.lemonsqueezy.com/checkout/buy/${checkoutUuid}`);
   url.searchParams.set('checkout[email]', email);
   url.searchParams.set('checkout[custom][user_id]', userId);
   url.searchParams.set('checkout[custom][plan]', plan);
