@@ -68,15 +68,15 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '12px',
-        overflowY: 'auto',
       }}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          width: '100%', maxWidth: 480,
-          margin: 'auto',
+          width: 'calc(100% - 24px)', maxWidth: 480,
+          maxHeight: 'calc(100vh - 40px)',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
           background: 'linear-gradient(145deg, #12122a, #1a1a35)',
           border: '1px solid rgba(168,85,247,0.3)',
           borderRadius: 20,
