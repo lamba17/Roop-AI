@@ -1,5 +1,7 @@
 import { saveSubscription } from './supabase';
 
+export type Currency = 'INR' | 'USD';
+
 export const PLANS = {
   monthly: {
     amount: 9900,           // ₹99 in paise
@@ -22,7 +24,18 @@ export const PLANS = {
 
 export type PlanKey = keyof typeof PLANS;
 
-/* Load Razorpay script once */
+/* Detect currency based on user's timezone */
+export function detectCurrency(): Currency {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return tz.startsWith('Asia/Kolkata') || tz.startsWith('Asia/Calcutta')
+      ? 'INR'
+      : 'USD';
+  } catch {
+    return 'INR';
+  }
+}
+
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise(resolve => {
     if ((window as any).Razorpay) { resolve(true); return; }
@@ -36,6 +49,7 @@ function loadRazorpayScript(): Promise<boolean> {
 
 export async function openRazorpayCheckout(
   plan: PlanKey,
+  currency: Currency,
   userId: string,
   userEmail: string,
   onSuccess: () => void,
@@ -55,7 +69,7 @@ export async function openRazorpayCheckout(
   const options = {
     key,
     amount: selectedPlan.amount,
-    currency: 'INR',
+    currency,
     name: 'ROOP AI',
     description: selectedPlan.description,
     image: '/favicon.svg',
