@@ -58,8 +58,6 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
     setLoading(false);
   }
 
-  const isMobile = window.innerWidth < 640;
-
   return (
     <div
       onClick={onClose}
@@ -68,23 +66,23 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
         background: 'rgba(0,0,0,0.75)',
         backdropFilter: 'blur(6px)',
         display: 'flex',
-        alignItems: isMobile ? 'flex-end' : 'center',
+        alignItems: 'center',
         justifyContent: 'center',
-        padding: isMobile ? '0' : '20px',
+        padding: '12px',
+        overflowY: 'auto',
       }}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          width: '100%', maxWidth: isMobile ? '100%' : 480,
-          maxHeight: isMobile ? '92vh' : '90vh',
-          overflowY: 'auto',
+          width: '100%', maxWidth: 480,
+          margin: 'auto',
           background: 'linear-gradient(145deg, #12122a, #1a1a35)',
           border: '1px solid rgba(168,85,247,0.3)',
-          borderRadius: isMobile ? '20px 20px 0 0' : 24,
-          padding: isMobile ? '24px 20px 32px' : '32px 28px',
-          boxShadow: '0 -8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(168,85,247,0.1)',
-          animation: isMobile ? 'slideUp 0.3s ease both' : 'fadeInUp 0.3s ease both',
+          borderRadius: 20,
+          padding: '28px 20px 28px',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(168,85,247,0.1)',
+          animation: 'fadeInUp 0.3s ease both',
           position: 'relative',
         }}
       >
