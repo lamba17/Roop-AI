@@ -73,6 +73,8 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: 480,
+          maxHeight: '90vh',
+          overflowY: 'auto',
           background: 'linear-gradient(145deg, #12122a, #1a1a35)',
           border: '1px solid rgba(168,85,247,0.3)',
           borderRadius: 24,
