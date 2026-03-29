@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { User } from '@supabase/supabase-js';
 import { openRazorpayCheckout, PLANS as INR_PLANS, type PlanKey, detectCurrency, type Currency } from '../lib/razorpay';
 import { startLemonSqueezyCheckout, LS_PLANS } from '../lib/lemonsqueezy';
@@ -58,7 +59,7 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
     setLoading(false);
   }
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       style={{
@@ -255,6 +256,7 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
