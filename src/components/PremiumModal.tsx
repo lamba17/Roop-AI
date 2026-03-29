@@ -66,17 +66,17 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
         background: 'rgba(0,0,0,0.75)',
         backdropFilter: 'blur(6px)',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
+        overflowY: 'auto',
+        padding: '16px 0 24px',
       }}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
           width: 'calc(100% - 24px)', maxWidth: 480,
-          maxHeight: 'calc(100vh - 40px)',
-          overflowY: 'auto',
-          WebkitOverflowScrolling: 'touch',
+          overflowY: 'visible',
           background: 'linear-gradient(145deg, #12122a, #1a1a35)',
           border: '1px solid rgba(168,85,247,0.3)',
           borderRadius: 20,
