@@ -303,10 +303,27 @@ export default function Results() {
                 color: 'rgba(248,248,255,0.8)',
                 lineHeight: 1.7,
                 fontFamily: "'DM Sans', sans-serif",
+                marginBottom: 10,
               }}
             >
               {analysis.groomingTip}
             </p>
+            <a
+              href={`https://www.amazon.in/s?k=${encodeURIComponent(
+                analysis.groomingTip.match(/(?:using\s+(?:a\s+)?|try\s+(?:a\s+)?)([a-zA-Z0-9 &+%-]+?)(?:\s+to|\s+for|\s+with|,|\.)/i)?.[1]?.trim() ?? 'grooming products'
+              )}&tag=roopai03-21`}
+              target="_blank"
+              rel="noreferrer noopener"
+              style={{
+                display: 'inline-block',
+                fontSize: 11, fontWeight: 600, padding: '5px 12px', borderRadius: 20,
+                background: 'rgba(245,158,11,0.12)', color: '#f59e0b',
+                border: '1px solid rgba(245,158,11,0.25)', textDecoration: 'none',
+                letterSpacing: 0.3,
+              }}
+            >
+              🛒 Shop on Amazon
+            </a>
           </div>
         </div>
 
