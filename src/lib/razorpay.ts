@@ -86,6 +86,12 @@ export async function openRazorpayCheckout(
         });
         localStorage.setItem('roop_premium', 'true');
         localStorage.setItem('roop_premium_expires', expiresAt);
+        // Send welcome email (non-blocking)
+        fetch('/api/send-welcome-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userEmail, plan }),
+        }).catch(() => {});
         onSuccess();
       } catch {
         onError('Payment received but activation failed. Contact support with payment ID: ' + response.razorpay_payment_id);

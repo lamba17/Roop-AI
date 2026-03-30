@@ -70,5 +70,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: error.message });
   }
 
+  // Send welcome email
+  const { data: userData } = await supabase.auth.admin.getUserById(userId);
+  if (userData?.user?.email) {
+    await fetch(`${process.env.VITE_SUPABASE_URL?.replace('supabase.co', 'vercel.app') ?? ''}/api/send-welcome-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userData.user.email,
+        name: userData.user.user_metadata?.full_name,
+        plan,
+      }),
+    }).catch(() => {}); // non-blocking
+  }
+
   return res.status(200).json({ success: true });
 }
