@@ -19,7 +19,7 @@ export const MASK_RECOMMENDATIONS: Record<MaskType, MaskRecommendation> = {
     time: 'Evening',
     benefit: 'Absorbs excess oil, unclogs pores, reduces breakouts',
     nykaaLink: 'https://www.nykaa.com/search/result/?q=kaolin+clay+mask',
-    amazonLink: 'https://www.amazon.in/s?k=kaolin+clay+mask+face',
+    amazonLink: 'https://www.amazon.in/s?k=kaolin+clay+mask+face&tag=roopai03-21',
   },
   dry: {
     name: 'Hydrating Sheet Mask',
@@ -28,7 +28,7 @@ export const MASK_RECOMMENDATIONS: Record<MaskType, MaskRecommendation> = {
     time: 'Night',
     benefit: 'Deep hydration, plumps skin, reduces flakiness',
     nykaaLink: 'https://www.nykaa.com/search/result/?q=hydrating+sheet+mask',
-    amazonLink: 'https://www.amazon.in/s?k=hydrating+sheet+mask',
+    amazonLink: 'https://www.amazon.in/s?k=hydrating+sheet+mask&tag=roopai03-21',
   },
   dark_circles: {
     name: 'Collagen Eye Patches',
@@ -37,7 +37,7 @@ export const MASK_RECOMMENDATIONS: Record<MaskType, MaskRecommendation> = {
     time: 'Morning',
     benefit: 'Reduces puffiness, brightens under-eye area',
     nykaaLink: 'https://www.nykaa.com/search/result/?q=eye+patches+dark+circles',
-    amazonLink: 'https://www.amazon.in/s?k=collagen+eye+patches',
+    amazonLink: 'https://www.amazon.in/s?k=collagen+eye+patches&tag=roopai03-21',
   },
   dull: {
     name: 'Vitamin C Glow Mask',
@@ -46,6 +46,7 @@ export const MASK_RECOMMENDATIONS: Record<MaskType, MaskRecommendation> = {
     time: 'Evening',
     benefit: 'Brightens complexion, evens skin tone, boosts radiance',
     nykaaLink: 'https://www.nykaa.com/search/result/?q=vitamin+c+glow+mask',
+    amazonLink: 'https://www.amazon.in/s?k=vitamin+c+glow+mask&tag=roopai03-21',
     myntraLink: 'https://www.myntra.com/face-mask?rawQuery=vitamin+c+glow+mask',
   },
   oily: {
@@ -55,6 +56,7 @@ export const MASK_RECOMMENDATIONS: Record<MaskType, MaskRecommendation> = {
     time: 'Evening',
     benefit: 'Deep cleanses pores, removes blackheads, controls oil',
     nykaaLink: 'https://www.nykaa.com/search/result/?q=charcoal+peel+off+mask',
+    amazonLink: 'https://www.amazon.in/s?k=charcoal+peel+off+mask&tag=roopai03-21',
     myntraLink: 'https://www.myntra.com/face-mask?rawQuery=charcoal+peel+off+mask',
   },
 };
