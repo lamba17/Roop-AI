@@ -62,7 +62,18 @@ export default function Progress() {
                     transition: 'background 0.2s',
                   }}
                 >
-                  <img src={entry.imageUrl} alt="Scan" style={{ width: 52, height: 52, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
+                  {entry.imageUrl ? (
+                    <img
+                      src={entry.imageUrl}
+                      alt="Scan"
+                      style={{ width: 52, height: 52, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }}
+                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>
+                      🤳
+                    </div>
+                  )}
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, color: '#888', marginBottom: 3 }}>
                       {new Date(entry.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}

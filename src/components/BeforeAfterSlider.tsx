@@ -7,10 +7,12 @@ export default function BeforeAfterSlider({ entries }: { entries: HistoryEntry[]
   const [sliderX, setSliderX] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  if (entries.length < 2) {
+  if (entries.length < 2 || !before.imageUrl || !after.imageUrl) {
     return (
       <div style={{ textAlign: 'center', padding: '24px 0', color: '#888', fontSize: 14 }}>
-        Complete at least 2 analyses to see your progress comparison.
+        {entries.length < 2
+          ? 'Complete at least 2 analyses to see your progress comparison.'
+          : 'Photos not available for comparison — cloud storage required.'}
       </div>
     );
   }
@@ -39,9 +41,9 @@ export default function BeforeAfterSlider({ entries }: { entries: HistoryEntry[]
         onMouseMove={e => handleMove(e.clientX)}
         onTouchMove={e => handleMove(e.touches[0].clientX)}
       >
-        <img src={before.imageUrl} alt="Before" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+        <img src={before.imageUrl} alt="Before" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = '0'; }} />
         <div style={{ position: 'absolute', inset: 0, clipPath: `inset(0 ${100 - sliderX}% 0 0)` }}>
-          <img src={after.imageUrl} alt="After" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={after.imageUrl} alt="After" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = '0'; }} />
         </div>
         <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${sliderX}%`, width: 3, background: '#a855f7', transform: 'translateX(-50%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', top: '50%', left: `${sliderX}%`, transform: 'translate(-50%,-50%)', width: 28, height: 28, borderRadius: '50%', background: '#a855f7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#fff', pointerEvents: 'none' }}>⟺</div>

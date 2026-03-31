@@ -64,12 +64,13 @@ export default function Home() {
     const result = await analyze(base64);
     if (!result) return;
 
-    // Upload selfie to Supabase Storage, fallback to blob URL if it fails
-    let imageUrl = preview!;
+    // Upload selfie to Supabase Storage
+    // Only use the URL if it's a permanent Supabase URL (not a blob URL)
+    let imageUrl = '';
     try {
       imageUrl = await uploadSelfie(user.id, file);
     } catch {
-      // Storage upload failed — continue with local blob URL
+      // Storage upload failed — store empty string, show placeholder in history
     }
 
     const entry: HistoryEntry = {
