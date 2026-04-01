@@ -92,6 +92,17 @@ export async function openRazorpayCheckout(
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: userEmail, plan }),
         }).catch(() => {});
+        // Admin notification (non-blocking)
+        fetch('/api/notify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: userEmail,
+            plan,
+            paymentId: response.razorpay_payment_id,
+            gateway: 'Razorpay',
+          }),
+        }).catch(() => {});
         onSuccess();
       } catch {
         onError('Payment received but activation failed. Contact support with payment ID: ' + response.razorpay_payment_id);
