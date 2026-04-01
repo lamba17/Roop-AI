@@ -43,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await transporter.sendMail({
       from: `"ROOP AI" <${process.env.GMAIL_FROM}>`,
       to: process.env.GMAIL_FROM, // notify yourself
-      subject: `🎉 New user signed up on ROOP AI — ${email}`,
+      subject: `🎉 New user signed up on ROOP AI — ${name !== 'Unknown' ? name : email}`,
       html: `
 <div style="font-family: Arial, sans-serif; max-width: 480px; background: #080818; color: #e8e8f0; padding: 28px; border-radius: 14px;">
   <h2 style="color: #a855f7; margin: 0 0 20px;">New Sign Up on ROOP AI 🎉</h2>
