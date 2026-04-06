@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { HistoryEntry } from '../types/analysis';
 import Logo from '../components/Logo';
+import ThemeToggle from '../components/ThemeToggle';
 import GlowRing from '../components/GlowRing';
 import ScoreBar from '../components/ScoreBar';
 import RoutineChecklist from '../components/RoutineChecklist';
@@ -107,7 +108,7 @@ export default function Results() {
         }}
       >
         <Logo size="sm" />
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center' }}>
           <button
             onClick={() => navigate('/progress')}
             className="btn-outline"
@@ -115,6 +116,7 @@ export default function Results() {
           >
             <span>📊</span> History
           </button>
+          <ThemeToggle />
           <button
             onClick={() => navigate('/')}
             className="btn-primary"

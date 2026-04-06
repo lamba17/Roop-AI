@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { GlamAnalysis, GlamScores } from '../types/analysis';
 import Logo from '../components/Logo';
+import ThemeToggle from '../components/ThemeToggle';
 import GlowRing from '../components/GlowRing';
 import MakeupProductCard from '../components/MakeupProductCard';
 import MakeupArtistFinder from '../components/MakeupArtistFinder';
@@ -139,8 +140,9 @@ export default function GlamResults() {
 
       <header className="header-glass" style={{ position: 'sticky', top: 0, zIndex: 40, padding: '0 20px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Logo size="sm" />
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button onClick={() => navigate('/')} className="btn-outline" style={{ fontSize: 12, padding: '7px 14px' }}>← Back</button>
+          <ThemeToggle />
           <button onClick={() => navigate('/')} className="btn-primary" style={{ fontSize: 12, padding: '7px 14px' }}>New Scan</button>
         </div>
       </header>

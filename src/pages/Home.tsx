@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import UploadZone from '../components/UploadZone';
 import Logo from '../components/Logo';
 import UserMenu from '../components/UserMenu';
+import ThemeToggle from '../components/ThemeToggle';
 import { fileToBase64 } from '../utils/imageUtils';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { useGlamAnalysis } from '../hooks/useGlamAnalysis';
@@ -117,6 +118,7 @@ export default function Home() {
               <span style={{ fontSize: 15 }}>📊</span>Progress
             </button>
           )}
+          <ThemeToggle />
           <UserMenu />
         </div>
       </header>

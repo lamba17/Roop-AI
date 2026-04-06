@@ -3,6 +3,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { HistoryEntry } from '../types/analysis';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
 import Logo from '../components/Logo';
+import ThemeToggle from '../components/ThemeToggle';
 
 function glowColor(score: number) {
   if (score >= 75) return '#22c55e';
@@ -15,21 +16,24 @@ export default function Progress() {
   const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080818' }} className="fade-in">
-      <header style={{
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }} className="fade-in">
+      <header className="header-glass" style={{
         padding: '18px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        borderBottom: '1px solid #1e1e3a', background: '#080818', position: 'sticky', top: 0, zIndex: 10,
+        position: 'sticky', top: 0, zIndex: 10,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <Logo size="sm" />
         </div>
-        <button onClick={() => navigate('/')} className="btn-primary" style={{ fontSize: 12, padding: '8px 16px' }}>
-          + New Scan
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ThemeToggle />
+          <button onClick={() => navigate('/')} className="btn-primary" style={{ fontSize: 12, padding: '8px 16px' }}>
+            + New Scan
+          </button>
+        </div>
       </header>
 
       <div style={{ maxWidth: 680, margin: '0 auto', padding: '24px 16px 60px' }}>
-        <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 24px', color: '#e8e8f0' }}>
+        <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 24px', color: 'var(--text-primary)' }}>
           Your <span style={{ background: 'linear-gradient(135deg,#a855f7,#ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Progress</span>
         </h2>
 

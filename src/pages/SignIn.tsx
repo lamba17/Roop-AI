@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
+import ThemeToggle from '../components/ThemeToggle';
 import { signInWithGoogle, supabase } from '../lib/supabase';
 
 /* ── Google SVG icon ─────────────────────────────────────────────────── */
@@ -80,6 +81,11 @@ export default function SignIn() {
     >
       {/* Ambient glow */}
       <div className="hero-glow" />
+
+      {/* Theme toggle — top right */}
+      <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}>
+        <ThemeToggle />
+      </div>
 
       {/* Card */}
       <div
