@@ -75,8 +75,30 @@ export default function GlamResults() {
           <ScoreBar label="Overall Finish"    score={s.overall}         delay={400} />
         </div>
 
+        {/* What's Missing */}
+        {analysis.missingElements && analysis.missingElements.length > 0 && (
+          <div className="glass-card card-in card-in-3" style={{ borderColor: 'rgba(245,158,11,0.25)', background: 'rgba(245,158,11,0.04)' }}>
+            <SectionLabel>What's Missing From Your Look</SectionLabel>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {analysis.missingElements.map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                  <span style={{
+                    fontSize: 13, fontWeight: 700,
+                    color: '#f59e0b',
+                    background: 'rgba(245,158,11,0.12)',
+                    border: '1px solid rgba(245,158,11,0.25)',
+                    borderRadius: 6, padding: '2px 8px',
+                    flexShrink: 0, marginTop: 1,
+                  }}>✕</span>
+                  <p style={{ margin: 0, fontSize: 14, color: 'rgba(248,248,255,0.8)', lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Corrections */}
-        <div className="glass-card card-in card-in-3" style={{ borderColor: 'rgba(236,72,153,0.2)', background: 'rgba(236,72,153,0.04)' }}>
+        <div className="glass-card card-in card-in-4" style={{ borderColor: 'rgba(236,72,153,0.2)', background: 'rgba(236,72,153,0.04)' }}>
           <SectionLabel>3 Things to Improve</SectionLabel>
           {analysis.corrections.map((c, i) => (
             <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: i < analysis.corrections.length - 1 ? 12 : 0 }}>
@@ -89,7 +111,7 @@ export default function GlamResults() {
         </div>
 
         {/* Tutorial Tip */}
-        <div className="glass-card card-in card-in-4" style={{ display: 'flex', gap: 16, alignItems: 'flex-start', background: 'rgba(168,85,247,0.07)', borderColor: 'rgba(168,85,247,0.25)' }}>
+        <div className="glass-card card-in card-in-5" style={{ display: 'flex', gap: 16, alignItems: 'flex-start', background: 'rgba(168,85,247,0.07)', borderColor: 'rgba(168,85,247,0.25)' }}>
           <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
             ✨
           </div>
@@ -100,7 +122,7 @@ export default function GlamResults() {
         </div>
 
         {/* Look Suggestion */}
-        <div className="glass-card card-in card-in-5" style={{ display: 'flex', gap: 16, alignItems: 'flex-start', background: 'rgba(236,72,153,0.06)', borderColor: 'rgba(236,72,153,0.22)' }}>
+        <div className="glass-card card-in card-in-6" style={{ display: 'flex', gap: 16, alignItems: 'flex-start', background: 'rgba(236,72,153,0.06)', borderColor: 'rgba(236,72,153,0.22)' }}>
           <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(236,72,153,0.12)', border: '1px solid rgba(236,72,153,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
             💄
           </div>
@@ -111,13 +133,13 @@ export default function GlamResults() {
         </div>
 
         {/* Makeup Products */}
-        <div className="glass-card card-in card-in-6">
+        <div className="glass-card card-in card-in-7">
           <SectionLabel>Recommended Makeup Products</SectionLabel>
           {analysis.products.map((p, i) => <MakeupProductCard key={i} product={p} />)}
         </div>
 
         {/* CTA */}
-        <div className="glass-card card-in card-in-7" style={{ textAlign: 'center', padding: '28px 24px' }}>
+        <div className="glass-card card-in card-in-8" style={{ textAlign: 'center', padding: '28px 24px' }}>
           <p style={{ margin: '0 0 16px', fontSize: 14, color: 'rgba(248,248,255,0.5)', fontFamily: "'DM Sans', sans-serif" }}>
             Want a full personalized tutorial using your skin + makeup selfies?
           </p>

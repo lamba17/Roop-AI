@@ -69,6 +69,7 @@ export interface GlamAnalysis {
   makeupStyle: MakeupStyle;
   report: string;
   skinToneMatch: string;
+  missingElements: string[];
   corrections: string[];
   products: MakeupProduct[];
   tutorialTip: string;

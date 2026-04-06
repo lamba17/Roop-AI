@@ -15,9 +15,10 @@ Required JSON structure:
   },
   "currentLook": "<name of the look they are wearing, e.g. Soft Glam, Bold Eye, Everyday Natural>",
   "makeupStyle": "<natural|everyday|glam|bold|smokey|minimal>",
-  "report": "<2-3 sentence friendly expert assessment of their current makeup>",
+  "report": "<2-3 sentence friendly expert assessment of their current makeup — focus ONLY on makeup application, NOT on skin health>",
   "skinToneMatch": "<1 sentence on how well the makeup shades suit their skin tone>",
-  "corrections": ["<specific correction 1>", "<specific correction 2>", "<specific correction 3>"],
+  "missingElements": ["<makeup element that is absent or underdone, e.g. 'No highlighter applied'>, "<element 2>", "<element 3>"],
+  "corrections": ["<specific makeup correction 1 — technique, blending, or placement>", "<correction 2>", "<correction 3>"],
   "products": [
     { "name": "<specific product name>", "type": "<foundation|concealer|blush|eyeshadow|mascara|lipstick|highlighter|primer|setting spray|contour|eyeliner>", "shade": "<shade suggestion if applicable>", "reason": "<why this product for their look>" },
     { "name": "<product>", "type": "<type>", "reason": "<reason>" },
@@ -69,6 +70,8 @@ async function callGlamApi(base64: string): Promise<GlamAnalysis> {
   parsed.scores.lipColor = Math.round(parsed.scores.lipColor);
   parsed.scores.blushContour = Math.round(parsed.scores.blushContour);
   parsed.scores.overall = Math.round(parsed.scores.overall);
+
+  if (!Array.isArray(parsed.missingElements)) parsed.missingElements = [];
 
   return parsed;
 }
