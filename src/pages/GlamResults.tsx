@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import type { GlamAnalysis, GlamScores } from '../types/analysis';
 import Logo from '../components/Logo';
 import ThemeToggle from '../components/ThemeToggle';
+import { useThemeColors } from '../hooks/useTheme';
 import GlowRing from '../components/GlowRing';
 import MakeupProductCard from '../components/MakeupProductCard';
 import MakeupArtistFinder from '../components/MakeupArtistFinder';
@@ -39,7 +40,7 @@ function AnimatedBar({ score, delay = 0 }: { score: number; delay?: number }) {
   }, [score, delay]);
 
   return (
-    <div style={{ height: 6, background: '#1e1e3a', borderRadius: 999, overflow: 'hidden', flex: 1 }}>
+    <div style={{ height: 6, background: 'var(--bar-track)', borderRadius: 999, overflow: 'hidden', flex: 1 }}>
       <div style={{
         height: '100%', width: `${width}%`,
         background: barColor(score), borderRadius: 999,
@@ -53,7 +54,7 @@ function ScoreRow({ label, score, delay = 0 }: { label: string; score: number; d
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-        <span style={{ fontSize: 13, color: 'rgba(248,248,255,0.75)', flex: 1, fontFamily: "'DM Sans', sans-serif" }}>{label}</span>
+        <span style={{ fontSize: 13, color: 'var(--text-muted)', flex: 1, fontFamily: "'DM Sans', sans-serif" }}>{label}</span>
         <StatusPill score={score} />
         <span style={{ fontSize: 13, fontWeight: 700, color: barColor(score), minWidth: 28, textAlign: 'right' }}>
           {score}
@@ -102,12 +103,13 @@ function SectionLabel({ children, color = '#ec4899' }: { children: string; color
 export default function GlamResults() {
   const location = useLocation();
   const navigate = useNavigate();
+  const tc = useThemeColors();
   const { analysis, imageUrl } = (location.state ?? {}) as { analysis: GlamAnalysis; imageUrl?: string };
 
   if (!analysis) {
     return (
       <div className="mesh-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 18 }}>
-        <p style={{ color: 'rgba(248,248,255,0.45)', fontFamily: "'DM Sans', sans-serif" }}>No analysis found.</p>
+        <p style={{ color: 'var(--text-muted)', fontFamily: "'DM Sans', sans-serif" }}>No analysis found.</p>
         <button onClick={() => navigate('/')} className="btn-primary">Go Home</button>
       </div>
     );
@@ -162,7 +164,7 @@ export default function GlamResults() {
             <span className="skin-badge skin-badge-cyan" style={{ textTransform: 'capitalize' }}>{analysis.makeupStyle} Style</span>
           </div>
 
-          <p style={{ fontSize: 14, color: 'rgba(248,248,255,0.6)', lineHeight: 1.7, maxWidth: 460, margin: 0, fontFamily: "'DM Sans', sans-serif" }}>
+          <p style={{ fontSize: 14, color: tc.textBody, lineHeight: 1.7, maxWidth: 460, margin: 0, fontFamily: "'DM Sans', sans-serif" }}>
             {analysis.report}
           </p>
           <p style={{ fontSize: 13, color: 'rgba(236,72,153,0.8)', margin: 0, fontFamily: "'DM Sans', sans-serif", fontStyle: 'italic' }}>
@@ -171,9 +173,9 @@ export default function GlamResults() {
 
           {/* Overall score pill */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 20px', borderRadius: 100, background: 'rgba(236,72,153,0.08)', border: '1px solid rgba(236,72,153,0.25)' }}>
-            <span style={{ fontSize: 13, color: 'rgba(248,248,255,0.6)', fontFamily: "'DM Sans', sans-serif" }}>Overall Finish</span>
+            <span style={{ fontSize: 13, color: tc.textBody, fontFamily: "'DM Sans', sans-serif" }}>Overall Finish</span>
             <span style={{ fontSize: 18, fontWeight: 800, color: barColor(s.overall) }}>{s.overall}</span>
-            <span style={{ fontSize: 12, color: 'rgba(248,248,255,0.35)' }}>/100</span>
+            <span style={{ fontSize: 12, color: tc.textHint }}>/100</span>
           </div>
         </div>
 
@@ -218,7 +220,7 @@ export default function GlamResults() {
               {analysis.missingElements.map((item, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#f59e0b', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 6, padding: '2px 8px', flexShrink: 0, marginTop: 1 }}>✕</span>
-                  <p style={{ margin: 0, fontSize: 14, color: 'rgba(248,248,255,0.8)', lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>{item}</p>
+                  <p style={{ margin: 0, fontSize: 14, color: tc.textBody, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>{item}</p>
                 </div>
               ))}
             </div>
@@ -233,7 +235,7 @@ export default function GlamResults() {
               <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(236,72,153,0.15)', border: '1px solid rgba(236,72,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#ec4899', flexShrink: 0 }}>
                 {i + 1}
               </div>
-              <p style={{ margin: 0, fontSize: 14, color: 'rgba(248,248,255,0.8)', lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>{c}</p>
+              <p style={{ margin: 0, fontSize: 14, color: tc.textBody, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>{c}</p>
             </div>
           ))}
         </div>
@@ -243,7 +245,7 @@ export default function GlamResults() {
           <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>✨</div>
           <div>
             <SectionLabel color="#a855f7">Pro Tutorial Tip</SectionLabel>
-            <p style={{ margin: '0 0 8px', fontSize: 14, color: 'rgba(248,248,255,0.8)', lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif" }}>{analysis.tutorialTip}</p>
+            <p style={{ margin: '0 0 8px', fontSize: 14, color: tc.textBody, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif" }}>{analysis.tutorialTip}</p>
             <p style={{ margin: 0, fontSize: 13, color: 'rgba(236,72,153,0.8)', fontStyle: 'italic', fontFamily: "'DM Sans', sans-serif" }}>💄 Try next: {analysis.lookSuggestion}</p>
           </div>
         </div>
@@ -251,7 +253,7 @@ export default function GlamResults() {
         {/* ── Recommended Products ─────────────────────────────────────── */}
         <div className="glass-card card-in card-in-8">
           <SectionLabel>Recommended Makeup Products</SectionLabel>
-          <p style={{ fontSize: 12, color: 'rgba(248,248,255,0.35)', marginBottom: 14, fontFamily: "'DM Sans', sans-serif" }}>
+          <p style={{ fontSize: 12, color: tc.textHint, marginBottom: 14, fontFamily: "'DM Sans', sans-serif" }}>
             Picks suited to your look · Shop on Amazon &amp; Nykaa
           </p>
           {analysis.products.map((p, i) => <MakeupProductCard key={i} product={p} />)}
@@ -260,7 +262,7 @@ export default function GlamResults() {
         {/* ── Makeup Artists Near You ──────────────────────────────────── */}
         <div className="glass-card card-in card-in-9" style={{ borderColor: 'rgba(236,72,153,0.2)', background: 'rgba(236,72,153,0.03)' }}>
           <SectionLabel>Makeup Artists Near You</SectionLabel>
-          <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '0 0 16px', color: '#f8f8ff' }}>
+          <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '0 0 16px', color: tc.textPrimary }}>
             Book a Pro in Your City
           </h3>
           <MakeupArtistFinder />

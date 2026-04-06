@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import type { HistoryEntry } from '../types/analysis';
 import Logo from '../components/Logo';
 import ThemeToggle from '../components/ThemeToggle';
+import { useThemeColors } from '../hooks/useTheme';
 import GlowRing from '../components/GlowRing';
 import ScoreBar from '../components/ScoreBar';
 import RoutineChecklist from '../components/RoutineChecklist';
@@ -36,6 +37,7 @@ export default function Results() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const tc = useThemeColors();
   const entry = location.state?.entry as HistoryEntry | undefined;
 
   // Persist analysis to Supabase if signed in
@@ -65,7 +67,7 @@ export default function Results() {
           gap: 18,
         }}
       >
-        <p style={{ color: 'rgba(248,248,255,0.45)', fontFamily: "'DM Sans', sans-serif" }}>
+        <p style={{ color: tc.textMuted, fontFamily: "'DM Sans', sans-serif" }}>
           No analysis found.
         </p>
         <button onClick={() => navigate('/')} className="btn-primary">
@@ -180,7 +182,7 @@ export default function Results() {
           <p
             style={{
               fontSize: 14,
-              color: 'rgba(248,248,255,0.6)',
+              color: tc.textBody,
               lineHeight: 1.7,
               maxWidth: 460,
               margin: 0,
@@ -222,7 +224,7 @@ export default function Results() {
                 fontSize: 18,
                 fontWeight: 700,
                 margin: '2px 0 0',
-                color: '#f8f8ff',
+                color: tc.textPrimary,
               }}
             >
               Your Personalised Regimen
@@ -240,7 +242,7 @@ export default function Results() {
                 fontSize: 18,
                 fontWeight: 700,
                 margin: '2px 0 0',
-                color: '#f8f8ff',
+                color: tc.textPrimary,
               }}
             >
               Targeted Treatment Schedule
@@ -258,7 +260,7 @@ export default function Results() {
                 fontSize: 18,
                 fontWeight: 700,
                 margin: '2px 0 0',
-                color: '#f8f8ff',
+                color: tc.textPrimary,
               }}
             >
               Curated For Your Skin
@@ -302,7 +304,7 @@ export default function Results() {
               style={{
                 margin: 0,
                 fontSize: 14,
-                color: 'rgba(248,248,255,0.8)',
+                color: tc.textBody,
                 lineHeight: 1.7,
                 fontFamily: "'DM Sans', sans-serif",
                 marginBottom: 10,
@@ -362,7 +364,7 @@ export default function Results() {
               style={{
                 margin: 0,
                 fontSize: 14,
-                color: 'rgba(248,248,255,0.8)',
+                color: tc.textBody,
                 lineHeight: 1.7,
                 fontFamily: "'DM Sans', sans-serif",
               }}
@@ -381,7 +383,7 @@ export default function Results() {
                 fontSize: 18,
                 fontWeight: 700,
                 margin: '2px 0 0',
-                color: '#f8f8ff',
+                color: tc.textPrimary,
               }}
             >
               Specialists Near You
@@ -405,7 +407,7 @@ export default function Results() {
                 fontSize: 18,
                 fontWeight: 700,
                 margin: '2px 0 0',
-                color: '#f8f8ff',
+                color: tc.textPrimary,
               }}
             >
               Build Your Glow Streak

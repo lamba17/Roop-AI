@@ -13,6 +13,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useAuth, uploadSelfie } from '../lib/supabase';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
+import { useThemeColors } from '../hooks/useTheme';
 import type { HistoryEntry, AppMode } from '../types/analysis';
 
 const FREE_LIMIT = 9999; // unlimited on Testing branch
@@ -31,6 +32,7 @@ const PARTICLES: Array<[number, number, number, number, string]> = [
 export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
+  const tc = useThemeColors();
   const [mode, setMode] = useState<AppMode>((location.state as any)?.mode ?? 'glow');
   const [skinFile, setSkinFile] = useState<File | null>(null);
   const [skinPreview, setSkinPreview] = useState<string | undefined>();
@@ -129,17 +131,17 @@ export default function Home() {
           {/* Hero Copy */}
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
             {firstName && (
-              <p style={{ fontSize: 14, color: 'rgba(248,248,255,0.55)', fontFamily: "'DM Sans', system-ui, sans-serif", fontWeight: 500, margin: '0 0 6px', animation: 'fadeIn 0.5s ease both', letterSpacing: 0.2 }}>
+              <p style={{ fontSize: 14, color: tc.textSoft, fontFamily: "'DM Sans', system-ui, sans-serif", fontWeight: 500, margin: '0 0 6px', animation: 'fadeIn 0.5s ease both', letterSpacing: 0.2 }}>
                 Welcome back,{' '}
                 <span style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', fontWeight: 700 }}>
                   {firstName}!
                 </span>
               </p>
             )}
-            <h1 key={mode} style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 700, margin: '0 0 10px', lineHeight: 1.2, letterSpacing: '-0.3px', animation: 'fadeIn 0.4s ease both' }}>
+            <h1 key={mode} style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 700, margin: '0 0 10px', lineHeight: 1.2, letterSpacing: '-0.3px', animation: 'fadeIn 0.4s ease both', color: tc.textPrimary }}>
               {selectedMode.heading}
             </h1>
-            <p key={mode + '-sub'} style={{ fontSize: 14, color: 'rgba(248,248,255,0.5)', lineHeight: 1.6, margin: '0 auto', maxWidth: 380, fontFamily: "'DM Sans', system-ui, sans-serif", animation: 'fadeIn 0.5s ease 0.1s both' }}>
+            <p key={mode + '-sub'} style={{ fontSize: 14, color: tc.textBody, lineHeight: 1.6, margin: '0 auto', maxWidth: 380, fontFamily: "'DM Sans', system-ui, sans-serif", animation: 'fadeIn 0.5s ease 0.1s both' }}>
               {selectedMode.tagline}
             </p>
           </div>
@@ -151,8 +153,8 @@ export default function Home() {
                 key={m.id}
                 onClick={() => handleModeSelect(m.id)}
                 style={{
-                  background: mode === m.id ? 'rgba(168,85,247,0.15)' : 'rgba(13,13,31,0.6)',
-                  border: `1.5px solid ${mode === m.id ? 'rgba(168,85,247,0.6)' : 'rgba(255,255,255,0.08)'}`,
+                  background: mode === m.id ? 'rgba(168,85,247,0.15)' : tc.cardBg,
+                  border: `1.5px solid ${mode === m.id ? 'rgba(168,85,247,0.6)' : tc.cardBorder}`,
                   borderRadius: 16, padding: '14px 12px', cursor: 'pointer',
                   textAlign: 'left', transition: 'all 0.2s', position: 'relative',
                   boxShadow: mode === m.id ? '0 0 20px rgba(168,85,247,0.15)' : 'none',
@@ -164,8 +166,8 @@ export default function Home() {
                   </span>
                 )}
                 <div style={{ fontSize: 22, marginBottom: 6 }}>{m.icon}</div>
-                <div style={{ fontSize: 12, fontWeight: 800, color: mode === m.id ? '#a855f7' : '#e8e8f0', letterSpacing: 0.5, marginBottom: 2 }}>{m.label}</div>
-                <div style={{ fontSize: 11, color: 'rgba(248,248,255,0.4)', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4 }}>{m.sub}</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: mode === m.id ? '#a855f7' : tc.textPrimary, letterSpacing: 0.5, marginBottom: 2 }}>{m.label}</div>
+                <div style={{ fontSize: 11, color: tc.textMuted, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4 }}>{m.sub}</div>
               </button>
             ))}
           </div>
@@ -176,8 +178,8 @@ export default function Home() {
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16, padding: '32px 16px' }}>
                 <div style={{ width: 64, height: 64, borderRadius: 18, background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(168,85,247,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🔒</div>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#f8f8ff', marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>Sign in to analyse your skin</div>
-                  <div style={{ fontSize: 13, color: 'rgba(248,248,255,0.45)', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5 }}>Create a free account to get your Glow Score, Glam Score, and more.</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: tc.textPrimary, marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>Sign in to analyse your skin</div>
+                  <div style={{ fontSize: 13, color: tc.textMuted, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5 }}>Create a free account to get your Glow Score, Glam Score, and more.</div>
                 </div>
                 <button onClick={() => navigate('/signin')} className="btn-glow" style={{ fontSize: 15, padding: '13px 32px', justifyContent: 'center' }}>
                   <span style={{ fontSize: 16 }}>🔑</span>Sign In / Create Account
@@ -209,7 +211,7 @@ export default function Home() {
             {/* Free limit warning */}
             {user && mode === 'glow' && limitReached && (
               <div style={{ marginTop: 14, padding: '14px 16px', background: 'rgba(168,85,247,0.07)', borderRadius: 12, border: '1px solid rgba(168,85,247,0.25)' }}>
-                <p style={{ margin: '0 0 10px', fontSize: 13, color: 'rgba(248,248,255,0.75)', lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
+                <p style={{ margin: '0 0 10px', fontSize: 13, color: tc.textBody, lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
                   ⚠️ You've used all <strong>3 free analyses</strong> for today.
                 </p>
                 <button onClick={() => setShowPremium(true)} className="btn-glow" style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '11px' }}>
@@ -267,7 +269,7 @@ export default function Home() {
             </div>
           </div>
 
-          <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(248,248,255,0.25)', marginTop: 20, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif", animation: 'fadeIn 0.8s ease 1s both' }}>
+          <p style={{ textAlign: 'center', fontSize: 12, color: tc.textHint, marginTop: 20, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif", animation: 'fadeIn 0.8s ease 1s both' }}>
             🔒 &nbsp;Your photos are never stored on our servers
           </p>
         </div>
