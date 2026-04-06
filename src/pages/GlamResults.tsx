@@ -63,36 +63,6 @@ function ScoreRow({ label, score, delay = 0 }: { label: string; score: number; d
   );
 }
 
-function CategoryCard({
-  title, emoji, accentColor, rows, delayBase, animClass,
-}: {
-  title: string; emoji: string; accentColor: string;
-  rows: Array<{ label: string; key: keyof GlamScores }>;
-  delayBase: number; animClass: string;
-}) {
-  return (
-    <div
-      className={`glass-card card-in ${animClass}`}
-      style={{ borderColor: `${accentColor}33` }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 10, fontSize: 18,
-          background: `${accentColor}18`, border: `1px solid ${accentColor}33`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-        }}>{emoji}</div>
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: accentColor }}>
-          {title}
-        </span>
-      </div>
-      {rows.map(({ label, key }, i) => (
-        <ScoreRow key={key} label={label} score={0} delay={delayBase + i * 80} />
-      ))}
-    </div>
-  );
-}
-
-/* We pass scores separately so CategoryCard can be a pure display component */
 function ScoreSection({
   title, emoji, accentColor, rows, scores, delayBase, animClass,
 }: {

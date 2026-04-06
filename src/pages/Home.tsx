@@ -39,8 +39,10 @@ export default function Home() {
 
   const { analyze: analyzeGlow, loading: glowLoading, error: glowError } = useSkinAnalysis();
   const { analyze: analyzeGlam, loading: glamLoading, error: glamError } = useGlamAnalysis();
-  const { analyze: analyzeGuide, loading: guideLoading, error: guideError } = useGuideAnalysis();
-  const { analyze: analyzeBridal, loading: bridalLoading, error: bridalError } = useBridalPlan();
+  // guide/bridal reserved for future release
+  const _analyzeGuide = useGuideAnalysis().analyze;
+  const _analyzeBridal = useBridalPlan().analyze;
+  void _analyzeGuide; void _analyzeBridal;
 
   const [history, setHistory] = useLocalStorage<HistoryEntry[]>('roop_history', []);
   const { user } = useAuth();
