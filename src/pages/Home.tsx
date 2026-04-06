@@ -51,9 +51,13 @@ export default function Home() {
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
     ?? user?.email?.split('@')[0] ?? null;
 
+  const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS as string ?? '')
+    .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+  const isAdmin = !!user?.email && adminEmails.includes(user.email.toLowerCase());
+
   const todayKey = new Date().toISOString().split('T')[0];
   const todayCount = history.filter(h => h.date.startsWith(todayKey)).length;
-  const limitReached = !premium && todayCount >= FREE_LIMIT;
+  const limitReached = !premium && !isAdmin && todayCount >= FREE_LIMIT;
 
   const selectedMode = MODES.find(m => m.id === mode)!;
   const error = glowError || glamError;
