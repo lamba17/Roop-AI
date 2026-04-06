@@ -4,6 +4,7 @@ import Logo from '../components/Logo';
 import GlowRing from '../components/GlowRing';
 import ScoreBar from '../components/ScoreBar';
 import MakeupProductCard from '../components/MakeupProductCard';
+import MakeupArtistFinder from '../components/MakeupArtistFinder';
 
 function SectionLabel({ children }: { children: string }) {
   return (
@@ -138,8 +139,17 @@ export default function GlamResults() {
           {analysis.products.map((p, i) => <MakeupProductCard key={i} product={p} />)}
         </div>
 
+        {/* Makeup Artist Finder */}
+        <div className="glass-card card-in card-in-8" style={{ borderColor: 'rgba(236,72,153,0.2)', background: 'rgba(236,72,153,0.03)' }}>
+          <SectionLabel>Makeup Artists Near You</SectionLabel>
+          <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '0 0 16px', color: '#f8f8ff' }}>
+            Book a Pro in Your City
+          </h3>
+          <MakeupArtistFinder />
+        </div>
+
         {/* CTA */}
-        <div className="glass-card card-in card-in-8" style={{ textAlign: 'center', padding: '28px 24px' }}>
+        <div className="glass-card card-in card-in-9" style={{ textAlign: 'center', padding: '28px 24px' }}>
           <p style={{ margin: '0 0 16px', fontSize: 14, color: 'rgba(248,248,255,0.5)', fontFamily: "'DM Sans', sans-serif" }}>
             Want a full personalized tutorial using your skin + makeup selfies?
           </p>

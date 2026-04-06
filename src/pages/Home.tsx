@@ -17,10 +17,8 @@ import type { HistoryEntry, AppMode } from '../types/analysis';
 const FREE_LIMIT = 3;
 
 const MODES: Array<{ id: AppMode; icon: string; label: string; sub: string; dual: boolean; premium?: boolean; heading: string; tagline: string }> = [
-  { id: 'glow',   icon: '🌿', label: 'GLOW SCORE', sub: 'No makeup · Skin health',      dual: false, heading: 'Your AI-Powered Skin Coach',   tagline: 'Upload a bare-face selfie — get your Glow Score, daily routine, product picks, and dermatologist insights.' },
-  { id: 'glam',   icon: '💄', label: 'GLAM SCORE', sub: 'Makeup selfie · Makeup coach',  dual: false, heading: 'Your AI-Powered Makeup Coach',  tagline: 'Upload a makeup selfie — get your Glam Score, what\'s missing from your look, and expert correction tips.' },
-  { id: 'guide',  icon: '📖', label: 'GUIDE',       sub: 'Two selfies · Your tutorial',  dual: true,  heading: 'Your Personalised Beauty Guide', tagline: 'Upload a bare-face + makeup selfie — get a step-by-step tutorial built around your unique features.' },
-  { id: 'bridal', icon: '👰', label: 'BRIDAL',      sub: 'Two selfies · 90-day plan',    dual: true,  premium: true, heading: 'Your 90-Day Bridal Beauty Plan', tagline: 'Upload two selfies — get a full skin prep + makeup plan tailored for your wedding day.' },
+  { id: 'glow', icon: '🌿', label: 'GLOW SCORE', sub: 'No makeup · Skin health',     dual: false, heading: 'Your AI-Powered Skin Coach',  tagline: 'Upload a bare-face selfie — get your Glow Score, daily routine, product picks, and dermatologist insights.' },
+  { id: 'glam', icon: '💄', label: 'GLAM SCORE', sub: 'Makeup selfie · Makeup coach', dual: false, heading: 'Your AI-Powered Makeup Coach', tagline: "Upload a makeup selfie — get your Glam Score, what's missing from your look, and expert correction tips." },
 ];
 
 const PARTICLES: Array<[number, number, number, number, string]> = [
@@ -254,14 +252,14 @@ export default function Home() {
                   <><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />Analysing&hellip;</>
                 ) : (
                   <><span style={{ fontSize: 18 }}>{selectedMode.icon}</span>
-                  {mode === 'glow' ? 'Analyse My Skin' : mode === 'glam' ? 'Get My Glam Score' : mode === 'guide' ? 'Build My Tutorial' : 'Create My Bridal Plan'}</>
+                  {mode === 'glow' ? 'Analyse My Skin' : 'Get My Glam Score'}</>
                 )}
               </button>
             )}
 
             {/* Feature pills */}
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6, marginTop: 16 }}>
-              {[['✦','Glow Score'],['💄','Glam Score'],['📖','Beauty Guide'],['👰','Bridal Plan']].map(([icon, label]) => (
+              {[['✦','Glow Score'],['💄','Glam Score']].map(([icon, label]) => (
                 <span key={label} className="feature-pill">
                   <span style={{ color: '#a855f7', fontSize: 11 }}>{icon}</span>{label}
                 </span>
