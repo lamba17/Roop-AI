@@ -1,7 +1,10 @@
 export type SkinType = "dry" | "oily" | "combination" | "normal";
 export type OilinessLevel = "dry" | "normal" | "oily" | "combination";
 export type MaskType = "acne" | "dry" | "dark_circles" | "dull" | "oily";
+export type MakeupStyle = "natural" | "everyday" | "glam" | "bold" | "smokey" | "minimal";
+export type AppMode = "glow" | "glam" | "guide" | "bridal";
 
+// ── GLOW (skin health) ────────────────────────────────────────────────────
 export interface GlowScores {
   acne: number;
   skinTone: number;
@@ -41,4 +44,76 @@ export interface HistoryEntry {
   score: number;
   imageUrl: string;
   analysis: SkinAnalysis;
+}
+
+// ── GLAM (makeup coaching) ────────────────────────────────────────────────
+export interface GlamScores {
+  foundationMatch: number;
+  eyeMakeup: number;
+  lipColor: number;
+  blushContour: number;
+  overall: number;
+}
+
+export interface MakeupProduct {
+  name: string;
+  type: "foundation" | "concealer" | "blush" | "eyeshadow" | "mascara" | "lipstick" | "highlighter" | "primer" | "setting spray" | "contour" | "eyeliner";
+  shade?: string;
+  reason: string;
+}
+
+export interface GlamAnalysis {
+  glamScore: number;
+  scores: GlamScores;
+  currentLook: string;
+  makeupStyle: MakeupStyle;
+  report: string;
+  skinToneMatch: string;
+  corrections: string[];
+  products: MakeupProduct[];
+  tutorialTip: string;
+  lookSuggestion: string;
+}
+
+// ── GUIDE (personalized tutorial) ────────────────────────────────────────
+export interface GuideStep {
+  step: number;
+  title: string;
+  instruction: string;
+  product?: string;
+  duration?: string;
+}
+
+export interface GuideAnalysis {
+  title: string;
+  lookCategory: string;
+  totalTime: string;
+  skinFoundationSummary: string;
+  makeupBaseSummary: string;
+  steps: GuideStep[];
+  proTips: string[];
+  avoidList: string[];
+  products: MakeupProduct[];
+}
+
+// ── BRIDAL (90-day plan) ──────────────────────────────────────────────────
+export interface BridalPhase {
+  weekRange: string;
+  phase: string;
+  skinGoal: string;
+  makeupFocus: string;
+  treatments: string[];
+  keyProducts: string[];
+}
+
+export interface BridalPlan {
+  weddingLook: string;
+  skinReadinessScore: number;
+  makeupCompatibilityScore: number;
+  urgentConcerns: string[];
+  phases: BridalPhase[];
+  bridalProducts: MakeupProduct[];
+  skinTreatments: string[];
+  weddingDayTips: string[];
+  preWeddingRoutine: string;
 }
