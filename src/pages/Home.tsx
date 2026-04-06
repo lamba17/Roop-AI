@@ -16,11 +16,11 @@ import type { HistoryEntry, AppMode } from '../types/analysis';
 
 const FREE_LIMIT = 3;
 
-const MODES: Array<{ id: AppMode; icon: string; label: string; sub: string; dual: boolean; premium?: boolean }> = [
-  { id: 'glow',   icon: '🌿', label: 'GLOW SCORE', sub: 'No makeup · Skin health',      dual: false },
-  { id: 'glam',   icon: '💄', label: 'GLAM SCORE', sub: 'Makeup selfie · Makeup coach',  dual: false },
-  { id: 'guide',  icon: '📖', label: 'GUIDE',       sub: 'Two selfies · Your tutorial',  dual: true  },
-  { id: 'bridal', icon: '👰', label: 'BRIDAL',      sub: 'Two selfies · 90-day plan',    dual: true, premium: true },
+const MODES: Array<{ id: AppMode; icon: string; label: string; sub: string; dual: boolean; premium?: boolean; heading: string; tagline: string }> = [
+  { id: 'glow',   icon: '🌿', label: 'GLOW SCORE', sub: 'No makeup · Skin health',      dual: false, heading: 'Your AI-Powered Skin Coach',   tagline: 'Upload a bare-face selfie — get your Glow Score, daily routine, product picks, and dermatologist insights.' },
+  { id: 'glam',   icon: '💄', label: 'GLAM SCORE', sub: 'Makeup selfie · Makeup coach',  dual: false, heading: 'Your AI-Powered Makeup Coach',  tagline: 'Upload a makeup selfie — get your Glam Score, what\'s missing from your look, and expert correction tips.' },
+  { id: 'guide',  icon: '📖', label: 'GUIDE',       sub: 'Two selfies · Your tutorial',  dual: true,  heading: 'Your Personalised Beauty Guide', tagline: 'Upload a bare-face + makeup selfie — get a step-by-step tutorial built around your unique features.' },
+  { id: 'bridal', icon: '👰', label: 'BRIDAL',      sub: 'Two selfies · 90-day plan',    dual: true,  premium: true, heading: 'Your 90-Day Bridal Beauty Plan', tagline: 'Upload two selfies — get a full skin prep + makeup plan tailored for your wedding day.' },
 ];
 
 const PARTICLES: Array<[number, number, number, number, string]> = [
@@ -153,11 +153,11 @@ export default function Home() {
                 </span>
               </p>
             )}
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 700, margin: '0 0 10px', lineHeight: 1.2, letterSpacing: '-0.3px' }}>
-              Your AI Beauty Coach
+            <h1 key={mode} style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 700, margin: '0 0 10px', lineHeight: 1.2, letterSpacing: '-0.3px', animation: 'fadeIn 0.4s ease both' }}>
+              {selectedMode.heading}
             </h1>
-            <p style={{ fontSize: 14, color: 'rgba(248,248,255,0.5)', lineHeight: 1.6, margin: '0 auto', maxWidth: 360, fontFamily: "'DM Sans', system-ui, sans-serif", animation: 'fadeIn 0.8s ease 0.4s both' }}>
-              Two selfies. Two scores. One complete beauty coach.
+            <p key={mode + '-sub'} style={{ fontSize: 14, color: 'rgba(248,248,255,0.5)', lineHeight: 1.6, margin: '0 auto', maxWidth: 380, fontFamily: "'DM Sans', system-ui, sans-serif", animation: 'fadeIn 0.5s ease 0.1s both' }}>
+              {selectedMode.tagline}
             </p>
           </div>
 
