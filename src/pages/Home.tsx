@@ -53,13 +53,8 @@ export default function Home() {
   const todayCount = history.filter(h => h.date.startsWith(todayKey)).length;
   const limitReached = !premium && todayCount >= FREE_LIMIT;
 
-  const loading = glowLoading || glamLoading || guideLoading || bridalLoading;
-  const error = glowError || glamError || guideError || bridalError;
-
   const selectedMode = MODES.find(m => m.id === mode)!;
-  const canAnalyze = selectedMode.dual
-    ? !!skinFile && !!makeupFile
-    : mode === 'glam' ? !!makeupFile : !!skinFile;
+  const error = glowError || glamError;
 
   function handleSkinFile(f: File) {
     setSkinFile(f);
@@ -75,44 +70,30 @@ export default function Home() {
     setMakeupFile(null); setMakeupPreview(undefined);
   }
 
-  async function handleAnalyze() {
-    if (!user) return;
-    if (mode === 'bridal' && !premium) { setShowPremium(true); return; }
+  async function handleGlowAnalyze() {
+    if (!user || !skinFile) return;
+    const base64 = await fileToBase64(skinFile);
+    const result = await analyzeGlow(base64);
+    if (!result) return;
+    let imageUrl = '';
+    try { imageUrl = await uploadSelfie(user.id, skinFile); } catch { /* use empty */ }
+    const entry: HistoryEntry = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      score: result.glowScore,
+      imageUrl,
+      analysis: result,
+    };
+    setHistory([entry, ...history].slice(0, 10));
+    navigate('/results', { state: { entry } });
+  }
 
-    if (mode === 'glow') {
-      if (!skinFile) return;
-      const base64 = await fileToBase64(skinFile);
-      const result = await analyzeGlow(base64);
-      if (!result) return;
-      let imageUrl = '';
-      try { imageUrl = await uploadSelfie(user.id, skinFile); } catch { /* use empty */ }
-      const entry: HistoryEntry = { id: Date.now().toString(), date: new Date().toISOString(), score: result.glowScore, imageUrl, analysis: result };
-      setHistory([entry, ...history].slice(0, 10));
-      navigate('/results', { state: { entry } });
-
-    } else if (mode === 'glam') {
-      if (!makeupFile) return;
-      const base64 = await fileToBase64(makeupFile);
-      const analysis = await analyzeGlam(base64);
-      if (!analysis) return;
-      navigate('/glam-results', { state: { analysis, imageUrl: makeupPreview } });
-
-    } else if (mode === 'guide') {
-      if (!skinFile || !makeupFile) return;
-      const skinB64 = await fileToBase64(skinFile);
-      const makeupB64 = await fileToBase64(makeupFile);
-      const analysis = await analyzeGuide(skinB64, makeupB64);
-      if (!analysis) return;
-      navigate('/guide-results', { state: { analysis, skinImageUrl: skinPreview, makeupImageUrl: makeupPreview } });
-
-    } else if (mode === 'bridal') {
-      if (!skinFile || !makeupFile) return;
-      const skinB64 = await fileToBase64(skinFile);
-      const makeupB64 = await fileToBase64(makeupFile);
-      const plan = await analyzeBridal(skinB64, makeupB64);
-      if (!plan) return;
-      navigate('/bridal-results', { state: { plan, skinImageUrl: skinPreview, makeupImageUrl: makeupPreview } });
-    }
+  async function handleGlamAnalyze() {
+    if (!user || !makeupFile) return;
+    const base64 = await fileToBase64(makeupFile);
+    const analysis = await analyzeGlam(base64);
+    if (!analysis) return;
+    navigate('/glam-results', { state: { analysis, imageUrl: makeupPreview } });
   }
 
   return (
@@ -240,19 +221,34 @@ export default function Home() {
               </div>
             )}
 
-            {/* CTA */}
-            {user && (
+            {/* CTA — Glow */}
+            {user && mode === 'glow' && (
               <button
-                onClick={handleAnalyze}
-                disabled={!canAnalyze || loading || (mode === 'glow' && limitReached)}
+                onClick={handleGlowAnalyze}
+                disabled={!skinFile || glowLoading || limitReached}
                 className="btn-glow"
                 style={{ width: '100%', marginTop: 18, fontSize: 16, padding: '15px', justifyContent: 'center' }}
               >
-                {loading ? (
+                {glowLoading ? (
                   <><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />Analysing&hellip;</>
                 ) : (
-                  <><span style={{ fontSize: 18 }}>{selectedMode.icon}</span>
-                  {mode === 'glow' ? 'Analyse My Skin' : 'Get My Glam Score'}</>
+                  <><span style={{ fontSize: 18 }}>🌿</span>Analyse My Skin</>
+                )}
+              </button>
+            )}
+
+            {/* CTA — Glam */}
+            {user && mode === 'glam' && (
+              <button
+                onClick={handleGlamAnalyze}
+                disabled={!makeupFile || glamLoading}
+                className="btn-glow"
+                style={{ width: '100%', marginTop: 18, fontSize: 16, padding: '15px', justifyContent: 'center', background: 'linear-gradient(135deg, #db2777, #a855f7, #db2777)', backgroundSize: '200% auto' }}
+              >
+                {glamLoading ? (
+                  <><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />Analysing&hellip;</>
+                ) : (
+                  <><span style={{ fontSize: 18 }}>💄</span>Get My Glam Score</>
                 )}
               </button>
             )}
