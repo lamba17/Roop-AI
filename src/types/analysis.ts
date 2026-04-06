@@ -48,16 +48,28 @@ export interface HistoryEntry {
 
 // ── GLAM (makeup coaching) ────────────────────────────────────────────────
 export interface GlamScores {
-  foundationMatch: number;
-  eyeMakeup: number;
-  lipColor: number;
-  blushContour: number;
+  // Face
+  foundation: number;
+  concealer: number;
+  powder: number;
+  blush: number;
+  highlighter: number;
+  // Eyes
+  eyeshadow: number;
+  eyeliner: number;
+  mascara: number;
+  browProducts: number;
+  // Lips
+  lipstick: number;
+  gloss: number;
+  balm: number;
+  // Overall
   overall: number;
 }
 
 export interface MakeupProduct {
   name: string;
-  type: "foundation" | "concealer" | "blush" | "eyeshadow" | "mascara" | "lipstick" | "highlighter" | "primer" | "setting spray" | "contour" | "eyeliner";
+  type: "foundation" | "concealer" | "powder" | "blush" | "highlighter" | "contour" | "primer" | "setting spray" | "eyeshadow" | "eyeliner" | "mascara" | "brow" | "lipstick" | "gloss" | "balm";
   shade?: string;
   reason: string;
 }

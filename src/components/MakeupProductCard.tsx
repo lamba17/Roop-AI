@@ -1,17 +1,24 @@
 import type { MakeupProduct } from '../types/analysis';
 
 const TYPE_COLOR: Record<string, string> = {
-  foundation: '#f59e0b',
-  concealer: '#a855f7',
-  blush: '#ec4899',
-  eyeshadow: '#6366f1',
-  mascara: '#1e1e3a',
-  lipstick: '#ef4444',
-  highlighter: '#f59e0b',
-  primer: '#22c55e',
+  // Face
+  foundation:      '#f59e0b',
+  concealer:       '#a855f7',
+  powder:          '#c084fc',
+  blush:           '#ec4899',
+  highlighter:     '#fcd34d',
+  contour:         '#a16207',
+  primer:          '#22c55e',
   'setting spray': '#06b6d4',
-  contour: '#a16207',
-  eyeliner: '#6366f1',
+  // Eyes
+  eyeshadow:       '#6366f1',
+  eyeliner:        '#818cf8',
+  mascara:         '#94a3b8',
+  brow:            '#92400e',
+  // Lips
+  lipstick:        '#ef4444',
+  gloss:           '#f472b6',
+  balm:            '#fb923c',
 };
 
 const AFFILIATE_TAG = 'roopai03-21';
