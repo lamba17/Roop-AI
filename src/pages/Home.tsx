@@ -14,7 +14,7 @@ import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
 import type { HistoryEntry, AppMode } from '../types/analysis';
 
-const FREE_LIMIT = 3;
+const FREE_LIMIT = 9999; // unlimited on Testing branch
 
 const MODES: Array<{ id: AppMode; icon: string; label: string; sub: string; dual: boolean; premium?: boolean; heading: string; tagline: string }> = [
   { id: 'glow', icon: '🌿', label: 'GLOW SCORE', sub: 'No makeup · Skin health',     dual: false, heading: 'Your AI-Powered Skin Coach',  tagline: 'Upload a bare-face selfie — get your Glow Score, daily routine, product picks, and dermatologist insights.' },
@@ -51,13 +51,9 @@ export default function Home() {
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
     ?? user?.email?.split('@')[0] ?? null;
 
-  const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS as string ?? '')
-    .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
-  const isAdmin = !!user?.email && adminEmails.includes(user.email.toLowerCase());
-
   const todayKey = new Date().toISOString().split('T')[0];
   const todayCount = history.filter(h => h.date.startsWith(todayKey)).length;
-  const limitReached = !premium && !isAdmin && todayCount >= FREE_LIMIT;
+  const limitReached = !premium && todayCount >= FREE_LIMIT;
 
   const selectedMode = MODES.find(m => m.id === mode)!;
   const error = glowError || glamError;
