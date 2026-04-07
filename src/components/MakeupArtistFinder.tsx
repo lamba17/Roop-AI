@@ -99,7 +99,7 @@ export default function MakeupArtistFinder() {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: '#f59e0b' }}>⭐ {artist.rating}</div>
               <a
-                href={`https://www.google.com/maps/search/makeup+artist+near+${encodeURIComponent(artist.studio)}`}
+                href={artist.googleMapsLink}
                 target="_blank"
                 rel="noreferrer noopener"
                 style={{
