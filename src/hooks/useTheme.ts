@@ -4,7 +4,7 @@ export type Theme = 'dark' | 'light';
 
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem('roop_theme') as Theme) ?? 'dark';
+    return (localStorage.getItem('roop_theme') as Theme) ?? 'light';
   });
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export function useTheme() {
 /* Returns inline-style-safe color values for the current theme */
 export function useThemeColors() {
   const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem('roop_theme') as Theme) ?? 'dark';
+    return (localStorage.getItem('roop_theme') as Theme) ?? 'light';
   });
 
   useEffect(() => {

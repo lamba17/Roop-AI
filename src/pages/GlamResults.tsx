@@ -229,7 +229,7 @@ export default function GlamResults() {
 
         {/* ── 3 Corrections ───────────────────────────────────────────── */}
         <div className="glass-card card-in card-in-6" style={{ borderColor: 'rgba(236,72,153,0.2)', background: 'rgba(236,72,153,0.04)' }}>
-          <SectionLabel>3 Things to Improve</SectionLabel>
+          <SectionLabel>{`${analysis.corrections.length} Things to Improve`}</SectionLabel>
           {analysis.corrections.map((c, i) => (
             <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: i < analysis.corrections.length - 1 ? 12 : 0 }}>
               <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(236,72,153,0.15)', border: '1px solid rgba(236,72,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#ec4899', flexShrink: 0 }}>
