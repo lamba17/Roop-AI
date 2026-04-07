@@ -124,21 +124,19 @@ export default function MakeupArtistFinder() {
                   JD
                 </a>
               )}
-              {artist.instagramHandle && (
-                <a
-                  href={`https://www.instagram.com/${artist.instagramHandle}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  style={{
-                    fontSize: 11, color: '#fff', textDecoration: 'none',
-                    background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
-                    padding: '4px 10px', borderRadius: 6, fontWeight: 600,
-                    display: 'block', textAlign: 'center',
-                  }}
-                >
-                  IG
-                </a>
-              )}
+              <a
+                href={`https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(artist.name)}`}
+                target="_blank"
+                rel="noreferrer noopener"
+                style={{
+                  fontSize: 11, color: '#fff', textDecoration: 'none',
+                  background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
+                  padding: '4px 10px', borderRadius: 6, fontWeight: 600,
+                  display: 'block', textAlign: 'center',
+                }}
+              >
+                IG
+              </a>
             </div>
           </div>
         ))}
