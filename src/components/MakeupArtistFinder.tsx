@@ -63,7 +63,7 @@ export default function MakeupArtistFinder() {
           onChange={e => setCity(e.target.value)}
           style={{
             flex: 1, padding: '8px 14px', borderRadius: 10,
-            background: '#1a1a30', border: '1px solid #1e1e3a', color: '#e8e8f0',
+            background: 'var(--select-bg)', border: '1px solid var(--inner-border)', color: 'var(--text-primary)',
             fontSize: 14, cursor: 'pointer',
           }}
         >
@@ -82,13 +82,13 @@ export default function MakeupArtistFinder() {
       <div>
         {artists.map((artist, i) => (
           <div key={i} style={{
-            background: '#1a1a30', border: '1px solid #1e1e3a', borderRadius: 12,
+            background: 'var(--inner-card)', border: '1px solid var(--inner-border)', borderRadius: 12,
             padding: '14px 16px', marginBottom: 10,
             display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
           }}>
             <div style={{ flex: 1, marginRight: 12 }}>
-              <div style={{ fontWeight: 700, fontSize: 14, color: '#e8e8f0', marginBottom: 3 }}>{artist.name}</div>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>{artist.studio}</div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 3 }}>{artist.name}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>{artist.studio}</div>
               <div style={{ fontSize: 12, color: 'rgba(236,72,153,0.8)', marginBottom: 8 }}>{artist.priceRange}</div>
               <span style={{
                 fontSize: 11, fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase',
@@ -112,7 +112,7 @@ export default function MakeupArtistFinder() {
                 </a>
               ) : (
                 <a
-                  href={`https://www.google.com/maps/search/makeup+artist+${encodeURIComponent(artist.studio)}`}
+                  href={`https://www.google.com/maps/search/${encodeURIComponent(artist.name + ' ' + artist.studio)}`}
                   target="_blank"
                   rel="noreferrer noopener"
                   style={{
