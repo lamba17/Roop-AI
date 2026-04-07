@@ -96,19 +96,49 @@ export default function MakeupArtistFinder() {
                 background: 'rgba(236,72,153,0.12)', color: '#ec4899',
               }}>{artist.specialty}</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: '#f59e0b' }}>⭐ {artist.rating}</div>
               <a
                 href={artist.googleMapsLink}
                 target="_blank"
                 rel="noreferrer noopener"
                 style={{
-                  fontSize: 12, color: '#fff', textDecoration: 'none',
+                  fontSize: 11, color: '#fff', textDecoration: 'none',
                   background: '#ec4899', padding: '4px 10px', borderRadius: 6, fontWeight: 600,
+                  display: 'block', textAlign: 'center',
                 }}
               >
-                Maps →
+                📍 Maps
               </a>
+              {artist.justDialLink && (
+                <a
+                  href={artist.justDialLink}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  style={{
+                    fontSize: 11, color: '#fff', textDecoration: 'none',
+                    background: '#f97316', padding: '4px 10px', borderRadius: 6, fontWeight: 600,
+                    display: 'block', textAlign: 'center',
+                  }}
+                >
+                  JD
+                </a>
+              )}
+              {artist.instagramHandle && (
+                <a
+                  href={`https://www.instagram.com/${artist.instagramHandle}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  style={{
+                    fontSize: 11, color: '#fff', textDecoration: 'none',
+                    background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
+                    padding: '4px 10px', borderRadius: 6, fontWeight: 600,
+                    display: 'block', textAlign: 'center',
+                  }}
+                >
+                  IG
+                </a>
+              )}
             </div>
           </div>
         ))}

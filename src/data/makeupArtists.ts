@@ -5,6 +5,8 @@ export interface MakeupArtist {
   specialty: string;
   priceRange: string;
   googleMapsLink: string;
+  justDialLink?: string;
+  instagramHandle?: string;
 }
 
 export const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
@@ -26,6 +28,8 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & Party Makeup',
       priceRange: '₹2,000 – ₹8,000',
       googleMapsLink: 'https://www.google.com/maps/search/Antheia+Enhance+Rajpur+Road+Dehradun',
+      justDialLink: 'https://www.justdial.com/Dehradun/Antheia-Enhance-Salon-Rajpur-Road/9999PX135-X135-220416233230-E4X3_BZDET',
+      instagramHandle: 'antheiaenhance',
     },
     {
       name: 'Makeovers by Sugandha',
@@ -34,6 +38,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal Makeup & Hair Styling',
       priceRange: '₹1,500 – ₹6,000',
       googleMapsLink: 'https://www.google.com/maps/search/Makeovers+by+Sugandha+Dehradun',
+      instagramHandle: 'makeoversbysugandha',
     },
     {
       name: 'G5 Makeup Studio & Academy',
@@ -52,6 +57,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & Party Makeup',
       priceRange: '₹2,000 – ₹8,000',
       googleMapsLink: 'https://www.google.com/maps/search/Attraction+Beauty+Studio+Rohini+Sector+17+Delhi',
+      justDialLink: 'https://www.justdial.com/Delhi/Attraction-Beauty-Studio-Near-Apsara-Restaurant-Rohini-Sector-17/011PXX11-XX11-130917154040-M8G7_BZDET',
     },
     {
       name: 'House of Beauty by Sahil Malhotra',
@@ -60,6 +66,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & HD Airbrush Makeup',
       priceRange: '₹5,000 – ₹25,000',
       googleMapsLink: 'https://www.google.com/maps/search/House+of+Beauty+Sahil+Malhotra+Rajouri+Garden+Delhi',
+      instagramHandle: 'sahilmalhotramakeovers',
     },
     {
       name: 'Isheeta Gupta Makeup Studio',
@@ -68,6 +75,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & Airbrush Makeup',
       priceRange: '₹4,000 – ₹15,000',
       googleMapsLink: 'https://www.google.com/maps/search/Isheeta+Gupta+Makeup+Studio+Delhi',
+      instagramHandle: 'isheetaguptamakeup',
     },
   ],
   Mumbai: [
@@ -78,6 +86,8 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal Studio & Makeup Academy',
       priceRange: '₹4,000 – ₹18,000',
       googleMapsLink: 'https://www.google.com/maps/search/Faritas+Academy+Salon+Andheri+West+Mumbai',
+      justDialLink: 'https://www.justdial.com/Mumbai/Faritas-Opp-Laxmi-Industrial-Estate-Andheri-West/022PXX22-XX22-121217114307-R4T2_BZDET',
+      instagramHandle: 'faritassalon',
     },
     {
       name: 'Beautyart Bridal Studio',
@@ -86,6 +96,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal Makeup',
       priceRange: '₹3,500 – ₹12,000',
       googleMapsLink: 'https://www.google.com/maps/search/Beautyart+Bridal+Studio+Ghatkopar+Mumbai',
+      instagramHandle: 'beautyartbridalstudio',
     },
     {
       name: 'ReemaZ Makeover',
@@ -94,6 +105,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & Party Makeup',
       priceRange: '₹5,000 – ₹20,000',
       googleMapsLink: 'https://www.google.com/maps/search/ReemaZ+Makeover+Mumbai',
+      instagramHandle: 'reemazbeauty',
     },
   ],
   Bangalore: [
@@ -104,6 +116,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & South Indian Makeup',
       priceRange: '₹3,000 – ₹12,000',
       googleMapsLink: 'https://www.google.com/maps/search/MJ+Gorgeous+Makeup+Studio+Arekere+Bangalore',
+      justDialLink: 'https://www.justdial.com/Bangalore/M-J-Gorgeous-Near-Rto-Office-Arekere-Gate/080PXX80-XX80-130428174611-V9B4_BZDET',
     },
     {
       name: 'Zorains Studio & Academy',
@@ -112,6 +125,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal, Hair & Nails',
       priceRange: '₹4,000 – ₹15,000',
       googleMapsLink: 'https://www.google.com/maps/search/Zorains+Studio+Academy+Bangalore',
+      instagramHandle: 'zorainsstudio',
     },
     {
       name: 'Kulsum Parvez',
@@ -120,6 +134,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Celebrity Bridal Makeup',
       priceRange: '₹6,000 – ₹20,000',
       googleMapsLink: 'https://www.google.com/maps/search/Kulsum+Parvez+Makeup+Artist+Bangalore',
+      instagramHandle: 'kulsumparvez',
     },
   ],
   Chennai: [
@@ -130,6 +145,8 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & Cine Makeup',
       priceRange: '₹3,000 – ₹15,000',
       googleMapsLink: 'https://www.google.com/maps/search/Noor+Bridal+Studio+Arumbakkam+Chennai',
+      justDialLink: 'https://www.justdial.com/Chennai/Bridal-Studio-Noor-Nearby-Anna-Arch-Arumbakkam/044PXX44-XX44-141017155052-E9U6_BZDET',
+      instagramHandle: 'makeupnoor',
     },
     {
       name: 'SAY Bridal Studio',
@@ -138,6 +155,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & Engagement Makeup',
       priceRange: '₹2,000 – ₹10,000',
       googleMapsLink: 'https://www.google.com/maps/search/SAY+Bridal+Studio+Kolathur+Chennai',
+      justDialLink: 'https://www.justdial.com/Chennai/Say-Bridal-Studio-Near-Praja-Hospital-Kolathur/044PXX44-XX44-240808202432-V3Q9_BZDET',
     },
   ],
   Hyderabad: [
@@ -148,6 +166,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal Makeup',
       priceRange: '₹4,000 – ₹18,000',
       googleMapsLink: 'https://www.google.com/maps/search/SminkUp+Bridal+Makeup+Studio+Jubilee+Hills+Hyderabad',
+      instagramHandle: 'sminkup',
     },
     {
       name: 'Tamanna Rooz Makeup Studio',
@@ -156,6 +175,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & Fashion Makeup',
       priceRange: '₹5,000 – ₹20,000',
       googleMapsLink: 'https://www.google.com/maps/search/Tamanna+Rooz+Makeup+Studio+Banjara+Hills+Hyderabad',
+      instagramHandle: 'tamannarooz',
     },
     {
       name: 'iGrace Beauty',
@@ -164,6 +184,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal, Film & Fashion Makeup',
       priceRange: '₹3,500 – ₹14,000',
       googleMapsLink: 'https://www.google.com/maps/search/iGrace+Beauty+Jubilee+Hills+Hyderabad',
+      instagramHandle: 'igracebeauty',
     },
   ],
   Pune: [
@@ -174,6 +195,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal Makeup',
       priceRange: '₹3,000 – ₹12,000',
       googleMapsLink: 'https://www.google.com/maps/search/Pallavi+Raut+Makeover+Pune',
+      instagramHandle: 'pallavi_raut_makeover',
     },
     {
       name: 'Anuja Khele Beauty',
@@ -182,6 +204,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal Makeup & Hair',
       priceRange: '₹2,500 – ₹10,000',
       googleMapsLink: 'https://www.google.com/maps/search/Anuja+Khele+Beauty+Stylishious+Salon+Pune',
+      instagramHandle: 'anujakhelebeauty',
     },
     {
       name: 'Pallavi Patil Makeup Artist',
@@ -190,6 +213,7 @@ export const MAKEUP_ARTISTS: Record<string, MakeupArtist[]> = {
       specialty: 'Bridal & Wedding Makeup',
       priceRange: '₹2,000 – ₹8,000',
       googleMapsLink: 'https://www.google.com/maps/search/Pallavi+Patil+Makeup+Artist+Pune',
+      instagramHandle: 'pallavipatil_makeupartist',
     },
   ],
 };
