@@ -98,31 +98,17 @@ export default function MakeupArtistFinder() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: '#f59e0b' }}>⭐ {artist.rating}</div>
-              {artist.googleMapsLink ? (
-                <a
-                  href={artist.googleMapsLink}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  style={{
-                    fontSize: 12, color: '#fff', textDecoration: 'none',
-                    background: '#ec4899', padding: '4px 10px', borderRadius: 6, fontWeight: 600,
-                  }}
-                >
-                  Maps →
-                </a>
-              ) : (
-                <a
-                  href={`https://www.google.com/maps/search/${encodeURIComponent(artist.name + ' ' + artist.studio)}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  style={{
-                    fontSize: 12, color: '#fff', textDecoration: 'none',
-                    background: 'rgba(236,72,153,0.7)', padding: '4px 10px', borderRadius: 6, fontWeight: 600,
-                  }}
-                >
-                  Maps →
-                </a>
-              )}
+              <a
+                href={`https://www.google.com/maps/search/makeup+artist+near+${encodeURIComponent(artist.studio)}`}
+                target="_blank"
+                rel="noreferrer noopener"
+                style={{
+                  fontSize: 12, color: '#fff', textDecoration: 'none',
+                  background: '#ec4899', padding: '4px 10px', borderRadius: 6, fontWeight: 600,
+                }}
+              >
+                Maps →
+              </a>
             </div>
           </div>
         ))}
