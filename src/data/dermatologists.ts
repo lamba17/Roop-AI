@@ -47,7 +47,6 @@ export const DERMATOLOGISTS: Record<string, Dermatologist[]> = {
       rating: 4.8,
       specialty: 'Trichology & Laser',
       googleMapsLink: 'https://maps.google.com/?q=Skin+Station+Dehradun',
-      instagramHandle: 'skinstation_dehradun',
       priceRange: '₹600 – ₹1,800',
     },
   ],
