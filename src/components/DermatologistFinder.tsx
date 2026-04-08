@@ -88,25 +88,33 @@ export default function DermatologistFinder() {
           }}>
             <div style={{ flex: 1, marginRight: 12 }}>
               <div style={{ fontWeight: 700, fontSize: 14, color: '#e8e8f0', marginBottom: 3 }}>{doc.name}</div>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>{doc.clinic}</div>
+              <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>{doc.clinic}</div>
+              {doc.priceRange && (
+                <div style={{ fontSize: 12, color: 'rgba(168,85,247,0.85)', marginBottom: 8 }}>💰 {doc.priceRange}</div>
+              )}
               <span style={{
                 fontSize: 11, fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase',
                 padding: '3px 8px', borderRadius: 6, background: 'rgba(168,85,247,0.15)', color: '#a855f7',
               }}>{doc.specialty}</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: '#f59e0b' }}>⭐ {doc.rating}</div>
               {doc.googleMapsLink && (
-                <a
-                  href={doc.googleMapsLink}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  style={{
-                    fontSize: 12, color: '#fff', textDecoration: 'none',
-                    background: '#06b6d4', padding: '4px 10px', borderRadius: 6, fontWeight: 600,
-                  }}
-                >
-                  Maps →
+                <a href={doc.googleMapsLink} target="_blank" rel="noreferrer noopener"
+                  style={{ fontSize: 11, color: '#fff', textDecoration: 'none', background: '#06b6d4', padding: '4px 10px', borderRadius: 6, fontWeight: 600, display: 'block', textAlign: 'center' }}>
+                  📍 Maps
+                </a>
+              )}
+              {doc.justDialLink && (
+                <a href={doc.justDialLink} target="_blank" rel="noreferrer noopener"
+                  style={{ fontSize: 11, color: '#fff', textDecoration: 'none', background: '#f97316', padding: '4px 10px', borderRadius: 6, fontWeight: 600, display: 'block', textAlign: 'center' }}>
+                  JD
+                </a>
+              )}
+              {doc.instagramHandle && (
+                <a href={`https://www.instagram.com/${doc.instagramHandle}`} target="_blank" rel="noreferrer noopener"
+                  style={{ fontSize: 11, color: '#fff', textDecoration: 'none', background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)', padding: '4px 10px', borderRadius: 6, fontWeight: 600, display: 'block', textAlign: 'center' }}>
+                  IG
                 </a>
               )}
             </div>
