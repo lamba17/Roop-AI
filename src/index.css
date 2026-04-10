@@ -5,7 +5,8 @@
 @tailwind utilities;
 
 /* ─── CSS CUSTOM PROPERTIES ───────────────────────────────────────────── */
-:root {
+:root,
+[data-theme="dark"] {
   --bg-primary:    #07070f;
   --bg-sidebar:    #0a0a14;
   --bg-card:       #0f0f1e;
@@ -25,6 +26,34 @@
   --cyan:          #06b6d4;
   --red:           #ef4444;
   --sidebar-width: 240px;
+  --topbar-bg:     rgba(7,7,15,0.9);
+  --glass-bg:      rgba(13,13,31,0.75);
+  --shadow-card:   0 8px 40px rgba(0,0,0,0.5);
+}
+
+[data-theme="light"] {
+  --bg-primary:    #f4f4f8;
+  --bg-sidebar:    #ffffff;
+  --bg-card:       #ffffff;
+  --bg-card2:      #f8f8fc;
+  --bg-elevated:   #eeeeF6;
+  --border:        #e0e0ee;
+  --border-subtle: rgba(124,58,237,0.12);
+  --text-primary:  #1a1a2e;
+  --text-muted:    #666688;
+  --text-hint:     #aaaacc;
+  --purple:        #7c3aed;
+  --purple-light:  #9333ea;
+  --pink:          #db2777;
+  --pink-light:    #ec4899;
+  --gold:          #d97706;
+  --green:         #16a34a;
+  --cyan:          #0891b2;
+  --red:           #dc2626;
+  --sidebar-width: 240px;
+  --topbar-bg:     rgba(255,255,255,0.92);
+  --glass-bg:      rgba(255,255,255,0.85);
+  --shadow-card:   0 4px 24px rgba(0,0,0,0.08);
 }
 
 /* ─── BASE ────────────────────────────────────────────────────────────── */
@@ -271,7 +300,7 @@
     justify-content: space-between;
     padding: 0 28px;
     border-bottom: 1px solid var(--border);
-    background: rgba(7,7,15,0.9);
+    background: var(--topbar-bg);
     backdrop-filter: blur(16px);
     position: sticky;
     top: 0;
@@ -1688,13 +1717,13 @@
 
   /* Glass card (kept for UploadZone and legacy) */
   .glass-card {
-    background: rgba(13,13,31,0.75);
+    background: var(--glass-bg);
     backdrop-filter: blur(24px);
     border: 1px solid rgba(124,58,237,0.25);
     border-radius: 24px;
     padding: 24px;
     margin-bottom: 14px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+    box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.05);
     transition: border-color 0.4s, box-shadow 0.4s, transform 0.3s;
   }
   .glass-card:hover {
@@ -1755,6 +1784,146 @@
     font-family: 'DM Sans', system-ui, sans-serif;
   }
   .feature-pill:hover { background: rgba(124,58,237,0.18); border-color: rgba(168,85,247,0.4); }
+
+  /* ── Theme Toggle Button ─────────────────────────────────────────── */
+  .theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    justify-content: space-between;
+  }
+  .theme-toggle-btn:hover {
+    background: rgba(168,85,247,0.1);
+    border-color: rgba(168,85,247,0.3);
+    color: var(--text-primary);
+  }
+  .theme-toggle-track {
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    background: var(--border);
+    position: relative;
+    transition: background 0.25s;
+    flex-shrink: 0;
+  }
+  .theme-toggle-track.on {
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+  }
+  .theme-toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.25s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .theme-toggle-track.on .theme-toggle-thumb {
+    transform: translateX(16px);
+  }
+
+  /* ── Light mode overrides ─────────────────────────────────────────── */
+  [data-theme="light"] .sidebar {
+    box-shadow: 2px 0 16px rgba(0,0,0,0.06);
+  }
+  [data-theme="light"] .sidebar-brand {
+    /* gradient still looks great on white */
+  }
+  [data-theme="light"] .sidebar-nav-item:hover {
+    background: rgba(124,58,237,0.08);
+  }
+  [data-theme="light"] .sidebar-nav-item.active {
+    background: rgba(124,58,237,0.12);
+  }
+  [data-theme="light"] .app-topbar {
+    box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+  }
+  [data-theme="light"] .dash-card,
+  [data-theme="light"] .results-card,
+  [data-theme="light"] .metric-card,
+  [data-theme="light"] .routine-ritual-card,
+  [data-theme="light"] .luminosity-card,
+  [data-theme="light"] .routine-scores-card,
+  [data-theme="light"] .routine-concerns-card,
+  [data-theme="light"] .booking-calendar,
+  [data-theme="light"] .booking-slots,
+  [data-theme="light"] .booking-doctor-card,
+  [data-theme="light"] .booking-summary,
+  [data-theme="light"] .analysis-tips-panel,
+  [data-theme="light"] .analysis-prev-panel,
+  [data-theme="light"] .analysis-upload-wrap,
+  [data-theme="light"] .doctor-featured-card,
+  [data-theme="light"] .doctor-card,
+  [data-theme="light"] .clinical-quote-card,
+  [data-theme="light"] .city-stats-card,
+  [data-theme="light"] .profile-hero,
+  [data-theme="light"] .profile-stat-card,
+  [data-theme="light"] .voice-card,
+  [data-theme="light"] .profile-clinic-card,
+  [data-theme="light"] .editors-choice-card,
+  [data-theme="light"] .product-card,
+  [data-theme="light"] .routine-potential-card,
+  [data-theme="light"] .skin-profile-card,
+  [data-theme="light"] .specialists-location-bar,
+  [data-theme="light"] .analysis-signin-gate,
+  [data-theme="light"] .confirmed-details {
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  [data-theme="light"] .mesh-bg {
+    background: #f4f4f8;
+  }
+  [data-theme="light"] body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+  [data-theme="light"] .gradient-text {
+    /* stays vibrant on light bg */
+    background: linear-gradient(135deg, #7c3aed 0%, #db2777 60%, #d97706 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  [data-theme="light"] .concern-tag {
+    background: rgba(220,38,38,0.08);
+    border-color: rgba(220,38,38,0.2);
+    color: #dc2626;
+  }
+  [data-theme="light"] .section-label { color: #888899; }
+  [data-theme="light"] .topnav-link { color: #888899; }
+  [data-theme="light"] .topnav-link:hover { color: var(--text-primary); }
+  [data-theme="light"] .topnav-link.active { color: #7c3aed; }
+  [data-theme="light"] .city-select {
+    background: var(--bg-elevated);
+    border-color: var(--border);
+    color: var(--text-primary);
+  }
+  [data-theme="light"] .cal-day { color: var(--text-primary); }
+  [data-theme="light"] .cal-day-header { color: var(--text-hint); }
+  [data-theme="light"] .slot-btn {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--border);
+  }
+  [data-theme="light"] .filter-tab {
+    border-color: var(--border);
+    color: var(--text-muted);
+  }
+  [data-theme="light"] .filter-tab:hover {
+    color: var(--text-primary);
+  }
 
   /* ── Responsive ──────────────────────────────────────────────────── */
   @media (max-width: 900px) {
