@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useAuth } from '../lib/supabase';
 import LanguageToggle from './LanguageToggle';
+import UserMenu from './UserMenu';
 
 const TOP_NAV = [
   { label: 'DASHBOARD', path: '/dashboard' },
@@ -47,17 +48,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
             </button>
-            {user && (
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="topbar-avatar"
-                title={user.email}
-              >
-                {(user?.user_metadata?.full_name as string | undefined)?.charAt(0)?.toUpperCase()
-                  ?? user?.email?.charAt(0)?.toUpperCase()
-                  ?? 'U'}
-              </button>
-            )}
+            <UserMenu />
           </div>
         </header>
 
