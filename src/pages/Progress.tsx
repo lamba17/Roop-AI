@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { HistoryEntry } from '../types/analysis';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
-import Logo from '../components/Logo';
+import AppLayout from '../components/AppLayout';
 
 function glowColor(score: number) {
   if (score >= 75) return '#22c55e';
@@ -15,42 +15,37 @@ export default function Progress() {
   const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080818' }} className="fade-in">
-      <header style={{
-        padding: '18px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        borderBottom: '1px solid #1e1e3a', background: '#080818', position: 'sticky', top: 0, zIndex: 10,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Logo size="sm" />
+    <AppLayout>
+      <div className="page-progress fade-in" style={{ maxWidth: 720 }}>
+        <div style={{ marginBottom: 28 }}>
+          <span className="page-eyebrow">Your Journey</span>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 700, margin: '0 0 6px' }}>
+            Your <span className="gradient-text">Progress</span>
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0 }}>
+            Track how your skin evolves over time.
+          </p>
         </div>
-        <button onClick={() => navigate('/')} className="btn-primary" style={{ fontSize: 12, padding: '8px 16px' }}>
-          + New Scan
-        </button>
-      </header>
-
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '24px 16px 60px' }}>
-        <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 24px', color: '#e8e8f0' }}>
-          Your <span style={{ background: 'linear-gradient(135deg,#a855f7,#ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Progress</span>
-        </h2>
 
         {history.length === 0 ? (
-          <div className="card" style={{ textAlign: 'center', padding: '40px 24px' }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>📊</div>
-            <p style={{ color: '#888', fontSize: 15, marginBottom: 20 }}>No analyses yet. Start your skin journey!</p>
-            <button onClick={() => navigate('/')} className="btn-primary">Analyze Now</button>
+          <div className="page-empty">
+            <div className="page-empty-icon">📊</div>
+            <h3>No analyses yet</h3>
+            <p>Start your skin journey to track progress over time.</p>
+            <button onClick={() => navigate('/')} className="btn-glow">
+              Start Analysis
+            </button>
           </div>
         ) : (
           <>
-            {/* Before/After Slider */}
             {history.length >= 2 && (
-              <div className="card" style={{ marginBottom: 20 }}>
+              <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 18, padding: '22px', marginBottom: 16 }}>
                 <span className="section-label">Progress Comparison</span>
                 <BeforeAfterSlider entries={[...history].reverse()} />
               </div>
             )}
 
-            {/* History list */}
-            <div className="card">
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 18, padding: '22px' }}>
               <span className="section-label">Scan History ({history.length})</span>
               {history.map(entry => (
                 <div
@@ -58,8 +53,8 @@ export default function Progress() {
                   onClick={() => navigate('/results', { state: { entry } })}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 14, padding: '12px 0',
-                    borderBottom: '1px solid #1e1e3a', cursor: 'pointer',
-                    transition: 'background 0.2s',
+                    borderBottom: '1px solid var(--border)', cursor: 'pointer',
+                    transition: 'opacity 0.2s',
                   }}
                 >
                   {entry.imageUrl ? (
@@ -75,10 +70,10 @@ export default function Progress() {
                     </div>
                   )}
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, color: '#888', marginBottom: 3 }}>
+                    <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 3 }}>
                       {new Date(entry.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
-                    <div style={{ fontSize: 13, color: '#555' }}>
+                    <div style={{ fontSize: 13, color: 'var(--text-hint)' }}>
                       {entry.analysis.skinType} · {entry.analysis.concerns[0]}
                     </div>
                   </div>
@@ -91,6 +86,6 @@ export default function Progress() {
           </>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }
