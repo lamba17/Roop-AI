@@ -10,6 +10,9 @@ import ProductCard from '../components/ProductCard';
 import DermatologistFinder from '../components/DermatologistFinder';
 import GlowChallenge from '../components/GlowChallenge';
 import FeedbackForm from '../components/FeedbackForm';
+import LanguageToggle from '../components/LanguageToggle';
+import { useLanguage } from '../context/LanguageContext';
+import { T } from '../data/translations';
 import { useAuth, saveAnalysis } from '../lib/supabase';
 
 /* WhatsApp SVG icon */
@@ -35,6 +38,8 @@ export default function Results() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { lang } = useLanguage();
+  const t = T[lang];
   const entry = location.state?.entry as HistoryEntry | undefined;
   const localImageUrl = location.state?.localImageUrl as string | undefined;
 
@@ -108,20 +113,21 @@ export default function Results() {
         }}
       >
         <Logo size="sm" />
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <LanguageToggle />
           <button
             onClick={() => navigate('/progress')}
             className="btn-outline"
             style={{ fontSize: 12, padding: '7px 14px', gap: 5 }}
           >
-            <span>📊</span> History
+            <span>📊</span> {t.history}
           </button>
           <button
             onClick={() => navigate('/')}
             className="btn-primary"
             style={{ fontSize: 12, padding: '7px 14px' }}
           >
-            New Scan
+            {t.newScan}
           </button>
         </div>
       </header>
@@ -171,8 +177,8 @@ export default function Results() {
 
           {/* Skin type badges */}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <span className="skin-badge skin-badge-purple">{skinTypeLabel} Skin</span>
-            <span className="skin-badge skin-badge-cyan">{oilinessLabel} Oiliness</span>
+            <span className="skin-badge skin-badge-purple">{skinTypeLabel} {t.skin}</span>
+            <span className="skin-badge skin-badge-cyan">{oilinessLabel} {t.oiliness}</span>
           </div>
 
           {/* Report */}
@@ -192,17 +198,17 @@ export default function Results() {
 
         {/* ── Skin Scores ───────────────────────────────────────────── */}
         <div className="glass-card card-in card-in-2">
-          <SectionHeading label="Skin Scores" />
-          <ScoreBar label="Acne Control"    score={s.acne}        delay={0}   />
-          <ScoreBar label="Skin Tone"       score={s.skinTone}    delay={100} />
-          <ScoreBar label="Texture"         score={s.texture}     delay={200} />
-          <ScoreBar label="Dark Circles"    score={s.darkCircles} delay={300} />
-          <ScoreBar label="Hair & Grooming" score={s.hair}        delay={400} />
+          <SectionHeading label={t.skinScores} />
+          <ScoreBar label={t.acneControl}  score={s.acne}        delay={0}   />
+          <ScoreBar label={t.skinTone}     score={s.skinTone}    delay={100} />
+          <ScoreBar label={t.texture}      score={s.texture}     delay={200} />
+          <ScoreBar label={t.darkCircles}  score={s.darkCircles} delay={300} />
+          <ScoreBar label={t.hairHealth}   score={s.hair}        delay={400} />
         </div>
 
         {/* ── Key Concerns ──────────────────────────────────────────── */}
         <div className="glass-card card-in card-in-3">
-          <SectionHeading label="Key Concerns" />
+          <SectionHeading label={t.skinConcerns} />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {analysis.concerns.map((c, i) => (
               <span key={i} className="concern-tag">
@@ -214,17 +220,9 @@ export default function Results() {
 
         {/* ── Daily Routine ─────────────────────────────────────────── */}
         <div className="glass-card card-in card-in-4">
-          <SectionHeading label="Daily Routine">
-            <h3
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: 18,
-                fontWeight: 700,
-                margin: '2px 0 0',
-                color: '#f8f8ff',
-              }}
-            >
-              Your Personalised Regimen
+          <SectionHeading label={t.dailyRoutine}>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '2px 0 0', color: '#f8f8ff' }}>
+              {t.yourRegimen}
             </h3>
           </SectionHeading>
           <RoutineChecklist morning={analysis.dailyRoutine.morning} evening={analysis.dailyRoutine.evening} />
@@ -232,17 +230,9 @@ export default function Results() {
 
         {/* ── Mask Plan ─────────────────────────────────────────────── */}
         <div className="glass-card card-in card-in-5">
-          <SectionHeading label="Weekly Mask Plan">
-            <h3
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: 18,
-                fontWeight: 700,
-                margin: '2px 0 0',
-                color: '#f8f8ff',
-              }}
-            >
-              Targeted Treatment Schedule
+          <SectionHeading label={t.weeklyMask}>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '2px 0 0', color: '#f8f8ff' }}>
+              {t.maskSchedule}
             </h3>
           </SectionHeading>
           <MaskPlan maskType={analysis.maskType} />
@@ -250,17 +240,9 @@ export default function Results() {
 
         {/* ── Products ──────────────────────────────────────────────── */}
         <div className="glass-card card-in card-in-6">
-          <SectionHeading label="Recommended Products">
-            <h3
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: 18,
-                fontWeight: 700,
-                margin: '2px 0 0',
-                color: '#f8f8ff',
-              }}
-            >
-              Curated For Your Skin
+          <SectionHeading label={t.products}>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '2px 0 0', color: '#f8f8ff' }}>
+              {t.curatedFor}
             </h3>
           </SectionHeading>
           {analysis.products.map((p, i) => (
@@ -296,7 +278,7 @@ export default function Results() {
             💈
           </div>
           <div>
-            <span className="section-label" style={{ marginBottom: 6 }}>Grooming Tip</span>
+            <span className="section-label" style={{ marginBottom: 6 }}>{t.groomingTip}</span>
             <p
               style={{
                 margin: 0,
@@ -356,7 +338,7 @@ export default function Results() {
             🩺
           </div>
           <div>
-            <span className="section-label" style={{ marginBottom: 6 }}>Dermatologist Advice</span>
+            <span className="section-label" style={{ marginBottom: 6 }}>{t.doctorAdvice}</span>
             <p
               style={{
                 margin: 0,
@@ -373,17 +355,9 @@ export default function Results() {
 
         {/* ── Dermatologist Finder ──────────────────────────────────── */}
         <div className="glass-card card-in card-in-9">
-          <SectionHeading label="Find a Dermatologist">
-            <h3
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: 18,
-                fontWeight: 700,
-                margin: '2px 0 0',
-                color: '#f8f8ff',
-              }}
-            >
-              Specialists Near You
+          <SectionHeading label={t.findDermat}>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '2px 0 0', color: '#f8f8ff' }}>
+              {t.specialistsNear}
             </h3>
           </SectionHeading>
           <DermatologistFinder />
@@ -397,17 +371,9 @@ export default function Results() {
             background: 'rgba(245,158,11,0.04)',
           }}
         >
-          <SectionHeading label="7-Day Glow Challenge">
-            <h3
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: 18,
-                fontWeight: 700,
-                margin: '2px 0 0',
-                color: '#f8f8ff',
-              }}
-            >
-              Build Your Glow Streak
+          <SectionHeading label={t.glowChallenge}>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '2px 0 0', color: '#f8f8ff' }}>
+              {t.buildStreak}
             </h3>
           </SectionHeading>
           <GlowChallenge />

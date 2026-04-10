@@ -1,4 +1,6 @@
 import type { ProductRecommendation } from '../types/analysis';
+import { useLanguage } from '../context/LanguageContext';
+import { T } from '../data/translations';
 
 const TYPE_COLOR: Record<string, string> = {
   cleanser: '#06b6d4',
@@ -20,6 +22,8 @@ function buildLinks(name: string) {
 }
 
 export default function ProductCard({ product }: { product: ProductRecommendation }) {
+  const { lang } = useLanguage();
+  const t = T[lang];
   const color = TYPE_COLOR[product.type] ?? '#a855f7';
   const links = buildLinks(product.name);
 
@@ -49,7 +53,7 @@ export default function ProductCard({ product }: { product: ProductRecommendatio
             letterSpacing: 0.3,
           }}
         >
-          🛒 Buy on Amazon
+          {t.buyAmazon}
         </a>
         <a
           href={links.nykaa}
@@ -62,7 +66,7 @@ export default function ProductCard({ product }: { product: ProductRecommendatio
             letterSpacing: 0.3,
           }}
         >
-          💄 Buy on Nykaa
+          {t.buyNykaa}
         </a>
       </div>
     </div>

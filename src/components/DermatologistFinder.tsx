@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DERMATOLOGISTS, CITY_COORDS } from '../data/dermatologists';
+import { useLanguage } from '../context/LanguageContext';
+import { T } from '../data/translations';
 
 function getNearestCity(lat: number, lng: number): string {
   let nearest = 'Delhi';
@@ -12,6 +14,8 @@ function getNearestCity(lat: number, lng: number): string {
 }
 
 export default function DermatologistFinder() {
+  const { lang } = useLanguage();
+  const t = T[lang];
   const cities = Object.keys(DERMATOLOGISTS);
   const [city, setCity] = useState('Delhi');
   const [locating, setLocating] = useState(false);
@@ -55,7 +59,7 @@ export default function DermatologistFinder() {
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
           }}
         >
-          {locating ? '⏳' : '📍'} {locating ? 'Locating...' : 'Near Me'}
+          {locating ? '⏳' : '📍'} {locating ? t.locating : t.nearMe}
         </button>
         <select
           value={city}
@@ -76,7 +80,7 @@ export default function DermatologistFinder() {
 
       {/* Showing city */}
       <p style={{ fontSize: 12, color: '#555', marginBottom: 12, letterSpacing: 0.5 }}>
-        Showing dermatologists in <span style={{ color: '#a855f7', fontWeight: 600 }}>{city}</span>
+        {t.showingDermats} <span style={{ color: '#a855f7', fontWeight: 600 }}>{city}</span>
       </p>
 
       <div>
@@ -102,7 +106,7 @@ export default function DermatologistFinder() {
               {doc.googleMapsLink && (
                 <a href={doc.googleMapsLink} target="_blank" rel="noreferrer noopener"
                   style={{ fontSize: 11, color: '#fff', textDecoration: 'none', background: '#06b6d4', padding: '4px 10px', borderRadius: 6, fontWeight: 600, display: 'block', textAlign: 'center' }}>
-                  📍 Maps
+                  {t.maps}
                 </a>
               )}
               {doc.justDialLink && (

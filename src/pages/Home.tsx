@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import UploadZone from '../components/UploadZone';
 import Logo from '../components/Logo';
 import UserMenu from '../components/UserMenu';
+import LanguageToggle from '../components/LanguageToggle';
+import { useLanguage } from '../context/LanguageContext';
 import { fileToBase64 } from '../utils/imageUtils';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -35,6 +37,7 @@ const TAGLINE = 'Your AI-Powered Skin Coach';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | undefined>();
   const { analyze, loading, error } = useSkinAnalysis();
@@ -61,7 +64,7 @@ export default function Home() {
   async function handleAnalyze() {
     if (!file || !user) return;
     const base64 = await fileToBase64(file);
-    const result = await analyze(base64);
+    const result = await analyze(base64, lang);
     if (!result) return;
 
     // Upload selfie to Supabase Storage
@@ -153,6 +156,7 @@ export default function Home() {
               Progress
             </button>
           )}
+          <LanguageToggle />
           <UserMenu />
         </div>
       </header>

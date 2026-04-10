@@ -1,6 +1,10 @@
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useLanguage } from '../context/LanguageContext';
+import { T } from '../data/translations';
 
 export default function GlowChallenge() {
+  const { lang } = useLanguage();
+  const t = T[lang];
   const [days, setDays] = useLocalStorage<number>('glow_challenge_days', 0);
 
   function markDone() {
@@ -15,9 +19,9 @@ export default function GlowChallenge() {
     return (
       <div style={{ textAlign: 'center', padding: '20px 0' }}>
         <div style={{ fontSize: 36, marginBottom: 12 }}>🎉</div>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#22c55e', marginBottom: 8 }}>Challenge Complete!</div>
-        <p style={{ fontSize: 14, color: '#888', marginBottom: 16 }}>You completed the 7-Day Glow Challenge!</p>
-        <button onClick={reset} className="btn-outline" style={{ fontSize: 13 }}>Start Again</button>
+        <div style={{ fontSize: 18, fontWeight: 800, color: '#22c55e', marginBottom: 8 }}>{t.challengeComplete}</div>
+        <p style={{ fontSize: 14, color: '#888', marginBottom: 16 }}>{t.challengeCompleteMsg}</p>
+        <button onClick={reset} className="btn-outline" style={{ fontSize: 13 }}>{t.startAgain}</button>
       </div>
     );
   }
@@ -38,10 +42,10 @@ export default function GlowChallenge() {
         ))}
       </div>
       <p style={{ fontSize: 13, color: '#888', marginBottom: 14 }}>
-        Day {days + 1} of 7 — Keep up your skincare routine!
+        {t.dayOf} {days + 1} {t.of7}
       </p>
       <button onClick={markDone} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>
-        ✅ Mark Day {days + 1} Done
+        {t.markDone} {days + 1} {t.done}
       </button>
     </div>
   );

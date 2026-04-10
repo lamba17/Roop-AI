@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { SkinAnalysis } from '../types/analysis';
 
-const SKIN_ANALYSIS_PROMPT = `You are ROOP AI, a professional AI skin analysis coach. Analyze this selfie with clinical precision. Return ONLY a raw JSON object — no markdown, no backticks, no preamble.
+const SKIN_ANALYSIS_PROMPT_EN = `You are ROOP AI, a professional AI skin analysis coach. Analyze this selfie with clinical precision. Return ONLY a raw JSON object — no markdown, no backticks, no preamble.
 
 Required JSON structure:
 {
@@ -31,7 +31,38 @@ Required JSON structure:
   "doctorAdvice": "<specific, actionable advice on when/why to visit a dermatologist based on what you observed>"
 }`;
 
-async function callApi(base64: string): Promise<SkinAnalysis> {
+const SKIN_ANALYSIS_PROMPT_HI = `आप ROOP AI हैं, एक पेशेवर AI त्वचा विश्लेषण कोच। इस सेल्फी का नैदानिक सटीकता के साथ विश्लेषण करें। केवल एक raw JSON object लौटाएं — कोई markdown, backticks या प्रस्तावना नहीं।
+
+आवश्यक JSON संरचना:
+{
+  "glowScore": <0-100 के बीच पूर्णांक>,
+  "scores": {
+    "acne": <0-100, अधिक = बेहतर मुंहासे नियंत्रण>,
+    "skinTone": <0-100, अधिक = अधिक समान रंग>,
+    "texture": <0-100, अधिक = चिकनी बनावट>,
+    "darkCircles": <0-100, अधिक = कम दिखने वाले काले घेरे>,
+    "hair": <0-100, अधिक = स्वस्थ हेयरलाइन/दाढ़ी>
+  },
+  "skinType": "<dry|oily|combination|normal>",
+  "oiliness": "<dry|normal|oily|combination>",
+  "concerns": ["<विशिष्ट समस्या 1>", "<विशिष्ट समस्या 2>", "<विशिष्ट समस्या 3>"],
+  "report": "<2-3 वाक्य में मैत्रीपूर्ण, विशिष्ट त्वचा रिपोर्ट वास्तविक दृश्य अवलोकन पर आधारित>",
+  "dailyRoutine": {
+    "morning": ["<विशिष्ट उत्पाद प्रकार के साथ चरण>", "<चरण>", "<चरण>"],
+    "evening": ["<चरण>", "<चरण>", "<चरण>"]
+  },
+  "products": [
+    { "name": "<विशिष्ट उत्पाद नाम>", "type": "<cleanser|serum|moisturizer|sunscreen|toner|eye cream>", "reason": "<इस व्यक्ति के लिए यह उत्पाद क्यों>" },
+    { "name": "<उत्पाद>", "type": "<प्रकार>", "reason": "<कारण>" },
+    { "name": "<उत्पाद>", "type": "<प्रकार>", "reason": "<कारण>" }
+  ],
+  "maskType": "<acne|dry|dark_circles|dull|oily> — प्राथमिक समस्या के आधार पर चुनें",
+  "groomingTip": "<1 वाक्य में हेयरलाइन/दाढ़ी/ग्रूमिंग अवलोकन और सुझाव>",
+  "doctorAdvice": "<डर्मेटोलॉजिस्ट से कब और क्यों मिलें, इस पर विशिष्ट, कार्रवाई योग्य सलाह>"
+}`;
+
+async function callApi(base64: string, lang = 'en'): Promise<SkinAnalysis> {
+  const prompt = lang === 'hi' ? SKIN_ANALYSIS_PROMPT_HI : SKIN_ANALYSIS_PROMPT_EN;
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -47,7 +78,7 @@ async function callApi(base64: string): Promise<SkinAnalysis> {
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
-          { type: 'text', text: SKIN_ANALYSIS_PROMPT },
+          { type: 'text', text: prompt },
         ],
       }],
     }),
@@ -86,12 +117,12 @@ export function useSkinAnalysis() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SkinAnalysis | null>(null);
 
-  async function analyze(base64: string) {
+  async function analyze(base64: string, lang = 'en') {
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const analysis = await callApi(base64);
+      const analysis = await callApi(base64, lang);
       setResult(analysis);
       return analysis;
     } catch (e) {

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useLanguage } from '../context/LanguageContext';
+import { T } from '../data/translations';
 
 interface RoutineChecklistProps {
   morning: string[];
@@ -10,6 +12,8 @@ const EMOJIS_MORNING = ['🌅', '💧', '☀️'];
 const EMOJIS_EVENING = ['🌙', '✨', '💤'];
 
 export default function RoutineChecklist({ morning, evening }: RoutineChecklistProps) {
+  const { lang } = useLanguage();
+  const t = T[lang];
   const [tab, setTab] = useState<'morning' | 'evening'>('morning');
   const today = new Date().toISOString().split('T')[0];
   const [checked, setChecked] = useLocalStorage<Record<string, boolean>>(`routine_${today}`, {});
@@ -24,20 +28,19 @@ export default function RoutineChecklist({ morning, evening }: RoutineChecklistP
   return (
     <div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        {(['morning', 'evening'] as const).map(t => (
+        {(['morning', 'evening'] as const).map(tabKey => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
             style={{
               padding: '8px 18px', borderRadius: 10, fontSize: 13, fontWeight: 600,
               border: 'none', cursor: 'pointer',
-              background: tab === t ? 'linear-gradient(135deg,#a855f7,#ec4899)' : '#1e1e3a',
-              color: tab === t ? '#fff' : '#888',
+              background: tab === tabKey ? 'linear-gradient(135deg,#a855f7,#ec4899)' : '#1e1e3a',
+              color: tab === tabKey ? '#fff' : '#888',
               transition: 'all 0.2s',
-              textTransform: 'capitalize',
             }}
           >
-            {t === 'morning' ? '🌅 Morning' : '🌙 Evening'}
+            {tabKey === 'morning' ? `🌅 ${t.morning}` : `🌙 ${t.evening}`}
           </button>
         ))}
       </div>
