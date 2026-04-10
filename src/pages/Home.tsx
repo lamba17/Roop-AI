@@ -90,7 +90,7 @@ export default function Home() {
       analysis: result,
     };
     setHistory([entry, ...history].slice(0, 10));
-    navigate('/results', { state: { entry } });
+    navigate('/results', { state: { entry, localImageUrl: skinPreview } });
   }
 
   async function handleGlamAnalyze() {

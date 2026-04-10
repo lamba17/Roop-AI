@@ -39,6 +39,7 @@ export default function Results() {
   const { user } = useAuth();
   const tc = useThemeColors();
   const entry = location.state?.entry as HistoryEntry | undefined;
+  const localImageUrl = location.state?.localImageUrl as string | undefined;
 
   // Persist analysis to Supabase if signed in
   useEffect(() => {
@@ -155,7 +156,7 @@ export default function Results() {
           {/* Selfie avatar */}
           <div style={{ position: 'relative' }}>
             <img
-              src={entry.imageUrl}
+              src={localImageUrl || entry.imageUrl}
               alt="Selfie"
               style={{
                 width: 88,
