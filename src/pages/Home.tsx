@@ -63,7 +63,7 @@ export default function Home() {
 
     const updated = [entry, ...history].slice(0, 10);
     setHistory(updated);
-    navigate('/results', { state: { entry, localImageUrl: preview } });
+    navigate('/results', { state: { entry, localImageUrl: `data:image/jpeg;base64,${base64}` } });
   }
 
   return (

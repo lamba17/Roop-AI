@@ -27,23 +27,33 @@ export default function RoutineChecklist({ morning, evening }: RoutineChecklistP
 
   return (
     <div>
+      {/* Tab switcher */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         {(['morning', 'evening'] as const).map(tabKey => (
           <button
             key={tabKey}
             onClick={() => setTab(tabKey)}
             style={{
-              padding: '8px 18px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-              border: 'none', cursor: 'pointer',
-              background: tab === tabKey ? 'linear-gradient(135deg,#a855f7,#ec4899)' : '#1e1e3a',
-              color: tab === tabKey ? '#fff' : '#888',
+              padding: '8px 18px',
+              borderRadius: 10,
+              fontSize: 13,
+              fontWeight: 600,
+              border: tab === tabKey ? 'none' : '1px solid var(--border)',
+              cursor: 'pointer',
+              background: tab === tabKey
+                ? 'linear-gradient(135deg,#a855f7,#ec4899)'
+                : 'var(--bg-elevated)',
+              color: tab === tabKey ? '#fff' : 'var(--text-muted)',
               transition: 'all 0.2s',
+              fontFamily: "'DM Sans', system-ui, sans-serif",
             }}
           >
             {tabKey === 'morning' ? `🌅 ${t.morning}` : `🌙 ${t.evening}`}
           </button>
         ))}
       </div>
+
+      {/* Steps */}
       <div>
         {steps.map((step, i) => {
           const key = `${tab}_${i}`;
@@ -53,19 +63,39 @@ export default function RoutineChecklist({ morning, evening }: RoutineChecklistP
               key={key}
               onClick={() => toggle(key)}
               style={{
-                display: 'flex', alignItems: 'flex-start', gap: 12, padding: '10px 0',
-                borderBottom: '1px solid #1e1e3a', cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 12,
+                padding: '12px 0',
+                borderBottom: '1px solid var(--border)',
+                cursor: 'pointer',
               }}
             >
+              {/* Checkbox */}
               <div style={{
-                width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 2,
-                border: done ? 'none' : '2px solid #333',
+                width: 20,
+                height: 20,
+                borderRadius: 6,
+                flexShrink: 0,
+                marginTop: 2,
+                border: done ? 'none' : '2px solid var(--border)',
                 background: done ? 'linear-gradient(135deg,#a855f7,#ec4899)' : 'transparent',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s',
               }}>
                 {done && <span style={{ color: '#fff', fontSize: 11 }}>✓</span>}
               </div>
-              <span style={{ fontSize: 14, color: done ? '#555' : '#e8e8f0', textDecoration: done ? 'line-through' : 'none' }}>
+
+              {/* Step text */}
+              <span style={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: done ? 'var(--text-hint)' : 'var(--text-primary)',
+                textDecoration: done ? 'line-through' : 'none',
+                lineHeight: 1.5,
+              }}>
                 {emojis[i] ?? '•'} {step}
               </span>
             </div>
