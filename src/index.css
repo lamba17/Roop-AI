@@ -767,6 +767,43 @@
   }
   .results-share-btn:hover { background: rgba(37,211,102,0.2); }
 
+  /* ── Locked / premium gate ─────────────────────────────────────── */
+  .locked-section {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .locked-blur-preview {
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.6;
+  }
+  .locked-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      to bottom,
+      rgba(8,8,24,0.15) 0%,
+      rgba(8,8,24,0.7) 25%,
+      rgba(8,8,24,0.92) 60%,
+      rgba(8,8,24,0.97) 100%
+    );
+    z-index: 10;
+    padding: 24px 20px;
+  }
+  .locked-overlay-inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 340px;
+  }
+
   .results-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -1881,6 +1918,15 @@
   [data-theme="light"] .analysis-signin-gate,
   [data-theme="light"] .confirmed-details {
     box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  [data-theme="light"] .locked-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(248,248,252,0.05) 0%,
+      rgba(248,248,252,0.65) 25%,
+      rgba(248,248,252,0.92) 60%,
+      rgba(248,248,252,0.97) 100%
+    );
   }
   [data-theme="light"] .mesh-bg {
     background: #f4f4f8;

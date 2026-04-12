@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { HistoryEntry } from '../types/analysis';
 import AppLayout from '../components/AppLayout';
@@ -10,10 +10,12 @@ import ProductCard from '../components/ProductCard';
 import DermatologistFinder from '../components/DermatologistFinder';
 import GlowChallenge from '../components/GlowChallenge';
 import FeedbackForm from '../components/FeedbackForm';
+import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../context/LanguageContext';
 import { T } from '../data/translations';
 import { useAuth, saveAnalysis } from '../lib/supabase';
 import { selfieStore } from '../utils/selfieStore';
+import { usePremium } from '../hooks/usePremium';
 
 function SectionHeading({ label, children }: { label: string; children?: React.ReactNode }) {
   return (
@@ -32,6 +34,10 @@ export default function Results() {
   const t = T[lang];
   const entry = location.state?.entry as HistoryEntry | undefined;
   const localImageUrl = selfieStore.get() ?? (entry?.imageUrl || undefined);
+  const { premium, refresh: refreshPremium } = usePremium(user ?? null);
+  const isAdmin = !!user?.email && ['lamba.akash1994@gmail.com', 'varunvlamba@gmail.com'].includes(user.email);
+  const hasFullAccess = isAdmin || premium;
+  const [showPremium, setShowPremium] = useState(false);
 
   useEffect(() => {
     if (!entry || !user) return;
@@ -67,6 +73,14 @@ export default function Results() {
 
   return (
     <AppLayout>
+      {showPremium && user && (
+        <PremiumModal
+          user={user}
+          onClose={() => setShowPremium(false)}
+          onUpgraded={() => { setShowPremium(false); refreshPremium(); }}
+        />
+      )}
+
       <div className="page-results fade-in">
         <div className="results-content">
 
@@ -102,109 +116,169 @@ export default function Results() {
             </a>
           </div>
 
-          {/* ── Skin Scores ────────────────────────────────────────── */}
-          <div className="results-card card-in card-in-2">
-            <SectionHeading label={t.skinScores} />
-            <ScoreBar label={t.acneControl}  score={s.acne}        delay={0}   />
-            <ScoreBar label={t.skinTone}     score={s.skinTone}    delay={100} />
-            <ScoreBar label={t.texture}      score={s.texture}     delay={200} />
-            <ScoreBar label={t.darkCircles}  score={s.darkCircles} delay={300} />
-            <ScoreBar label={t.hairHealth}   score={s.hair}        delay={400} />
-          </div>
+          {/* ── PREMIUM GATE ───────────────────────────────────────── */}
+          {!hasFullAccess ? (
+            <div className="locked-section">
+              {/* Blurred preview content */}
+              <div className="locked-blur-preview" aria-hidden="true">
+                <div className="results-card">
+                  <SectionHeading label={t.skinScores} />
+                  <ScoreBar label={t.acneControl}  score={s.acne}        delay={0}   />
+                  <ScoreBar label={t.skinTone}     score={s.skinTone}    delay={100} />
+                  <ScoreBar label={t.texture}      score={s.texture}     delay={200} />
+                </div>
+                <div className="results-card">
+                  <SectionHeading label={t.dailyRoutine}>
+                    <h3 className="card-heading">{t.yourRegimen}</h3>
+                  </SectionHeading>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {analysis.dailyRoutine.morning.map((step, i) => (
+                      <div key={i} style={{ padding: '10px 0', borderBottom: '1px solid var(--border)', fontSize: 14, color: 'var(--text-primary)' }}>
+                        🌅 {step}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="results-card">
+                  <SectionHeading label={t.products}>
+                    <h3 className="card-heading">{t.curatedFor}</h3>
+                  </SectionHeading>
+                  {analysis.products.slice(0, 2).map((p, i) => (
+                    <ProductCard key={i} product={p} />
+                  ))}
+                </div>
+              </div>
 
-          {/* ── Key Concerns ───────────────────────────────────────── */}
-          <div className="results-card card-in card-in-3">
-            <SectionHeading label={t.skinConcerns} />
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {analysis.concerns.map((c, i) => (
-                <span key={i} className="concern-tag">
-                  <span>⚠</span> {c}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* ── Daily Routine ──────────────────────────────────────── */}
-          <div className="results-card card-in card-in-4">
-            <SectionHeading label={t.dailyRoutine}>
-              <h3 className="card-heading">{t.yourRegimen}</h3>
-            </SectionHeading>
-            <RoutineChecklist morning={analysis.dailyRoutine.morning} evening={analysis.dailyRoutine.evening} />
-          </div>
-
-          {/* ── Mask Plan ──────────────────────────────────────────── */}
-          <div className="results-card card-in card-in-5">
-            <SectionHeading label={t.weeklyMask}>
-              <h3 className="card-heading">{t.maskSchedule}</h3>
-            </SectionHeading>
-            <MaskPlan maskType={analysis.maskType} />
-          </div>
-
-          {/* ── Products ───────────────────────────────────────────── */}
-          <div className="results-card card-in card-in-6">
-            <SectionHeading label={t.products}>
-              <h3 className="card-heading">{t.curatedFor}</h3>
-            </SectionHeading>
-            {analysis.products.map((p, i) => (
-              <ProductCard key={i} product={p} />
-            ))}
-          </div>
-
-          {/* ── Grooming Tip ───────────────────────────────────────── */}
-          <div className="results-card results-card-purple card-in card-in-7">
-            <div className="results-icon-card">
-              <div className="results-icon-bubble results-icon-bubble-purple">💈</div>
-              <div>
-                <span className="section-label">{t.groomingTip}</span>
-                <p className="results-text">{analysis.groomingTip}</p>
-                <a
-                  href={`https://www.amazon.in/s?k=${encodeURIComponent(
-                    analysis.groomingTip.match(/(?:using\s+(?:a\s+)?|try\s+(?:a\s+)?)([a-zA-Z0-9 &+%-]+?)(?:\s+to|\s+for|\s+with|,|\.)/i)?.[1]?.trim() ?? 'grooming products'
-                  )}&tag=roopai03-21`}
-                  target="_blank" rel="noreferrer noopener"
-                  className="results-shop-link"
-                >
-                  🛒 Shop on Amazon
-                </a>
+              {/* Lock overlay */}
+              <div className="locked-overlay">
+                <div className="locked-overlay-inner">
+                  <div style={{ fontSize: 44, marginBottom: 12 }}>🔒</div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-primary)' }}>
+                    Unlock Your Full Skin Report
+                  </h3>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.6, maxWidth: 280 }}>
+                    Get detailed score breakdown, daily routine, product picks with Nykaa links, dermatologist finder &amp; more.
+                  </p>
+                  <button
+                    onClick={() => setShowPremium(true)}
+                    className="btn-glow"
+                    style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}
+                  >
+                    ✨ Unlock Full Report — ₹99/month
+                  </button>
+                  <p style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 10 }}>
+                    Also available at ₹799/year · Cancel anytime
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* ── Doctor Advice ──────────────────────────────────────── */}
-          <div className="results-card results-card-cyan card-in card-in-8">
-            <div className="results-icon-card">
-              <div className="results-icon-bubble results-icon-bubble-cyan">🩺</div>
-              <div>
-                <span className="section-label">{t.doctorAdvice}</span>
-                <p className="results-text">{analysis.doctorAdvice}</p>
+          ) : (
+            <>
+              {/* ── Skin Scores ────────────────────────────────────────── */}
+              <div className="results-card card-in card-in-2">
+                <SectionHeading label={t.skinScores} />
+                <ScoreBar label={t.acneControl}  score={s.acne}        delay={0}   />
+                <ScoreBar label={t.skinTone}     score={s.skinTone}    delay={100} />
+                <ScoreBar label={t.texture}      score={s.texture}     delay={200} />
+                <ScoreBar label={t.darkCircles}  score={s.darkCircles} delay={300} />
+                <ScoreBar label={t.hairHealth}   score={s.hair}        delay={400} />
               </div>
-            </div>
-          </div>
 
-          {/* ── Dermatologist Finder ───────────────────────────────── */}
-          <div className="results-card card-in card-in-9">
-            <SectionHeading label={t.findDermat}>
-              <h3 className="card-heading">{t.specialistsNear}</h3>
-            </SectionHeading>
-            <DermatologistFinder />
-          </div>
+              {/* ── Key Concerns ───────────────────────────────────────── */}
+              <div className="results-card card-in card-in-3">
+                <SectionHeading label={t.skinConcerns} />
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {analysis.concerns.map((c, i) => (
+                    <span key={i} className="concern-tag">
+                      <span>⚠</span> {c}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-          {/* ── 7-Day Challenge ────────────────────────────────────── */}
-          <div className="results-card results-card-gold card-in card-in-9">
-            <SectionHeading label={t.glowChallenge}>
-              <h3 className="card-heading">{t.buildStreak}</h3>
-            </SectionHeading>
-            <GlowChallenge />
-          </div>
+              {/* ── Daily Routine ──────────────────────────────────────── */}
+              <div className="results-card card-in card-in-4">
+                <SectionHeading label={t.dailyRoutine}>
+                  <h3 className="card-heading">{t.yourRegimen}</h3>
+                </SectionHeading>
+                <RoutineChecklist morning={analysis.dailyRoutine.morning} evening={analysis.dailyRoutine.evening} />
+              </div>
 
-          {/* ── Feedback ───────────────────────────────────────────── */}
-          <div className="results-card card-in card-in-9">
-            <FeedbackForm
-              entryId={entry.id}
-              glowScore={analysis.glowScore}
-              skinType={analysis.skinType}
-            />
-          </div>
+              {/* ── Mask Plan ──────────────────────────────────────────── */}
+              <div className="results-card card-in card-in-5">
+                <SectionHeading label={t.weeklyMask}>
+                  <h3 className="card-heading">{t.maskSchedule}</h3>
+                </SectionHeading>
+                <MaskPlan maskType={analysis.maskType} />
+              </div>
+
+              {/* ── Products ───────────────────────────────────────────── */}
+              <div className="results-card card-in card-in-6">
+                <SectionHeading label={t.products}>
+                  <h3 className="card-heading">{t.curatedFor}</h3>
+                </SectionHeading>
+                {analysis.products.map((p, i) => (
+                  <ProductCard key={i} product={p} />
+                ))}
+              </div>
+
+              {/* ── Grooming Tip ───────────────────────────────────────── */}
+              <div className="results-card results-card-purple card-in card-in-7">
+                <div className="results-icon-card">
+                  <div className="results-icon-bubble results-icon-bubble-purple">💈</div>
+                  <div>
+                    <span className="section-label">{t.groomingTip}</span>
+                    <p className="results-text">{analysis.groomingTip}</p>
+                    <a
+                      href={`https://www.amazon.in/s?k=${encodeURIComponent(
+                        analysis.groomingTip.match(/(?:using\s+(?:a\s+)?|try\s+(?:a\s+)?)([a-zA-Z0-9 &+%-]+?)(?:\s+to|\s+for|\s+with|,|\.)/i)?.[1]?.trim() ?? 'grooming products'
+                      )}&tag=roopai03-21`}
+                      target="_blank" rel="noreferrer noopener"
+                      className="results-shop-link"
+                    >
+                      🛒 Shop on Amazon
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Doctor Advice ──────────────────────────────────────── */}
+              <div className="results-card results-card-cyan card-in card-in-8">
+                <div className="results-icon-card">
+                  <div className="results-icon-bubble results-icon-bubble-cyan">🩺</div>
+                  <div>
+                    <span className="section-label">{t.doctorAdvice}</span>
+                    <p className="results-text">{analysis.doctorAdvice}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Dermatologist Finder ───────────────────────────────── */}
+              <div className="results-card card-in card-in-9">
+                <SectionHeading label={t.findDermat}>
+                  <h3 className="card-heading">{t.specialistsNear}</h3>
+                </SectionHeading>
+                <DermatologistFinder />
+              </div>
+
+              {/* ── 7-Day Challenge ────────────────────────────────────── */}
+              <div className="results-card results-card-gold card-in card-in-9">
+                <SectionHeading label={t.glowChallenge}>
+                  <h3 className="card-heading">{t.buildStreak}</h3>
+                </SectionHeading>
+                <GlowChallenge />
+              </div>
+
+              {/* ── Feedback ───────────────────────────────────────────── */}
+              <div className="results-card card-in card-in-9">
+                <FeedbackForm
+                  entryId={entry.id}
+                  glowScore={analysis.glowScore}
+                  skinType={analysis.skinType}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
 

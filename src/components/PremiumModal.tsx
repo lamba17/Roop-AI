@@ -5,19 +5,18 @@ import { openRazorpayCheckout, PLANS as INR_PLANS, type PlanKey, detectCurrency,
 import { startLemonSqueezyCheckout, LS_PLANS } from '../lib/lemonsqueezy';
 
 const FEATURES_FREE = [
-  '3 analyses per day',
-  'Glow Score + skin report',
-  'Daily routine checklist',
-  'Mask plan',
+  '1 scan per day',
+  'Glow Score + skin type',
+  '2-line skin summary',
 ];
 
 const FEATURES_PREMIUM = [
-  'Unlimited analyses per day',
-  'Selfies saved to cloud',
-  'Before/After progress slider',
-  'Full history (30 entries)',
+  'Full detailed score breakdown',
+  'Daily morning & evening routine',
+  'Product picks with Nykaa links',
+  'Dermatologist finder',
+  'Progress tracking & history',
   'PDF report export (coming soon)',
-  'Priority support',
 ];
 
 interface Props {
@@ -124,7 +123,7 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
                 Unlock <span className="gradient-text">ROOP AI Premium</span>
               </h2>
               <p style={{ fontSize: 13, color: 'rgba(248,248,255,0.5)', fontFamily: "'DM Sans', sans-serif", margin: 0 }}>
-                Unlimited skin analyses + cloud storage
+                Full skin report · routine · products · doctors
               </p>
             </div>
 

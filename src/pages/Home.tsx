@@ -12,7 +12,8 @@ import PremiumModal from '../components/PremiumModal';
 import AppLayout from '../components/AppLayout';
 import type { HistoryEntry } from '../types/analysis';
 
-const FREE_LIMIT = 3;
+const FREE_LIMIT = 1;
+const ADMIN_EMAILS = ['lamba.akash1994@gmail.com', 'varunvlamba@gmail.com'];
 
 const ANALYSIS_TIPS = [
   { icon: '☀️', title: 'Natural Lighting', desc: 'Stand near a window in soft daylight for best results.' },
@@ -31,9 +32,10 @@ export default function Home() {
   const { user } = useAuth();
   const { premium, refresh: refreshPremium } = usePremium(user);
 
+  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
   const todayKey = new Date().toISOString().split('T')[0];
   const todayCount = history.filter(h => h.date.startsWith(todayKey)).length;
-  const limitReached = !premium && todayCount >= FREE_LIMIT;
+  const limitReached = !isAdmin && !premium && todayCount >= FREE_LIMIT;
 
   function handleFile(f: File) {
     setFile(f);
