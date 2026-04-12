@@ -31,10 +31,10 @@ export default function Routine() {
       <AppLayout>
         <div className="page-empty">
           <div className="page-empty-icon">📋</div>
-          <h3>No Routine Yet</h3>
-          <p>Complete a skin analysis to get your personalised morning and evening routine.</p>
+          <h3>{t.noRoutineYet}</h3>
+          <p>{t.noRoutineDesc}</p>
           <button onClick={() => navigate('/')} className="btn-glow">
-            Start Analysis
+            {t.startAnalysis}
           </button>
         </div>
       </AppLayout>
@@ -44,15 +44,22 @@ export default function Routine() {
   const { analysis } = latest;
   const luminosity = analysis.scores.skinTone;
 
+  const luminosityDesc =
+    luminosity >= 75 ? t.luminosityHigh :
+    luminosity >= 55 ? t.luminosityMid :
+    t.luminosityLow;
+
   return (
     <AppLayout>
       <div className="page-routine fade-in">
         {/* Header */}
         <div className="routine-header">
-          <span className="page-eyebrow">Personalised Care</span>
-          <h1 className="routine-title">Daily <span className="gradient-text">Routine.</span></h1>
+          <span className="page-eyebrow">{t.personalisedCare}</span>
+          <h1 className="routine-title">
+            {t.dailyHeading} <span className="gradient-text">{t.routineDot}</span>
+          </h1>
           <p className="routine-subtitle">
-            Curated specifically for your {analysis.skinType} skin type.
+            {t.curatedSkinType} {t[analysis.skinType as keyof typeof t] ?? analysis.skinType} {t.skinTypeLabel}
           </p>
         </div>
 
@@ -66,8 +73,10 @@ export default function Routine() {
                   <span>☀️</span>
                 </div>
                 <div>
-                  <div className="ritual-title">Morning Ritual</div>
-                  <div className="ritual-desc">{analysis.dailyRoutine.morning.length} steps · ~10 min</div>
+                  <div className="ritual-title">{t.morningRitual}</div>
+                  <div className="ritual-desc">
+                    {analysis.dailyRoutine.morning.length} {t.stepsLabel} · ~10 {t.minLabel}
+                  </div>
                 </div>
               </div>
               <div className="ritual-steps">
@@ -88,8 +97,10 @@ export default function Routine() {
                   <span>🌙</span>
                 </div>
                 <div>
-                  <div className="ritual-title">Night Ritual</div>
-                  <div className="ritual-desc">{analysis.dailyRoutine.evening.length} steps · ~15 min</div>
+                  <div className="ritual-title">{t.nightRitual}</div>
+                  <div className="ritual-desc">
+                    {analysis.dailyRoutine.evening.length} {t.stepsLabel} · ~15 {t.minLabel}
+                  </div>
                 </div>
               </div>
               <div className="ritual-steps">
@@ -109,23 +120,19 @@ export default function Routine() {
             {/* Luminosity Score */}
             <div className="luminosity-card">
               <div className="luminosity-header">
-                <span className="page-eyebrow">Current Luminosity</span>
+                <span className="page-eyebrow">{t.currentLuminosity}</span>
                 <div className="luminosity-score">
                   <span className="luminosity-num">{luminosity}</span>
                   <span className="luminosity-denom">/100</span>
                 </div>
-                <p className="luminosity-desc">
-                  {luminosity >= 75 ? 'Your skin is radiating beautifully. Keep up the routine!' :
-                   luminosity >= 55 ? 'Good progress! Your skin tone is evening out with consistent care.' :
-                   'Your routine is just beginning to show results. Consistency is key.'}
-                </p>
+                <p className="luminosity-desc">{luminosityDesc}</p>
               </div>
               <ProgressBar value={luminosity} color="linear-gradient(90deg, #a855f7, #ec4899)" />
             </div>
 
             {/* Score bars */}
             <div className="routine-scores-card">
-              <div className="section-label">Skin Metrics</div>
+              <div className="section-label">{t.skinMetrics}</div>
               {[
                 { label: t.acneControl, value: analysis.scores.acne, color: '#22c55e' },
                 { label: t.skinTone, value: analysis.scores.skinTone, color: '#a855f7' },
@@ -164,7 +171,7 @@ export default function Routine() {
               className="btn-outline"
               style={{ width: '100%', justifyContent: 'center' }}
             >
-              View Full Analysis Report →
+              {t.viewFullReport}
             </button>
           </div>
         </div>

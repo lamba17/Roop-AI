@@ -293,7 +293,7 @@ export default function Specialists() {
                 {/* More Doctors Grid */}
                 {rest.length > 0 && (
                   <>
-                    <div className="doctors-section-label">More Specialists</div>
+                    <div className="doctors-section-label">{t.moreSpecialists}</div>
                     <div className="doctors-grid">
                       {rest.map((doc, i) => (
                         <div key={i} className="doctor-card">
