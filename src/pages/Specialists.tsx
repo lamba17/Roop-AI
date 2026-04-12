@@ -209,7 +209,7 @@ export default function Specialists() {
                 If you're experiencing severe acne, rashes, or sudden skin changes, consult a specialist immediately.
               </div>
               <a
-                href={`https://www.practo.com/dermatologist`}
+                href={`https://www.practo.com/search/doctors?results_type=doctor&q=%5B%7B%22word%22%3A%22dermatologist%22%7D%5D&city=${encodeURIComponent(city)}`}
                 target="_blank"
                 rel="noreferrer noopener"
                 className="btn-glow"
