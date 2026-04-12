@@ -15,7 +15,7 @@ const TOP_NAV = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { } = useAuth();
 
   function isActive(path: string) {
     if (path === '/') return location.pathname === '/';
