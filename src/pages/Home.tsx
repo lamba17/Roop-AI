@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import UploadZone from '../components/UploadZone';
 import { useLanguage } from '../context/LanguageContext';
 import { fileToBase64 } from '../utils/imageUtils';
+import { selfieStore } from '../utils/selfieStore';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useAuth, uploadSelfie } from '../lib/supabase';
@@ -63,7 +64,8 @@ export default function Home() {
 
     const updated = [entry, ...history].slice(0, 10);
     setHistory(updated);
-    navigate('/results', { state: { entry, localImageUrl: `data:image/jpeg;base64,${base64}` } });
+    selfieStore.set(`data:image/jpeg;base64,${base64}`);
+    navigate('/results', { state: { entry } });
   }
 
   return (

@@ -13,6 +13,7 @@ import FeedbackForm from '../components/FeedbackForm';
 import { useLanguage } from '../context/LanguageContext';
 import { T } from '../data/translations';
 import { useAuth, saveAnalysis } from '../lib/supabase';
+import { selfieStore } from '../utils/selfieStore';
 
 function SectionHeading({ label, children }: { label: string; children?: React.ReactNode }) {
   return (
@@ -30,7 +31,7 @@ export default function Results() {
   const { lang } = useLanguage();
   const t = T[lang];
   const entry = location.state?.entry as HistoryEntry | undefined;
-  const localImageUrl = location.state?.localImageUrl as string | undefined;
+  const localImageUrl = selfieStore.get() ?? (entry?.imageUrl || undefined);
 
   useEffect(() => {
     if (!entry || !user) return;
