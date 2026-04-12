@@ -1,6 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import LanguageToggle from './LanguageToggle';
 import UserMenu from './UserMenu';
 import { useTheme } from '../context/ThemeContext';
 
@@ -41,7 +40,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
           <div className="app-topbar-right">
-            <LanguageToggle />
             <button
               onClick={toggle}
               title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}

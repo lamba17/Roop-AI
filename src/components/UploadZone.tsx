@@ -40,7 +40,7 @@ export default function UploadZone({ onFile, preview }: UploadZoneProps) {
           cursor: 'pointer',
           background: dragOver
             ? 'rgba(124,58,237,0.10)'
-            : 'rgba(13,13,31,0.5)',
+            : 'var(--bg-card2)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
           transition: 'all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)',
@@ -121,7 +121,7 @@ export default function UploadZone({ onFile, preview }: UploadZoneProps) {
                 style={{
                   fontSize: 16,
                   fontWeight: 700,
-                  color: '#f8f8ff',
+                  color: 'var(--text-primary)',
                   marginBottom: 5,
                   fontFamily: "'DM Sans', sans-serif",
                   letterSpacing: '-0.2px',
@@ -132,7 +132,7 @@ export default function UploadZone({ onFile, preview }: UploadZoneProps) {
               <div
                 style={{
                   fontSize: 13,
-                  color: 'rgba(248,248,255,0.4)',
+                  color: 'var(--text-muted)',
                   fontFamily: "'DM Sans', sans-serif",
                 }}
               >
@@ -147,9 +147,9 @@ export default function UploadZone({ onFile, preview }: UploadZoneProps) {
                   key={fmt}
                   style={{
                     fontSize: 10,
-                    color: 'rgba(248,248,255,0.3)',
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: 'var(--text-hint)',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
                     borderRadius: 4,
                     padding: '2px 6px',
                     fontFamily: "'DM Sans', sans-serif",
@@ -181,7 +181,7 @@ export default function UploadZone({ onFile, preview }: UploadZoneProps) {
         <span
           style={{
             fontSize: 12,
-            color: 'rgba(253,210,100,0.8)',
+            color: 'var(--gold)',
             fontFamily: "'DM Sans', sans-serif",
             lineHeight: 1.5,
           }}
