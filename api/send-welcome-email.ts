@@ -37,13 +37,23 @@ function buildWelcomeHTML(name: string, plan?: string) {
   <div style="background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.2); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;">
     <p style="margin: 0 0 8px; font-size: 13px; color: #a855f7; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Premium Features Unlocked</p>
     <ul style="margin: 0; padding-left: 18px; color: #ccc; font-size: 14px; line-height: 2;">
-      <li>Unlimited AI skin analyses per day</li>
-      <li>Selfies saved to cloud</li>
-      <li>Before/After progress slider</li>
-      <li>Full history (30 entries)</li>
-      <li>Priority support</li>
+      <li>Full detailed skin score breakdown</li>
+      <li>Daily morning &amp; evening routine</li>
+      <li>Product picks with Nykaa &amp; Amazon links</li>
+      <li>Dermatologist finder (7 cities)</li>
+      <li>Progress tracking &amp; analysis history</li>
+      <li>PDF report export (coming soon)</li>
     </ul>
-  </div>` : ''}
+  </div>` : `
+  <div style="background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.15); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;">
+    <p style="margin: 0 0 8px; font-size: 13px; color: #a855f7; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">What you get for free</p>
+    <ul style="margin: 0; padding-left: 18px; color: #ccc; font-size: 14px; line-height: 2;">
+      <li>1 AI skin scan per day</li>
+      <li>Glow Score (0–100) with animated ring</li>
+      <li>Skin type identification</li>
+      <li>2-line personalised skin summary</li>
+    </ul>
+  </div>`}
 
   <div style="text-align: center; margin: 28px 0;">
     <a href="https://www.roopai.co.in" style="background: linear-gradient(135deg, #a855f7, #ec4899); color: #fff; padding: 14px 36px; border-radius: 50px; text-decoration: none; font-size: 15px; font-weight: 600;">

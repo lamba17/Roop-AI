@@ -40,6 +40,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const signupTime = new Date(record?.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
   try {
+    // ── Welcome email to the new user ────────────────────────────────────
+    if (email && email !== 'Unknown') {
+      const baseUrl = 'https://www.roopai.co.in';
+      fetch(`${baseUrl}/api/send-welcome-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name: name !== 'Unknown' ? name : undefined }),
+      }).catch(() => {});
+    }
+
+    // ── Admin notification ────────────────────────────────────────────────
     await transporter.sendMail({
       from: `"ROOP AI" <${process.env.GMAIL_FROM}>`,
       to: process.env.GMAIL_FROM, // notify yourself
