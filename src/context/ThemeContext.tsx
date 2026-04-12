@@ -7,12 +7,12 @@ interface ThemeContextValue {
   toggle: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextValue>({ theme: 'dark', toggle: () => {} });
+const ThemeContext = createContext<ThemeContextValue>({ theme: 'light', toggle: () => {} });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('roop_theme');
-    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+    return (saved === 'light' || saved === 'dark') ? saved : 'light';
   });
 
   useEffect(() => {
