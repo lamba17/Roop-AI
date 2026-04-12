@@ -865,7 +865,7 @@
     flex-shrink: 0;
   }
   .ritual-step-icon { font-size: 16px; flex-shrink: 0; }
-  .ritual-step-text { font-size: 13px; color: var(--text-primary); line-height: 1.4; }
+  .ritual-step-text { font-size: 14px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
 
   .luminosity-card {
     background: var(--bg-card);
@@ -1925,12 +1925,20 @@
     color: var(--text-primary);
   }
 
+  /* ── Mobile Bottom Nav ───────────────────────────────────────────── */
+  .mobile-bottom-nav {
+    display: none;
+  }
+  .mobile-topbar-logo {
+    display: none;
+  }
+
   /* ── Responsive ──────────────────────────────────────────────────── */
   @media (max-width: 900px) {
     :root { --sidebar-width: 0px; }
     .sidebar { display: none; }
     .app-main { margin-left: 0; }
-    .app-content { padding: 20px 16px; }
+    .app-content { padding: 16px 14px 90px; }
     .app-topnav { display: none; }
     .dashboard-grid { grid-template-columns: 1fr; }
     .page-analysis { grid-template-columns: 1fr; }
@@ -1947,5 +1955,87 @@
     .booking-layout { grid-template-columns: 1fr; }
     .booking-sidebar { display: none; }
     .metrics-grid { grid-template-columns: 1fr 1fr; }
+
+    /* Show logo in topbar on mobile */
+    .mobile-topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mobile-topbar-logo-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(168,85,247,0.12);
+      border: 1px solid rgba(168,85,247,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-topbar-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+    }
+    .app-topbar { padding: 0 16px; }
+
+    /* Bottom nav */
+    .mobile-bottom-nav {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: var(--topbar-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+      gap: 0;
+    }
+    .mobile-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background 0.15s;
+      color: var(--text-muted);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    .mobile-nav-item.active {
+      color: #a855f7;
+    }
+    .mobile-nav-item:active {
+      background: rgba(168,85,247,0.08);
+    }
+    .mobile-nav-icon {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-nav-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #a855f7;
+      margin-top: 1px;
+    }
   }
 }
