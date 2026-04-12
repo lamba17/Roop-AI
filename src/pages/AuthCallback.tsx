@@ -6,29 +6,122 @@ import Logo from '../components/Logo';
 export default function AuthCallback() {
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState('Signing you in…');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     async function handleCallback() {
-      try {
-        // Exchange the auth code in the URL for a session
-        const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+      // ── 1. Check for error params Supabase puts in the URL ──────────────
+      const params = new URLSearchParams(window.location.search);
+      const urlError = params.get('error');
+      const urlErrorDesc = params.get('error_description');
+
+      if (urlError) {
+        const msg = urlErrorDesc
+          ? decodeURIComponent(urlErrorDesc.replace(/\+/g, ' '))
+          : urlError;
+        setErrorMsg(msg);
+        return;
+      }
+
+      // ── 2. PKCE flow: ?code=... in query string ──────────────────────────
+      const code = params.get('code');
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(
+          window.location.href
+        );
         if (error) {
-          // If no code in URL, the session may already be established via onAuthStateChange
-          // (magic link / implicit flow) — just proceed
-          if (!error.message.includes('Code challenge')) {
-            setStatusText('Finalising your account…');
-          }
+          setErrorMsg(error.message);
+          return;
         }
-        // Small delay so the session can propagate before redirect
-        setTimeout(() => navigate('/', { replace: true }), 800);
-      } catch {
-        // Fallback: session was set by the Supabase client listener already
+        setTimeout(() => navigate('/', { replace: true }), 600);
+        return;
+      }
+
+      // ── 3. Implicit / magic-link flow: #access_token=... in hash ────────
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token')) {
+        // Supabase JS client picks up the fragment automatically via
+        // onAuthStateChange — just wait briefly then redirect.
+        setStatusText('Finalising your account…');
         setTimeout(() => navigate('/', { replace: true }), 1000);
+        return;
+      }
+
+      // ── 4. Nothing in URL — session may already be active ───────────────
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        setTimeout(() => navigate('/', { replace: true }), 600);
+      } else {
+        setErrorMsg(
+          'The sign-in link has expired or is invalid. Please request a new one.'
+        );
       }
     }
 
     handleCallback();
   }, [navigate]);
+
+  if (errorMsg) {
+    return (
+      <div
+        className="mesh-bg"
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 24,
+          padding: '24px 20px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div className="hero-glow" />
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            textAlign: 'center',
+            maxWidth: 400,
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+            <Logo size="lg" />
+          </div>
+          <div
+            style={{
+              padding: '20px 24px',
+              background: 'rgba(239,68,68,0.08)',
+              border: '1px solid rgba(239,68,68,0.3)',
+              borderRadius: 16,
+              marginBottom: 24,
+            }}
+          >
+            <p style={{ fontSize: 22, margin: '0 0 10px' }}>⚠️</p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 14,
+                color: '#f87171',
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+                lineHeight: 1.6,
+              }}
+            >
+              {errorMsg}
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/signin', { replace: true })}
+            className="btn-glow"
+            style={{ justifyContent: 'center', width: '100%' }}
+          >
+            Back to Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -53,7 +146,10 @@ export default function AuthCallback() {
           </div>
         </div>
 
-        <span className="spinner" style={{ width: 36, height: 36, borderWidth: 3, display: 'block', margin: '0 auto 18px' }} />
+        <span
+          className="spinner"
+          style={{ width: 36, height: 36, borderWidth: 3, display: 'block', margin: '0 auto 18px' }}
+        />
 
         <p
           style={{
