@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../lib/supabase';
+import { useAuth, signOut } from '../lib/supabase';
 
 const NAV_ITEMS = [
   {
@@ -80,6 +80,15 @@ export default function Sidebar() {
   const location = useLocation();
   const { user } = useAuth();
 
+  async function handleSignOut() {
+    try {
+      await signOut();
+      navigate('/signin');
+    } catch {
+      // ignore
+    }
+  }
+
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
     ?? user?.email?.split('@')[0]
     ?? 'Guest';
@@ -142,6 +151,41 @@ export default function Sidebar() {
           className="sidebar-cta"
         >
           + New Scan
+        </button>
+        <button
+          onClick={handleSignOut}
+          style={{
+            marginTop: 8,
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '9px 14px',
+            background: 'none',
+            border: '1px solid rgba(239,68,68,0.2)',
+            borderRadius: 10,
+            color: '#f87171',
+            fontSize: 13,
+            fontFamily: "'DM Sans', system-ui, sans-serif",
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'background 0.15s, border-color 0.15s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.08)';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.4)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'none';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(239,68,68,0.2)';
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign Out
         </button>
       </div>
     </aside>

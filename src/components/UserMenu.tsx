@@ -38,6 +38,7 @@ export default function UserMenu() {
     setSigningOut(true);
     try {
       await signOut();
+      navigate('/signin');
     } catch {
       // ignore
     } finally {
