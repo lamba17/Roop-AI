@@ -88,9 +88,15 @@ async function callApi(base64: string, lang = 'en'): Promise<SkinAnalysis> {
     const err = await response.json().catch(() => ({}));
     const apiMsg = (err as { error?: { message?: string } }).error?.message ?? '';
     if (response.status === 529 || apiMsg.toLowerCase().includes('overload')) {
-      throw new Error('Anthropic servers are busy right now. Please wait a moment and try again.');
+      throw new Error('Our analysis servers are busy right now. Please wait a moment and try again.');
     }
-    throw new Error(apiMsg || 'API error');
+    if (response.status === 401 || apiMsg.toLowerCase().includes('credit') || apiMsg.toLowerCase().includes('balance') || apiMsg.toLowerCase().includes('billing')) {
+      throw new Error('Analysis service is temporarily unavailable. Please try again later or contact support.');
+    }
+    if (response.status === 429) {
+      throw new Error('Too many requests. Please wait a few seconds and try again.');
+    }
+    throw new Error('Analysis failed. Please try again.');
   }
 
   const data = await response.json() as { content?: Array<{ type: string; text?: string }> };
