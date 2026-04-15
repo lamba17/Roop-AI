@@ -86,6 +86,9 @@ export interface GlamAnalysis {
   products: MakeupProduct[];
   tutorialTip: string;
   lookSuggestion: string;
+  // Skin tone detection for foundation shade matching
+  depthScore: number;    // 1-10: 1-2=Fair, 3-4=Light, 5-6=Wheatish, 7-8=Medium Brown, 9-10=Deep
+  undertone: 'warm' | 'cool' | 'neutral';
 }
 
 // ── GUIDE (personalized tutorial) ────────────────────────────────────────

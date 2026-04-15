@@ -12,6 +12,8 @@ Score every product 0–100 where:
 Required JSON structure:
 {
   "glamScore": <integer 0-100, weighted overall makeup score>,
+  "depthScore": <integer 1-10 — skin depth/darkness: 1-2=Fair, 3-4=Light, 5-6=Wheatish, 7-8=Medium Brown, 9-10=Deep — assess the BARE skin under/around makeup>,
+  "undertone": "<warm|cool|neutral — based on visible skin undertone: warm=golden/yellow, cool=pink/bluish, neutral=balanced>",
   "scores": {
     "foundation": <0-100, coverage and shade match to skin tone>,
     "concealer": <0-100, under-eye and blemish coverage; 0 if absent>,
@@ -94,6 +96,10 @@ async function callGlamApi(base64: string): Promise<GlamAnalysis> {
 
   if (!Array.isArray(parsed.missingElements)) parsed.missingElements = [];
   if (!Array.isArray(parsed.products)) parsed.products = [];
+
+  // Ensure skin tone fields are valid
+  parsed.depthScore = Math.min(10, Math.max(1, Math.round(parsed.depthScore ?? 5)));
+  if (!['warm', 'cool', 'neutral'].includes(parsed.undertone)) parsed.undertone = 'neutral';
 
   return parsed;
 }

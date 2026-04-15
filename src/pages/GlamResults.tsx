@@ -7,6 +7,11 @@ import GlowRing from '../components/GlowRing';
 import MakeupProductCard from '../components/MakeupProductCard';
 import MakeupArtistFinder from '../components/MakeupArtistFinder';
 import { useEffect, useState } from 'react';
+import {
+  BRAND_LABELS, BRAND_COLORS, PRICE_RANGE,
+  getShadeRecommendation, getDepthLabel, getNykaaLink, getAmazonLink,
+  type FoundationBrand, type Undertone,
+} from '../data/foundationShades';
 
 /* ── helpers ─────────────────────────────────────────────────────────── */
 function barColor(score: number) {
@@ -95,6 +100,94 @@ function SectionLabel({ children, color = '#ec4899' }: { children: string; color
   return (
     <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color, marginBottom: 12 }}>
       {children}
+    </div>
+  );
+}
+
+/* ── Foundation Shade Finder ─────────────────────────────────────────── */
+const BRANDS: FoundationBrand[] = ['maybelline', 'loreal', 'lakme', 'myglamm', 'faces', 'nykaa'];
+
+function FoundationShadeSection({ depthScore, undertone }: { depthScore: number; undertone: Undertone }) {
+  const tc = useThemeColors();
+  const shades = getShadeRecommendation(depthScore, undertone);
+  if (!shades) return null;
+
+  const depthLabel = getDepthLabel(depthScore);
+  const undertoneLabel = undertone.charAt(0).toUpperCase() + undertone.slice(1);
+  const undertoneDesc =
+    undertone === 'warm' ? 'golden / yellow-olive cast' :
+    undertone === 'cool' ? 'pink / rosy cast' :
+    'balanced / no dominant cast';
+
+  return (
+    <div className="glass-card card-in card-in-9" style={{ borderColor: 'rgba(245,158,11,0.25)', background: 'rgba(245,158,11,0.03)' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+          🎨
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: '#f59e0b' }}>
+          Your Foundation Shade Matches
+        </span>
+      </div>
+
+      {/* Skin tone summary */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)', letterSpacing: 0.5 }}>
+          {depthLabel} · Depth {depthScore}/10
+        </span>
+        <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: 'rgba(168,85,247,0.12)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.25)', letterSpacing: 0.5 }}>
+          {undertoneLabel} Undertone
+        </span>
+        <span style={{ fontSize: 11, color: tc.textHint, fontFamily: "'DM Sans', sans-serif", alignSelf: 'center' }}>
+          ({undertoneDesc})
+        </span>
+      </div>
+
+      <p style={{ fontSize: 13, color: tc.textMuted, fontFamily: "'DM Sans', sans-serif", marginBottom: 16, lineHeight: 1.5 }}>
+        Based on your visible skin tone, here are your best-match shades across popular Indian foundation brands — all available on Nykaa &amp; Amazon.
+      </p>
+
+      {/* Brand cards grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
+        {BRANDS.map((brand) => {
+          const shade = shades[brand];
+          const color = BRAND_COLORS[brand];
+          const nykaaUrl = getNykaaLink(brand, shade);
+          const amazonUrl = getAmazonLink(brand, shade);
+          return (
+            <div key={brand} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${color}30`, borderRadius: 12, padding: '12px 14px' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color, marginBottom: 4 }}>
+                {BRAND_LABELS[brand]}
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: tc.textPrimary, marginBottom: 2, fontFamily: "'DM Sans', sans-serif" }}>
+                {shade}
+              </div>
+              <div style={{ fontSize: 11, color: tc.textHint, marginBottom: 10, fontFamily: "'DM Sans', sans-serif" }}>
+                {PRICE_RANGE[brand]}
+              </div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <a href={nykaaUrl} target="_blank" rel="noreferrer noopener" style={{
+                  fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 20, textDecoration: 'none',
+                  background: 'rgba(236,72,153,0.12)', color: '#ec4899', border: '1px solid rgba(236,72,153,0.25)',
+                }}>
+                  💄 Nykaa
+                </a>
+                <a href={amazonUrl} target="_blank" rel="noreferrer noopener" style={{
+                  fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 20, textDecoration: 'none',
+                  background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)',
+                }}>
+                  🛒 Amazon
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <p style={{ marginTop: 14, fontSize: 12, color: tc.textHint, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5, fontStyle: 'italic' }}>
+        💡 Tip: Always swatch on your jawline in natural light. Go one shade deeper if you prefer a sun-kissed finish.
+      </p>
     </div>
   );
 }
@@ -259,8 +352,14 @@ export default function GlamResults() {
           {analysis.products.map((p, i) => <MakeupProductCard key={i} product={p} />)}
         </div>
 
+        {/* ── Foundation Shade Finder ──────────────────────────────────── */}
+        <FoundationShadeSection
+          depthScore={analysis.depthScore ?? 5}
+          undertone={(analysis.undertone as Undertone) ?? 'neutral'}
+        />
+
         {/* ── Makeup Artists Near You ──────────────────────────────────── */}
-        <div className="glass-card card-in card-in-9" style={{ borderColor: 'rgba(236,72,153,0.2)', background: 'rgba(236,72,153,0.03)' }}>
+        <div className="glass-card card-in card-in-10" style={{ borderColor: 'rgba(236,72,153,0.2)', background: 'rgba(236,72,153,0.03)' }}>
           <SectionLabel>Makeup Artists Near You</SectionLabel>
           <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '0 0 16px', color: tc.textPrimary }}>
             Book a Pro in Your City
