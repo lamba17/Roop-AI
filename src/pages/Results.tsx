@@ -217,6 +217,12 @@ export default function Results() {
                 <SectionHeading label={t.products}>
                   <h3 className="card-heading">{t.curatedFor}</h3>
                 </SectionHeading>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '10px 14px', borderRadius: 10, background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)', marginBottom: 14 }}>
+                  <span style={{ fontSize: 15, flexShrink: 0 }}>⚕️</span>
+                  <p style={{ margin: 0, fontSize: 12, color: '#a38c50', lineHeight: 1.6, fontFamily: 'var(--font-body, sans-serif)' }}>
+                    <strong style={{ color: '#f59e0b' }}>Medical Disclaimer:</strong> These are AI-generated suggestions for informational purposes only and are not a substitute for professional medical advice. Please consult a dermatologist before starting any new skincare product, especially if you have sensitive skin, allergies, or an existing skin condition.
+                  </p>
+                </div>
                 {analysis.products.map((p, i) => (
                   <ProductCard key={i} product={p} />
                 ))}
