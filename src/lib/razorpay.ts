@@ -10,7 +10,9 @@ export const PLANS = {
     period: '/week',
     expiryDays: 7,
     description: 'ROOP AI Premium – 7-Day Trial',
-    badge: '🔥 Best to Start',
+    billingNote: 'First week',
+    tagline: 'Try it',
+    perDay: null,
   },
   monthly: {
     amount: 4900,           // ₹49 in paise
@@ -19,6 +21,21 @@ export const PLANS = {
     period: '/month',
     expiryDays: 30,
     description: 'ROOP AI Premium – Monthly',
+    billingNote: 'Billed monthly',
+    tagline: 'Stay consistent',
+    perDay: '₹4.90/day',
+  },
+  yearly: {
+    amount: 39900,          // ₹399 in paise
+    label: 'Yearly',
+    price: '₹399',
+    period: '/year',
+    expiryDays: 365,
+    description: 'ROOP AI Premium – Yearly',
+    billingNote: 'Billed once',
+    tagline: 'Best value ✨',
+    perDay: '₹1.09/day',
+    savings: 'Save ₹189',
   },
 } as const;
 

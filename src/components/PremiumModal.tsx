@@ -170,50 +170,60 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
               </span>
             </div>
 
-            {/* Plan toggle */}
-            <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+            {/* Plan cards — 3 column */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 20 }}>
               {(Object.keys(plans) as PlanKey[]).map(key => {
                 const plan = plans[key];
                 const isSelected = selected === key;
-                const isTrial = key === 'trial';
+                const isYearly = key === 'yearly';
+                const accentColor = key === 'trial' ? '#f59e0b' : key === 'monthly' ? '#a855f7' : '#22c55e';
                 return (
                   <button
                     key={key}
                     onClick={() => setSelected(key)}
                     style={{
-                      flex: 1, padding: '14px 10px', borderRadius: 14,
-                      border: isSelected
-                        ? '2px solid #a855f7'
-                        : '1px solid rgba(124,58,237,0.25)',
-                      background: isSelected
-                        ? 'rgba(168,85,247,0.12)'
-                        : 'rgba(13,13,31,0.5)',
+                      padding: '12px 8px 10px', borderRadius: 14,
+                      border: isSelected ? `2px solid ${accentColor}` : '1px solid rgba(124,58,237,0.2)',
+                      background: isSelected ? `${accentColor}18` : 'rgba(13,13,31,0.5)',
                       cursor: 'pointer', transition: 'all 0.2s',
-                      position: 'relative',
-                      boxShadow: isSelected ? '0 0 20px rgba(168,85,247,0.15)' : 'none',
+                      position: 'relative', textAlign: 'center',
+                      boxShadow: isSelected ? `0 0 18px ${accentColor}30` : 'none',
                     }}
                   >
-                    {isTrial && (
+                    {/* Save badge on yearly */}
+                    {'savings' in plan && (
                       <span style={{
-                        position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-                        background: 'linear-gradient(135deg,#f59e0b,#ef4444)',
-                        color: '#fff', fontSize: 10, fontWeight: 700,
-                        padding: '2px 10px', borderRadius: 20,
-                        fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.5,
+                        position: 'absolute', top: -9, left: '50%', transform: 'translateX(-50%)',
+                        background: 'linear-gradient(135deg,#22c55e,#16a34a)',
+                        color: '#fff', fontSize: 9, fontWeight: 700,
+                        padding: '2px 8px', borderRadius: 20,
+                        fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.4,
                         whiteSpace: 'nowrap',
                       }}>
-                        🔥 Best to Start
+                        {(plan as any).savings}
                       </span>
                     )}
-                    <div style={{ fontSize: 20, fontWeight: 800, color: isSelected ? '#a855f7' : '#f8f8ff', fontFamily: "'DM Sans', sans-serif", marginBottom: 2 }}>
+
+                    {/* Price */}
+                    <div style={{ fontSize: 18, fontWeight: 800, color: isSelected ? accentColor : '#f8f8ff', fontFamily: "'DM Sans', sans-serif", lineHeight: 1, marginBottom: 2, marginTop: isYearly ? 4 : 0 }}>
                       {plan.price}
                     </div>
-                    <div style={{ fontSize: 11, color: 'rgba(248,248,255,0.5)', fontFamily: "'DM Sans', sans-serif" }}>
-                      {plan.label} · {plan.period.replace('/', '')}
+                    <div style={{ fontSize: 10, color: 'rgba(248,248,255,0.4)', fontFamily: "'DM Sans', sans-serif", marginBottom: 6 }}>
+                      {(plan as any).billingNote}
                     </div>
-                    {isTrial && (
-                      <div style={{ fontSize: 10, color: 'rgba(248,248,255,0.35)', fontFamily: "'DM Sans', sans-serif", marginTop: 3 }}>
-                        then {currency === 'INR' ? '₹49' : '$1.99'}/mo
+
+                    {/* Divider */}
+                    <div style={{ height: 1, background: `${accentColor}25`, margin: '0 0 6px' }} />
+
+                    {/* Tagline */}
+                    <div style={{ fontSize: 11, fontWeight: 700, color: isSelected ? accentColor : 'rgba(248,248,255,0.55)', fontFamily: "'DM Sans', sans-serif", marginBottom: 3 }}>
+                      {(plan as any).tagline}
+                    </div>
+
+                    {/* Per-day rate */}
+                    {(plan as any).perDay && (
+                      <div style={{ fontSize: 10, color: 'rgba(248,248,255,0.3)', fontFamily: "'DM Sans', sans-serif" }}>
+                        {(plan as any).perDay}
                       </div>
                     )}
                   </button>
@@ -260,7 +270,9 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
                     {currency === 'USD' ? ' Redirecting to checkout…' : ' Processing…'}</>
                 : selected === 'trial'
                   ? <>🚀 Start My Week — {currentPlan.price}</>
-                  : <>✨ Get Monthly Access — {currentPlan.price}</>
+                  : selected === 'yearly'
+                    ? <>✨ Get Yearly Access — {currentPlan.price}</>
+                    : <>✨ Get Monthly Access — {currentPlan.price}</>
               }
             </button>
 
