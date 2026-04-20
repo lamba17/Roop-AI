@@ -66,7 +66,7 @@ export default function DermatologistFinder() {
           onChange={e => setCity(e.target.value)}
           style={{
             flex: 1, padding: '8px 14px', borderRadius: 10,
-            background: '#1a1a30', border: '1px solid #1e1e3a', color: '#e8e8f0',
+            background: 'var(--bg-card2)', border: '1px solid var(--border)', color: 'var(--text-primary)',
             fontSize: 14, cursor: 'pointer',
           }}
         >
@@ -79,20 +79,20 @@ export default function DermatologistFinder() {
       )}
 
       {/* Showing city */}
-      <p style={{ fontSize: 12, color: '#555', marginBottom: 12, letterSpacing: 0.5 }}>
+      <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, letterSpacing: 0.5 }}>
         {t.showingDermats} <span style={{ color: '#a855f7', fontWeight: 600 }}>{city}</span>
       </p>
 
       <div>
         {doctors.map((doc, i) => (
           <div key={i} style={{
-            background: '#1a1a30', border: '1px solid #1e1e3a', borderRadius: 12,
+            background: 'var(--bg-card2)', border: '1px solid var(--border)', borderRadius: 12,
             padding: '14px 16px', marginBottom: 10,
             display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
           }}>
             <div style={{ flex: 1, marginRight: 12 }}>
-              <div style={{ fontWeight: 700, fontSize: 14, color: '#e8e8f0', marginBottom: 3 }}>{doc.name}</div>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>{doc.clinic}</div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-primary)', marginBottom: 3 }}>{doc.name}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>{doc.clinic}</div>
               {doc.priceRange && (
                 <div style={{ fontSize: 12, color: 'rgba(168,85,247,0.85)', marginBottom: 8 }}>💰 {doc.priceRange}</div>
               )}
