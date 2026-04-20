@@ -164,10 +164,10 @@ export default function Results() {
                     className="btn-glow"
                     style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}
                   >
-                    ✨ Unlock Full Report — ₹99/month
+                    🚀 Try Full Access — ₹25 for 7 days
                   </button>
                   <p style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 10 }}>
-                    Also available at ₹799/year · Cancel anytime
+                    Then just ₹49/month · Cancel anytime · No surprises
                   </p>
                 </div>
               </div>
