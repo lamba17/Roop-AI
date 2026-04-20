@@ -21,7 +21,7 @@ function glowLabel(score: number) {
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
 
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
     ?? user?.email?.split('@')[0]

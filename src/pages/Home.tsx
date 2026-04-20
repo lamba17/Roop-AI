@@ -27,10 +27,11 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | undefined>();
   const { analyze, loading, error } = useSkinAnalysis();
-  const [history, setHistory] = useLocalStorage<HistoryEntry[]>('roop_history', []);
   const [showPremium, setShowPremium] = useState(false);
   const { user } = useAuth();
   const { premium, refresh: refreshPremium } = usePremium(user);
+  const historyKey = user ? `roop_history_${user.id}` : 'roop_history';
+  const [history, setHistory] = useLocalStorage<HistoryEntry[]>(historyKey, []);
 
   const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
   const todayKey = new Date().toISOString().split('T')[0];

@@ -4,6 +4,7 @@ import type { HistoryEntry } from '../types/analysis';
 import AppLayout from '../components/AppLayout';
 import { useLanguage } from '../context/LanguageContext';
 import { T } from '../data/translations';
+import { useAuth } from '../lib/supabase';
 
 const MORNING_ICONS = ['🧴', '🌊', '💆', '☀️', '🛡️'];
 const EVENING_ICONS = ['💫', '🌙', '✨', '💎', '🌿'];
@@ -23,7 +24,8 @@ export default function Routine() {
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const t = T[lang];
-  const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const { user } = useAuth();
+  const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
   const latest = history[0];
 
   if (!latest) {

@@ -3,6 +3,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { HistoryEntry } from '../types/analysis';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
 import AppLayout from '../components/AppLayout';
+import { useAuth } from '../lib/supabase';
 
 function glowColor(score: number) {
   if (score >= 75) return '#22c55e';
@@ -12,7 +13,8 @@ function glowColor(score: number) {
 
 export default function Progress() {
   const navigate = useNavigate();
-  const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const { user } = useAuth();
+  const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
 
   return (
     <AppLayout>
