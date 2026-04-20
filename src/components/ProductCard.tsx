@@ -29,7 +29,7 @@ export default function ProductCard({ product }: { product: ProductRecommendatio
 
   return (
     <div style={{
-      background: '#12122a', border: '1px solid #1e1e3a', borderRadius: 12,
+      background: 'var(--bg-card2)', border: '1px solid var(--border)', borderRadius: 12,
       padding: '14px 16px', marginBottom: 10,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
@@ -38,9 +38,9 @@ export default function ProductCard({ product }: { product: ProductRecommendatio
           padding: '3px 8px', borderRadius: 6,
           background: `${color}22`, color,
         }}>{product.type}</span>
-        <span style={{ fontSize: 14, fontWeight: 700, color: '#e8e8f0' }}>{product.name}</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{product.name}</span>
       </div>
-      <p style={{ margin: 0, fontSize: 13, color: '#888', lineHeight: 1.5, marginBottom: 10 }}>{product.reason}</p>
+      <p style={{ margin: 0, fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: 10 }}>{product.reason}</p>
       <div style={{ display: 'flex', gap: 8 }}>
         <a
           href={links.amazon}
