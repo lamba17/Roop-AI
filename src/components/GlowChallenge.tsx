@@ -33,15 +33,15 @@ export default function GlowChallenge() {
           <div key={i} style={{
             width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 13, fontWeight: 700,
-            background: i < days ? '#f59e0b' : '#1e1e3a',
-            color: i < days ? '#080818' : '#555',
-            border: i === days ? '2px solid #f59e0b' : '2px solid transparent',
+            background: i < days ? '#f59e0b' : 'var(--bg-card2)',
+            color: i < days ? '#080818' : 'var(--text-muted)',
+            border: i === days ? '2px solid #f59e0b' : '2px solid var(--border)',
           }}>
             {i < days ? '✓' : i + 1}
           </div>
         ))}
       </div>
-      <p style={{ fontSize: 13, color: '#888', marginBottom: 14 }}>
+      <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>
         {t.dayOf} {days + 1} {t.of7}
       </p>
       <button onClick={markDone} className="btn-primary" style={{ fontSize: 14, padding: '10px 22px' }}>

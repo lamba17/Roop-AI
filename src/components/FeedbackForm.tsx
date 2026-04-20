@@ -24,7 +24,7 @@ function StarRow({
 
   return (
     <div style={{ marginBottom: 18 }}>
-      <p style={{ margin: '0 0 8px', fontSize: 13, color: '#888888', letterSpacing: '1px', textTransform: 'uppercase' }}>
+      <p style={{ margin: '0 0 8px', fontSize: 13, color: 'var(--text-muted)', letterSpacing: '1px', textTransform: 'uppercase' }}>
         {label}
       </p>
       <div style={{ display: 'flex', gap: 8 }}>
@@ -43,7 +43,7 @@ function StarRow({
                 cursor: 'pointer',
                 padding: 2,
                 fontSize: 28,
-                color: active ? color : '#1e1e3a',
+                color: active ? color : 'var(--border)',
                 filter: active ? 'drop-shadow(0 0 4px ' + color + '80)' : 'none',
                 transition: 'color 0.15s, filter 0.15s',
                 lineHeight: 1,
@@ -94,7 +94,7 @@ export default function FeedbackForm({ entryId, glowScore, skinType }: FeedbackF
         >
           Thank you for your feedback!
         </p>
-        <p style={{ fontSize: 13, color: '#888888', margin: 0 }}>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
           Your input helps us improve ROOP AI for everyone.
         </p>
       </div>
@@ -137,7 +137,7 @@ export default function FeedbackForm({ entryId, glowScore, skinType }: FeedbackF
         style={{
           fontSize: 17,
           fontWeight: 700,
-          color: '#e8e8f0',
+          color: 'var(--text-primary)',
           margin: '4px 0 20px',
         }}
       >
@@ -164,7 +164,7 @@ export default function FeedbackForm({ entryId, glowScore, skinType }: FeedbackF
             style={{
               margin: '0 0 8px',
               fontSize: 13,
-              color: '#888888',
+              color: 'var(--text-muted)',
               letterSpacing: '1px',
               textTransform: 'uppercase',
             }}
@@ -179,10 +179,10 @@ export default function FeedbackForm({ entryId, glowScore, skinType }: FeedbackF
             rows={3}
             style={{
               width: '100%',
-              background: '#080818',
-              border: '1px solid #1e1e3a',
+              background: 'var(--bg-card2)',
+              border: '1px solid var(--border)',
               borderRadius: 10,
-              color: '#e8e8f0',
+              color: 'var(--text-primary)',
               fontSize: 14,
               padding: '10px 14px',
               resize: 'vertical',
@@ -193,9 +193,9 @@ export default function FeedbackForm({ entryId, glowScore, skinType }: FeedbackF
               transition: 'border-color 0.2s',
             }}
             onFocus={(e) => (e.currentTarget.style.borderColor = '#a855f7')}
-            onBlur={(e) => (e.currentTarget.style.borderColor = '#1e1e3a')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
           />
-          <p style={{ fontSize: 11, color: '#555566', margin: '4px 0 0', textAlign: 'right' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: '4px 0 0', textAlign: 'right' }}>
             {comment.length}/500
           </p>
         </div>
