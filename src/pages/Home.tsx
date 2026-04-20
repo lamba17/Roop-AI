@@ -119,13 +119,13 @@ export default function Home() {
               {/* Limit warning */}
               {limitReached && (
                 <div className="analysis-limit-banner">
-                  <p>⚠️ You've used all <strong>3 free analyses</strong> for today.</p>
+                  <p>⚠️ You've used your <strong>{FREE_LIMIT} free scan</strong> for today.</p>
                   <button
                     onClick={() => setShowPremium(true)}
                     className="btn-glow"
                     style={{ justifyContent: 'center', fontSize: 13, padding: '10px 20px' }}
                   >
-                    ✨ Upgrade for Unlimited
+                    🚀 Try Full Access — ₹25 for 7 days
                   </button>
                 </div>
               )}
