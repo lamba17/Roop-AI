@@ -92,7 +92,7 @@ export async function uploadSelfie(userId: string, file: File): Promise<string> 
 
 export interface Subscription {
   user_id: string;
-  plan: 'monthly' | 'yearly';
+  plan: 'trial' | 'monthly' | 'yearly';
   razorpay_payment_id: string;
   expires_at: string;
 }
