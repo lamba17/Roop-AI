@@ -1,16 +1,16 @@
 export const LS_PLANS = {
+  trial: {
+    price: '$0.99',
+    period: '/week',
+    label: 'First Week',
+    expiryDays: 7,
+    badge: '🔥 Best to Start',
+  },
   monthly: {
-    price: '$4.99',
+    price: '$1.99',
     period: '/month',
     label: 'Monthly',
     expiryDays: 30,
-  },
-  yearly: {
-    price: '$24.99',
-    period: '/year',
-    label: 'Yearly',
-    expiryDays: 365,
-    savings: 'Save $34.89',
   },
 } as const;
 
@@ -23,9 +23,9 @@ export function startLemonSqueezyCheckout(
   onError: (msg: string) => void,
 ): void {
   // Lemon Squeezy uses a UUID-based checkout URL: /checkout/buy/{uuid}
-  const checkoutUuid = plan === 'monthly'
-    ? import.meta.env.VITE_LS_MONTHLY_UUID as string
-    : import.meta.env.VITE_LS_YEARLY_UUID as string;
+  const checkoutUuid = plan === 'trial'
+    ? import.meta.env.VITE_LS_TRIAL_UUID as string
+    : import.meta.env.VITE_LS_MONTHLY_UUID as string;
 
   if (!checkoutUuid) {
     onError('Payment not configured. Please contact support.');

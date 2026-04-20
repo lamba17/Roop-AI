@@ -26,7 +26,7 @@ interface Props {
 }
 
 export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
-  const [selected, setSelected] = useState<PlanKey>('yearly');
+  const [selected, setSelected] = useState<PlanKey>('trial');
   const [currency, setCurrency] = useState<Currency>(detectCurrency);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -116,19 +116,25 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
           <>
             {/* Header */}
             <div style={{ textAlign: 'center', marginBottom: 20 }}>
-              <span style={{ display: 'inline-block', fontSize: 11, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: '#a855f7', marginBottom: 8 }}>
-                Upgrade
+              <span style={{ display: 'inline-block', fontSize: 11, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: '#a855f7', marginBottom: 10 }}>
+                Limited Offer
               </span>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.4rem,4vw,1.8rem)', fontWeight: 700, margin: '0 0 6px', color: '#f8f8ff', lineHeight: 1.2 }}>
-                Unlock <span className="gradient-text">ROOP AI Premium</span>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.35rem,4vw,1.75rem)', fontWeight: 700, margin: '0 0 10px', color: '#f8f8ff', lineHeight: 1.25 }}>
+                Try Full Access —{' '}
+                <span className="gradient-text">{currency === 'INR' ? '₹25' : '$0.99'} for your first week</span>
               </h2>
-              <p style={{ fontSize: 13, color: 'rgba(248,248,255,0.5)', fontFamily: "'DM Sans', sans-serif", margin: 0 }}>
-                Full skin report · routine · products · doctors
-              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 4 }}>
+                <p style={{ fontSize: 13, color: 'rgba(248,248,255,0.6)', fontFamily: "'DM Sans', sans-serif", margin: 0 }}>
+                  Then just {currency === 'INR' ? '₹49' : '$1.99'}/month. Cancel anytime.
+                </p>
+                <p style={{ fontSize: 13, color: 'rgba(168,85,247,0.8)', fontFamily: "'DM Sans', sans-serif", margin: 0, fontWeight: 600 }}>
+                  No surprises.
+                </p>
+              </div>
             </div>
 
             {/* Currency toggle */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
               <div style={{
                 display: 'flex', gap: 0,
                 background: 'rgba(13,13,31,0.6)',
@@ -138,7 +144,7 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
                 {(['INR', 'USD'] as Currency[]).map(c => (
                   <button
                     key={c}
-                    onClick={() => setCurrency(c)}
+                    onClick={() => { setCurrency(c); setSelected('trial'); }}
                     style={{
                       padding: '6px 18px', borderRadius: 9, border: 'none',
                       cursor: 'pointer', fontSize: 12, fontWeight: 600,
@@ -157,10 +163,7 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
 
             {/* Gateway badge */}
             <div style={{ textAlign: 'center', marginBottom: 14 }}>
-              <span style={{
-                fontSize: 10, fontFamily: "'DM Sans', sans-serif",
-                color: 'rgba(248,248,255,0.3)', letterSpacing: 0.5,
-              }}>
+              <span style={{ fontSize: 10, fontFamily: "'DM Sans', sans-serif", color: 'rgba(248,248,255,0.3)', letterSpacing: 0.5 }}>
                 {currency === 'INR'
                   ? 'Powered by Razorpay · UPI, Cards, Net Banking'
                   : 'Powered by Lemon Squeezy · Credit & Debit Cards'}
@@ -172,37 +175,47 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
               {(Object.keys(plans) as PlanKey[]).map(key => {
                 const plan = plans[key];
                 const isSelected = selected === key;
+                const isTrial = key === 'trial';
                 return (
                   <button
                     key={key}
                     onClick={() => setSelected(key)}
                     style={{
                       flex: 1, padding: '14px 10px', borderRadius: 14,
-                      border: isSelected ? '2px solid #a855f7' : '1px solid rgba(124,58,237,0.25)',
-                      background: isSelected ? 'rgba(168,85,247,0.12)' : 'rgba(13,13,31,0.5)',
+                      border: isSelected
+                        ? '2px solid #a855f7'
+                        : '1px solid rgba(124,58,237,0.25)',
+                      background: isSelected
+                        ? 'rgba(168,85,247,0.12)'
+                        : 'rgba(13,13,31,0.5)',
                       cursor: 'pointer', transition: 'all 0.2s',
                       position: 'relative',
                       boxShadow: isSelected ? '0 0 20px rgba(168,85,247,0.15)' : 'none',
                     }}
                   >
-                    {'savings' in plan && (
+                    {isTrial && (
                       <span style={{
                         position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-                        background: 'linear-gradient(135deg,#a855f7,#ec4899)',
+                        background: 'linear-gradient(135deg,#f59e0b,#ef4444)',
                         color: '#fff', fontSize: 10, fontWeight: 700,
                         padding: '2px 10px', borderRadius: 20,
                         fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.5,
                         whiteSpace: 'nowrap',
                       }}>
-                        {(plan as any).savings}
+                        🔥 Best to Start
                       </span>
                     )}
-                    <div style={{ fontSize: 18, fontWeight: 800, color: isSelected ? '#a855f7' : '#f8f8ff', fontFamily: "'DM Sans', sans-serif", marginBottom: 2 }}>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: isSelected ? '#a855f7' : '#f8f8ff', fontFamily: "'DM Sans', sans-serif", marginBottom: 2 }}>
                       {plan.price}
                     </div>
                     <div style={{ fontSize: 11, color: 'rgba(248,248,255,0.5)', fontFamily: "'DM Sans', sans-serif" }}>
-                      {plan.label}{plan.period}
+                      {plan.label} · {plan.period.replace('/', '')}
                     </div>
+                    {isTrial && (
+                      <div style={{ fontSize: 10, color: 'rgba(248,248,255,0.35)', fontFamily: "'DM Sans', sans-serif", marginTop: 3 }}>
+                        then {currency === 'INR' ? '₹49' : '$1.99'}/mo
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -245,12 +258,14 @@ export default function PremiumModal({ user, onClose, onUpgraded }: Props) {
               {loading
                 ? <><span className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} />
                     {currency === 'USD' ? ' Redirecting to checkout…' : ' Processing…'}</>
-                : <>✨ Pay {currentPlan.price} &amp; Unlock Premium</>
+                : selected === 'trial'
+                  ? <>🚀 Start My Week — {currentPlan.price}</>
+                  : <>✨ Get Monthly Access — {currentPlan.price}</>
               }
             </button>
 
-            <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(248,248,255,0.25)', marginTop: 12, marginBottom: 0, fontFamily: "'DM Sans', sans-serif" }}>
-              🔒 Payments are secure and encrypted
+            <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(248,248,255,0.25)', marginTop: 12, marginBottom: 0, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6 }}>
+              🔒 Secure & encrypted · Cancel anytime · No hidden charges
             </p>
           </>
         )}

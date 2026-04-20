@@ -3,22 +3,22 @@ import { saveSubscription } from './supabase';
 export type Currency = 'INR' | 'USD';
 
 export const PLANS = {
+  trial: {
+    amount: 2500,           // ₹25 in paise
+    label: 'First Week',
+    price: '₹25',
+    period: '/week',
+    expiryDays: 7,
+    description: 'ROOP AI Premium – 7-Day Trial',
+    badge: '🔥 Best to Start',
+  },
   monthly: {
-    amount: 9900,           // ₹99 in paise
+    amount: 4900,           // ₹49 in paise
     label: 'Monthly',
-    price: '₹99',
+    price: '₹49',
     period: '/month',
     expiryDays: 30,
     description: 'ROOP AI Premium – Monthly',
-  },
-  yearly: {
-    amount: 79900,          // ₹799 in paise
-    label: 'Yearly',
-    price: '₹799',
-    period: '/year',
-    expiryDays: 365,
-    description: 'ROOP AI Premium – Yearly',
-    savings: 'Save ₹389',
   },
 } as const;
 
