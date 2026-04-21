@@ -773,6 +773,7 @@
     border-radius: 16px;
     overflow: hidden;
     margin-bottom: 14px;
+    min-height: calc(100vh - 260px);
   }
   .locked-blur-preview {
     filter: blur(6px);

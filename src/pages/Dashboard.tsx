@@ -231,7 +231,7 @@ export default function Dashboard() {
         </div>
 
         {!hasFullAccess ? (
-          <div className="locked-section">
+          <div className="locked-section" style={{ minHeight: 'calc(100vh - 260px)' }}>
             <div className="locked-blur-preview" aria-hidden="true">
               <DashboardContent history={history} latest={latest} score={score} metrics={metrics} navigate={navigate} />
             </div>
