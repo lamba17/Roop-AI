@@ -186,43 +186,43 @@ export default function SignIn() {
 
       {/* ── Navbar ── */}
       <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, ...glass, borderBottom: `1px solid ${c.outlineVar}`, boxShadow: `0 20px 40px ${c.navShadow}` }}>
-        <nav style={{ maxWidth: 1200, margin: '0 auto', padding: '0 40px', height: 72, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Logo */}
+        <nav style={{ width: '100%', padding: '0 40px', height: 72, display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', boxSizing: 'border-box' }}>
+          {/* Logo — far left */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 36, height: 36, objectFit: 'contain' }} />
+            <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 34, height: 34, objectFit: 'contain' }} />
             <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', background: TEXT_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>ROOP AI</span>
           </div>
 
+          {/* Nav links — true center */}
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
             {[
-              { label: 'Glow Score',        id: 'glow-score'  },
-              { label: 'Specialists',        id: 'specialists' },
-              { label: 'Curated Products',   id: 'products'    },
-              { label: 'The Clinic',         id: 'clinic'      },
+              { label: 'Glow Score',   id: 'glow-score'  },
+              { label: 'Specialists',  id: 'specialists' },
+              { label: 'How It Works', id: 'products'    },
+              { label: 'The Clinic',   id: 'clinic'      },
             ].map(({ label, id }, i) => (
               <a
                 key={label}
                 href={`#${id}`}
                 onClick={e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }}
-                style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 14, fontWeight: i === 0 ? 700 : 500, color: i === 0 ? c.onSurface : c.onSurfaceVar, textDecoration: 'none', letterSpacing: '-0.01em', transition: 'color 0.2s', cursor: 'pointer' }}
+                style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 14, fontWeight: i === 0 ? 700 : 500, color: i === 0 ? c.onSurface : c.onSurfaceVar, textDecoration: 'none', letterSpacing: '-0.01em', transition: 'color 0.2s', cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
                 {label}
               </a>
             ))}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Auth buttons — far right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'flex-end' }}>
             <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
-              style={{ padding: '8px 16px', background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, borderRadius: 50, cursor: 'pointer', fontSize: 12, fontWeight: 600, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
+              style={{ padding: '7px 14px', background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, borderRadius: 50, cursor: 'pointer', fontSize: 12, fontWeight: 600, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
               {d ? '☀️ Light' : '🌙 Dark'}
             </button>
-            <button
-              onClick={() => setShowModal(true)}
-              style={{ padding: '10px 24px', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Epilogue', sans-serif", fontWeight: 600, color: c.onSurfaceVar, letterSpacing: '-0.01em' }}
-            >
+            <button onClick={() => setShowModal(true)}
+              style={{ padding: '9px 20px', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Epilogue', sans-serif", fontWeight: 600, color: c.onSurfaceVar, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>
               Login
             </button>
-            <button className="brand-btn" style={{ padding: '10px 24px', fontSize: 13 }} onClick={() => setShowModal(true)}>
+            <button className="brand-btn" style={{ padding: '10px 22px', fontSize: 13 }} onClick={() => setShowModal(true)}>
               Sign Up
             </button>
           </div>
