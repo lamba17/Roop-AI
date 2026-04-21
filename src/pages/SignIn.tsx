@@ -231,10 +231,11 @@ export default function SignIn() {
           {/* Nav links — true center */}
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
             {[
-              { label: 'Glow Score',   id: 'glow-score'  },
-              { label: 'How It Works', id: 'products'    },
-              { label: 'Specialists',  id: 'specialists' },
-              { label: 'The Clinic',   id: 'clinic'      },
+              { label: 'Glow Score',    id: 'glow-score'    },
+              { label: 'How It Works',  id: 'products'      },
+              { label: 'Specialists',   id: 'specialists'   },
+              { label: 'Testimonials',  id: 'testimonials'  },
+              { label: 'The Clinic',    id: 'clinic'        },
             ].map(({ label, id }, i) => (
               <a
                 key={label}
@@ -473,7 +474,7 @@ export default function SignIn() {
       </section>
 
       {/* ── Testimonials ── */}
-      <section style={{ padding: '120px 40px', background: c.surfaceLow, overflow: 'hidden' }}>
+      <section id="testimonials" style={{ padding: '120px 40px', background: c.surfaceLow, overflow: 'hidden' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', color: c.primary, marginBottom: 16 }}>Real Results</p>
