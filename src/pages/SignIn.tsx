@@ -474,14 +474,6 @@ export default function SignIn() {
         </div>
       </footer>
 
-      {/* ── Continue as guest ── */}
-      <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
-        <button onClick={() => navigate('/scan')}
-          style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 50, padding: '10px 20px', fontSize: 12, color: c.onSurfaceVar, cursor: 'pointer', fontFamily: "'Manrope', sans-serif", fontWeight: 600, boxShadow: `0 8px 24px ${c.shadow}` }}>
-          Continue as Guest →
-        </button>
-      </div>
-
       {/* ── Sign-in Modal ── */}
       {showModal && <SignInModal c={c} onClose={() => setShowModal(false)} />}
     </div>
