@@ -11,13 +11,13 @@ const ThemeContext = createContext<ThemeContextValue>({ theme: 'light', toggle: 
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('roop_theme_v2');
+    const saved = localStorage.getItem('roop_theme_v3');
     return (saved === 'light' || saved === 'dark') ? saved : 'dark';
   });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('roop_theme_v2', theme);
+    localStorage.setItem('roop_theme_v3', theme);
   }, [theme]);
 
   function toggle() {
