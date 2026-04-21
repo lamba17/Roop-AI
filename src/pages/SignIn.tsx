@@ -217,6 +217,8 @@ export default function SignIn() {
         .ghost-btn { background: ${c.glassBg}; backdrop-filter: blur(20px); color: ${c.onSurface}; padding: 16px 36px; border-radius: 9999px; font-family: 'Epilogue', sans-serif; font-weight: 700; font-size: 15px; border: 1px solid ${c.outlineVar}; cursor: pointer; transition: all 0.2s; }
         .ghost-btn:hover { border-color: rgba(124,58,237,0.5); }
         .text-grad { background: ${TEXT_GRADIENT}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-link { color: ${c.onSurfaceVar}; text-decoration: none; font-family: 'Epilogue', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: -0.01em; transition: color 0.2s; cursor: pointer; white-space: nowrap; }
+        .nav-link:hover { color: ${c.onSurface}; }
         @keyframes fadeInUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
         @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .float-card { animation: float 4s ease-in-out infinite; }
@@ -241,12 +243,12 @@ export default function SignIn() {
               { label: 'Specialists',   id: 'specialists'   },
               { label: 'Testimonials',  id: 'testimonials'  },
               { label: 'The Clinic',    id: 'clinic'        },
-            ].map(({ label, id }, i) => (
+            ].map(({ label, id }) => (
               <a
                 key={label}
                 href={`#${id}`}
+                className="nav-link"
                 onClick={e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }}
-                style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 14, fontWeight: i === 0 ? 700 : 500, color: i === 0 ? c.onSurface : c.onSurfaceVar, textDecoration: 'none', letterSpacing: '-0.01em', transition: 'color 0.2s', cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
                 {label}
               </a>
