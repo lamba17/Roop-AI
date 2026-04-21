@@ -167,7 +167,7 @@ export default function SignIn() {
   ];
 
   return (
-    <div style={{ background: c.surface, minHeight: '100vh', color: c.onSurface, transition: 'background 0.3s, color 0.3s', overflowX: 'hidden' }}>
+    <div style={{ background: c.surface, minHeight: '100vh', color: c.onSurface, transition: 'background 0.3s, color 0.3s', overflowX: 'hidden', scrollBehavior: 'smooth' }}>
 
       {/* ── Font imports ── */}
       <style>{`
@@ -194,8 +194,20 @@ export default function SignIn() {
           </div>
 
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
-            {['Glow Score', 'Specialists', 'Curated Products', 'The Clinic'].map((l, i) => (
-              <a key={l} href="#" style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 14, fontWeight: i === 0 ? 700 : 500, color: i === 0 ? c.onSurface : c.onSurfaceVar, textDecoration: 'none', letterSpacing: '-0.01em', transition: 'color 0.2s' }}>{l}</a>
+            {[
+              { label: 'Glow Score',        id: 'glow-score'  },
+              { label: 'Specialists',        id: 'specialists' },
+              { label: 'Curated Products',   id: 'products'    },
+              { label: 'The Clinic',         id: 'clinic'      },
+            ].map(({ label, id }, i) => (
+              <a
+                key={label}
+                href={`#${id}`}
+                onClick={e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }}
+                style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 14, fontWeight: i === 0 ? 700 : 500, color: i === 0 ? c.onSurface : c.onSurfaceVar, textDecoration: 'none', letterSpacing: '-0.01em', transition: 'color 0.2s', cursor: 'pointer' }}
+              >
+                {label}
+              </a>
             ))}
           </div>
 
@@ -204,8 +216,14 @@ export default function SignIn() {
               style={{ padding: '8px 16px', background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, borderRadius: 50, cursor: 'pointer', fontSize: 12, fontWeight: 600, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
               {d ? '☀️ Light' : '🌙 Dark'}
             </button>
+            <button
+              onClick={() => setShowModal(true)}
+              style={{ padding: '10px 24px', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Epilogue', sans-serif", fontWeight: 600, color: c.onSurfaceVar, letterSpacing: '-0.01em' }}
+            >
+              Login
+            </button>
             <button className="brand-btn" style={{ padding: '10px 24px', fontSize: 13 }} onClick={() => setShowModal(true)}>
-              Join the Clinic
+              Sign Up
             </button>
           </div>
         </nav>
@@ -308,7 +326,7 @@ export default function SignIn() {
       </section>
 
       {/* ── Glow Score Science ── */}
-      <section style={{ padding: '120px 40px', background: c.surfaceLow }}>
+      <section id="glow-score" style={{ padding: '120px 40px', background: c.surfaceLow }}>
         <div className="science-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', gap: 80, alignItems: 'center' }}>
           {/* Score ring */}
           <div style={{ flexShrink: 0, display: 'flex', justifyContent: 'center', width: 340 }}>
@@ -351,7 +369,7 @@ export default function SignIn() {
       </section>
 
       {/* ── How it works ── */}
-      <section style={{ padding: '120px 40px', background: c.surface }}>
+      <section id="products" style={{ padding: '120px 40px', background: c.surface }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 72 }}>
             <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: c.primary, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2 }}>Simple Process</span>
@@ -420,7 +438,7 @@ export default function SignIn() {
       </section>
 
       {/* ── Final CTA ── */}
-      <section style={{ padding: '120px 40px', background: c.surface }}>
+      <section id="clinic" style={{ padding: '120px 40px', background: c.surface }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 64, padding: '100px 60px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(190,0,98,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
