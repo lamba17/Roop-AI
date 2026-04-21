@@ -232,8 +232,8 @@ export default function SignIn() {
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
             {[
               { label: 'Glow Score',   id: 'glow-score'  },
-              { label: 'Specialists',  id: 'specialists' },
               { label: 'How It Works', id: 'products'    },
+              { label: 'Specialists',  id: 'specialists' },
               { label: 'The Clinic',   id: 'clinic'      },
             ].map(({ label, id }, i) => (
               <a
