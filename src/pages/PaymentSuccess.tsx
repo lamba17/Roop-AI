@@ -24,7 +24,7 @@ export default function PaymentSuccess() {
     // Small delay for UX feel
     setTimeout(() => {
       setStatus('success');
-      setTimeout(() => navigate('/'), 3000);
+      setTimeout(() => navigate('/dashboard'), 3000);
     }, 1200);
   }, [navigate]);
 
@@ -87,7 +87,7 @@ export default function PaymentSuccess() {
             <p style={{ fontSize: 13, color: '#f87171', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6, margin: '0 0 20px' }}>
               Please contact support at info@roopai.co.in
             </p>
-            <button onClick={() => navigate('/')} className="btn-glow" style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}>
+            <button onClick={() => navigate('/dashboard')} className="btn-glow" style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}>
               Back to Home
             </button>
           </>

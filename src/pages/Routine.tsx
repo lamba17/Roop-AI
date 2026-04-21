@@ -146,7 +146,7 @@ export default function Routine() {
           <div className="page-empty-icon">📋</div>
           <h3>{t.noRoutineYet}</h3>
           <p>{t.noRoutineDesc}</p>
-          <button onClick={() => navigate('/')} className="btn-glow">{t.startAnalysis}</button>
+          <button onClick={() => navigate('/scan')} className="btn-glow">{t.startAnalysis}</button>
         </div>
       </AppLayout>
     );

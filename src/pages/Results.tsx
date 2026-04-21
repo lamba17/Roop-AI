@@ -55,7 +55,7 @@ export default function Results() {
       <AppLayout>
         <div className="results-empty">
           <p>No analysis found.</p>
-          <button onClick={() => navigate('/')} className="btn-primary">Go Home</button>
+          <button onClick={() => navigate('/dashboard')} className="btn-primary">Go Home</button>
         </div>
       </AppLayout>
     );

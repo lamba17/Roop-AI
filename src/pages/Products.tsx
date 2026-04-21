@@ -191,7 +191,7 @@ export default function Products() {
           <div className="page-empty-icon">🛍️</div>
           <h3>No Products Yet</h3>
           <p>Complete a skin analysis to unlock your personalised product recommendations.</p>
-          <button onClick={() => navigate('/')} className="btn-glow">
+          <button onClick={() => navigate('/scan')} className="btn-glow">
             Start Analysis
           </button>
         </div>

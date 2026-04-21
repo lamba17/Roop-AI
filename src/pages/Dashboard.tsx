@@ -58,7 +58,7 @@ function DashboardContent({ history, latest, score, metrics, navigate }: any) {
                   <text x="70" y="82" textAnchor="middle" fill="#555566" fontSize="11" fontFamily="DM Sans">yet</text>
                 </svg>
               </div>
-              <button onClick={() => navigate('/')} className="btn-glow" style={{ marginTop: 16 }}>
+              <button onClick={() => navigate('/scan')} className="btn-glow" style={{ marginTop: 16 }}>
                 Start Analysis
               </button>
             </div>
@@ -107,7 +107,7 @@ function DashboardContent({ history, latest, score, metrics, navigate }: any) {
             <p style={{ color: 'rgba(232,232,240,0.5)', fontSize: 14, marginBottom: 16 }}>
               Complete your first skin analysis to unlock your personalized metrics.
             </p>
-            <button onClick={() => navigate('/')} className="btn-primary">
+            <button onClick={() => navigate('/scan')} className="btn-primary">
               Analyse My Skin
             </button>
           </div>

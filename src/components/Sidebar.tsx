@@ -147,7 +147,7 @@ export default function Sidebar() {
           </div>
         </div>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/scan')}
           className="sidebar-cta"
         >
           + New Scan

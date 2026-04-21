@@ -104,7 +104,7 @@ export default function Progress() {
             <div className="page-empty-icon">📊</div>
             <h3>No analyses yet</h3>
             <p>Start your skin journey to track progress over time.</p>
-            <button onClick={() => navigate('/')} className="btn-glow">
+            <button onClick={() => navigate('/scan')} className="btn-glow">
               Start Analysis
             </button>
           </div>
