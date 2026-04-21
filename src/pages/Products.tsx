@@ -32,7 +32,7 @@ function buildLinks(name: string) {
   };
 }
 
-function ProductsContent({ latest, activeFilter, setActiveFilter, t }: any) {
+function ProductsContent({ latest, activeFilter, t }: any) {
   const { products } = latest.analysis;
   const filtered = activeFilter === 'All'
     ? products
