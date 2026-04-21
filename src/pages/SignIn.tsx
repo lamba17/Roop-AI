@@ -435,6 +435,43 @@ export default function SignIn() {
         </div>
       </section>
 
+      {/* ── Testimonials ── */}
+      <section style={{ padding: '120px 40px', background: c.surfaceLow, overflow: 'hidden' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', color: c.primary, marginBottom: 16 }}>Real Results</p>
+            <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1, color: c.onSurface, margin: 0 }}>
+              Skin that <span className="text-grad">speaks for itself</span>
+            </h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+            {[
+              { name: 'Priya Mehta', city: 'Mumbai', score: 84, avatar: 'PM', quote: 'I was skeptical at first, but after my first scan ROOP AI caught my dehydration pattern instantly. My skin cleared up in 3 weeks just following the routine.', tag: 'Oily + Acne-prone', color: '#7C3AED' },
+              { name: 'Arjun Kapoor', city: 'Delhi', score: 91, avatar: 'AK', quote: 'The Glow Score actually motivated me to be consistent. Went from a 67 to 91 in 6 weeks. The product picks were spot on — nothing generic.', tag: 'Combination skin', color: '#BE0062' },
+              { name: 'Sneha Iyer', city: 'Bangalore', score: 78, avatar: 'SI', quote: 'Tried 4 apps before this. ROOP AI is the only one that felt like a real dermatologist was looking at my face. The dark circle analysis was scarily accurate.', tag: 'Dry + Sensitive', color: '#7C3AED' },
+              { name: 'Rahul Sharma', city: 'Pune', score: 88, avatar: 'RS', quote: 'As a guy I never paid attention to skincare. ROOP AI made it dead simple — 3 steps morning, 3 evening. My confidence is completely different now.', tag: 'Normal skin', color: '#BE0062' },
+              { name: 'Ananya Singh', city: 'Chennai', score: 76, avatar: 'AS', quote: 'The specialist recommendations led me to a dermatologist who finally diagnosed my rosacea. I had been treating it wrong for years.', tag: 'Rosacea-prone', color: '#7C3AED' },
+              { name: 'Vikram Nair', city: 'Hyderabad', score: 93, avatar: 'VN', quote: 'I travel constantly and my skin was suffering. The weekly mask plan adjusted to my skin type each scan. It is like having a skin coach in my pocket.', tag: 'Combination skin', color: '#BE0062' },
+            ].map((t, i) => (
+              <div key={t.name} style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 28, padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 20, transform: i % 2 === 1 ? 'translateY(20px)' : 'none' }}>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {[1,2,3,4,5].map(s => <span key={s} style={{ color: '#f59e0b', fontSize: 14 }}>★</span>)}
+                </div>
+                <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 14, color: c.onSurfaceVar, lineHeight: 1.75, margin: 0, flex: 1 }}>"{t.quote}"</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingTop: 16, borderTop: `1px solid ${c.outlineVar}` }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: `linear-gradient(135deg, ${t.color}, ${t.color}99)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Epilogue', sans-serif", fontSize: 14, fontWeight: 800, color: '#fff', flexShrink: 0 }}>{t.avatar}</div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 15, fontWeight: 700, color: c.onSurface, margin: '0 0 2px', letterSpacing: '-0.02em' }}>{t.name}</p>
+                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: c.onSurfaceVar, margin: 0 }}>{t.city} · {t.tag}</p>
+                  </div>
+                  <div style={{ background: BRAND_GRADIENT, borderRadius: 12, padding: '4px 12px', fontFamily: "'Epilogue', sans-serif", fontSize: 13, fontWeight: 800, color: '#fff' }}>{t.score}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Final CTA ── */}
       <section id="clinic" style={{ padding: '120px 40px', background: c.surface }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
