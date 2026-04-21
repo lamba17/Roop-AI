@@ -215,14 +215,15 @@ export default function Home() {
           )}
 
           {/* Premium upgrade */}
-          {user && !premium && (
+          {user && !isAdmin && !premium && (
             <div className="analysis-upgrade-panel">
-              <div className="upgrade-icon">⭐</div>
-              <div className="upgrade-title">Go Premium</div>
+              <div className="upgrade-icon">🚀</div>
+              <div className="upgrade-title">Try Full Access</div>
               <div className="upgrade-desc">Unlimited analyses, PDF reports, advanced insights</div>
-              <button onClick={() => setShowPremium(true)} className="btn-outline" style={{ width: '100%', justifyContent: 'center', fontSize: 13 }}>
-                Upgrade Now
+              <button onClick={() => setShowPremium(true)} className="btn-glow" style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '10px 16px' }}>
+                ₹25 for 7 days
               </button>
+              <p style={{ fontSize: 11, color: 'var(--text-hint)', margin: '8px 0 0', textAlign: 'center' }}>Then ₹49/month · Cancel anytime</p>
             </div>
           )}
         </div>

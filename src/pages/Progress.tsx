@@ -109,7 +109,7 @@ export default function Progress() {
             </button>
           </div>
         ) : !hasFullAccess ? (
-          <div className="locked-section">
+          <div className="locked-section" style={{ minHeight: 420 }}>
             <div className="locked-blur-preview" aria-hidden="true">
               <ProgressContent history={history} navigate={navigate} />
             </div>
