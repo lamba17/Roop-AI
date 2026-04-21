@@ -49,11 +49,12 @@ function Spinner({ size = 20 }: { size?: number }) {
 }
 
 /* ── Sign-in modal ────────────────────────────────────────────────────────── */
-function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () => void }) {
+function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose: () => void; mode: 'login' | 'signup' }) {
   const [gLoading, setGLoading] = useState(false);
   const [email, setEmail]       = useState('');
+  const [name, setName]         = useState('');
   const [eLoading, setELoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
+  const [sent, setSent]         = useState(false);
   const [error, setError]       = useState<string | null>(null);
 
   const inputStyle: React.CSSProperties = {
@@ -62,6 +63,8 @@ function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () =>
     fontSize: 14, fontFamily: "'Manrope', sans-serif", outline: 'none',
     marginBottom: 10, boxSizing: 'border-box',
   };
+  const focusIn  = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.5)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'; };
+  const focusOut = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = c.outlineVar; e.currentTarget.style.boxShadow = 'none'; };
 
   async function handleGoogle() {
     setError(null); setGLoading(true);
@@ -69,22 +72,28 @@ function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () =>
     catch (e) { setError(e instanceof Error ? e.message : 'Sign-in failed.'); setGLoading(false); }
   }
 
-  async function handleEmailOtp(ev: React.FormEvent) {
+  async function handleSubmit(ev: React.FormEvent) {
     ev.preventDefault();
     if (!email.trim()) return;
+    if (mode === 'signup' && !name.trim()) return;
     setError(null); setELoading(true);
     try {
       const { error: e } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          ...(mode === 'signup' && { data: { full_name: name.trim() } }),
+        },
       });
       if (e) throw new Error(e.message);
-      setEmailSent(true);
+      setSent(true);
     } catch (e) { setError(e instanceof Error ? e.message : 'Failed to send link.'); }
     finally { setELoading(false); }
   }
 
   const glass: React.CSSProperties = { background: c.glassBg, backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' };
+  const isSignup = mode === 'signup';
+  const canSubmit = !!email.trim() && (!isSignup || !!name.trim());
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(23,16,32,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
@@ -99,8 +108,12 @@ function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () =>
             <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 32, height: 32, objectFit: 'contain' }} />
             <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 17, fontWeight: 800, letterSpacing: '-0.02em', background: TEXT_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>ROOP AI</span>
           </div>
-          <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: '1.5rem', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.03em', color: c.onSurface }}>Begin Your Analysis</h2>
-          <p style={{ fontSize: 13, color: c.onSurfaceVar, margin: 0, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>Sign in to unlock your personalised skin profile.</p>
+          <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: '1.5rem', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.03em', color: c.onSurface }}>
+            {isSignup ? 'Create Your Account' : 'Welcome Back'}
+          </h2>
+          <p style={{ fontSize: 13, color: c.onSurfaceVar, margin: 0, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>
+            {isSignup ? 'Join the Ethereal Clinic and start your skin journey.' : 'Sign in to access your personalised skin profile.'}
+          </p>
         </div>
 
         {/* Error */}
@@ -114,44 +127,48 @@ function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () =>
         <button onClick={handleGoogle} disabled={gLoading}
           style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '14px 20px', background: '#fff', color: '#1a1a2e', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: gLoading ? 'not-allowed' : 'pointer', opacity: gLoading ? 0.7 : 1, boxShadow: `0 4px 20px ${c.shadow}`, marginBottom: 20 }}>
           {gLoading ? <Spinner size={18} /> : <GoogleIcon />}
-          {gLoading ? 'Connecting…' : 'Continue with Google'}
+          {gLoading ? 'Connecting…' : isSignup ? 'Sign up with Google' : 'Continue with Google'}
         </button>
 
         {/* Divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{ flex: 1, height: 1, background: c.outlineVar }} />
-          <span style={{ fontSize: 11, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", letterSpacing: 0.5 }}>or sign in with email</span>
+          <span style={{ fontSize: 11, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", letterSpacing: 0.5 }}>or {isSignup ? 'sign up' : 'sign in'} with email</span>
           <div style={{ flex: 1, height: 1, background: c.outlineVar }} />
         </div>
 
-        {/* Email magic link */}
-        {emailSent ? (
+        {/* Success state */}
+        {sent ? (
           <div style={{ padding: '20px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 16, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>📬</div>
             <p style={{ margin: '0 0 6px', fontSize: 14, fontWeight: 700, color: '#4ade80', fontFamily: "'Manrope', sans-serif" }}>Check your inbox</p>
             <p style={{ margin: 0, fontSize: 13, color: c.onSurfaceVar, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>
-              Magic link sent to <strong style={{ color: c.onSurface }}>{email}</strong>. Click it to sign in instantly.
+              Magic link sent to <strong style={{ color: c.onSurface }}>{email}</strong>. Click it to {isSignup ? 'activate your account' : 'sign in'} instantly.
             </p>
-            <button onClick={() => { setEmailSent(false); setEmail(''); }}
+            <button onClick={() => { setSent(false); setEmail(''); setName(''); }}
               style={{ marginTop: 14, background: 'none', border: 'none', color: c.onSurfaceVar, fontSize: 12, fontFamily: "'Manrope', sans-serif", cursor: 'pointer', textDecoration: 'underline' }}>
               Use a different email
             </button>
           </div>
         ) : (
-          <form onSubmit={handleEmailOtp}>
+          <form onSubmit={handleSubmit}>
+            {/* Name field — signup only */}
+            {isSignup && (
+              <input type="text" value={name} onChange={e => setName(e.target.value)}
+                placeholder="Your full name" required style={inputStyle}
+                onFocus={focusIn} onBlur={focusOut} />
+            )}
             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
               placeholder="your@email.com" required style={inputStyle}
-              onFocus={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.5)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'; }}
-              onBlur={e => { e.currentTarget.style.borderColor = c.outlineVar; e.currentTarget.style.boxShadow = 'none'; }}
-            />
-            <button type="submit" disabled={eLoading || !email.trim()}
-              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px', background: BRAND_GRADIENT, color: '#fff', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: eLoading || !email.trim() ? 'not-allowed' : 'pointer', opacity: eLoading || !email.trim() ? 0.6 : 1, boxShadow: '0 0 24px rgba(124,58,237,0.3)' }}>
-              {eLoading ? <><Spinner size={16} /> Sending…</> : '✉️  Send Magic Link'}
+              onFocus={focusIn} onBlur={focusOut} />
+            <button type="submit" disabled={eLoading || !canSubmit}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px', background: BRAND_GRADIENT, color: '#fff', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: eLoading || !canSubmit ? 'not-allowed' : 'pointer', opacity: eLoading || !canSubmit ? 0.6 : 1, boxShadow: '0 0 24px rgba(124,58,237,0.3)' }}>
+              {eLoading ? <><Spinner size={16} /> Sending…</> : isSignup ? '✨  Create Account' : '✉️  Send Magic Link'}
             </button>
           </form>
         )}
 
-        <p style={{ textAlign: 'center', fontSize: 11, color: c.onSurfaceVar, marginTop: 20, marginBottom: 0, fontFamily: "'Inter', sans-serif', letterSpacing: 0.3" }}>🔒 Encrypted · Free to start · No card needed</p>
+        <p style={{ textAlign: 'center', fontSize: 11, color: c.onSurfaceVar, marginTop: 20, marginBottom: 0, fontFamily: "'Inter', sans-serif", letterSpacing: 0.3 }}>🔒 Encrypted · Free to start · No card needed</p>
       </div>
     </div>
   );
@@ -159,8 +176,8 @@ function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () =>
 
 /* ── Landing Page ─────────────────────────────────────────────────────────── */
 export default function SignIn() {
-  const [theme, setTheme]       = useState<Theme>('dark');
-  const [showModal, setShowModal] = useState(false);
+  const [theme, setTheme]         = useState<Theme>('dark');
+  const [modalMode, setModalMode] = useState<'login' | 'signup' | null>(null);
   const c = tok(theme);
   const d = theme === 'dark';
 
@@ -236,11 +253,11 @@ export default function SignIn() {
               style={{ padding: '7px 14px', background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, borderRadius: 50, cursor: 'pointer', fontSize: 12, fontWeight: 600, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
               {d ? '☀️ Light' : '🌙 Dark'}
             </button>
-            <button onClick={() => setShowModal(true)}
+            <button onClick={() => setModalMode('login')}
               style={{ padding: '9px 20px', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Epilogue', sans-serif", fontWeight: 600, color: c.onSurfaceVar, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>
               Login
             </button>
-            <button className="brand-btn" style={{ padding: '10px 22px', fontSize: 13 }} onClick={() => setShowModal(true)}>
+            <button className="brand-btn" style={{ padding: '10px 22px', fontSize: 13 }} onClick={() => setModalMode('signup')}>
               Sign Up
             </button>
           </div>
@@ -271,7 +288,7 @@ export default function SignIn() {
             </p>
 
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 56 }}>
-              <button className="brand-btn" onClick={() => setShowModal(true)}>Get Your Glow Score</button>
+              <button className="brand-btn" onClick={() => setModalMode("signup")}>Get Your Glow Score</button>
               <button className="ghost-btn" onClick={() => document.getElementById('specialists')?.scrollIntoView({ behavior: 'smooth' })}>
                 Free Specialist Network
               </button>
@@ -426,7 +443,7 @@ export default function SignIn() {
                 </div>
               ))}
             </div>
-            <button onClick={() => setShowModal(true)}
+            <button onClick={() => setModalMode("signup")}
               style={{ display: 'flex', alignItems: 'center', gap: 16, background: 'none', border: 'none', color: c.onSurface, fontFamily: "'Epilogue', sans-serif", fontWeight: 700, fontSize: 16, cursor: 'pointer', letterSpacing: '-0.01em' }}>
               Explore Specialist Directory
               <span style={{ width: 44, height: 44, borderRadius: '50%', border: `1px solid ${c.outlineVar}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>→</span>
@@ -504,7 +521,7 @@ export default function SignIn() {
               <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 18, color: c.onSurfaceVar, maxWidth: 560, margin: '0 auto 48px', lineHeight: 1.75 }}>
                 Step into the future of precision dermatology. Your personalised skin journey starts with a single scan.
               </p>
-              <button className="brand-btn" style={{ fontSize: 18, padding: '20px 52px' }} onClick={() => setShowModal(true)}>
+              <button className="brand-btn" style={{ fontSize: 18, padding: '20px 52px' }} onClick={() => setModalMode("signup")}>
                 Begin Your Analysis
               </button>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: c.onSurfaceVar, marginTop: 20 }}>Free to start · No credit card · 60-second analysis</p>
@@ -530,7 +547,7 @@ export default function SignIn() {
       </footer>
 
       {/* ── Sign-in Modal ── */}
-      {showModal && <SignInModal c={c} onClose={() => setShowModal(false)} />}
+      {modalMode && <SignInModal c={c} onClose={() => setModalMode(null)} mode={modalMode} />}
     </div>
   );
 }
