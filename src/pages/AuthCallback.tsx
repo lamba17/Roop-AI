@@ -33,7 +33,7 @@ export default function AuthCallback() {
           setErrorMsg(error.message);
           return;
         }
-        setTimeout(() => navigate('/', { replace: true }), 600);
+        setTimeout(() => navigate('/dashboard', { replace: true }), 600);
         return;
       }
 
@@ -43,14 +43,14 @@ export default function AuthCallback() {
         // Supabase JS client picks up the fragment automatically via
         // onAuthStateChange — just wait briefly then redirect.
         setStatusText('Finalising your account…');
-        setTimeout(() => navigate('/', { replace: true }), 1000);
+        setTimeout(() => navigate('/dashboard', { replace: true }), 1000);
         return;
       }
 
       // ── 4. Nothing in URL — session may already be active ───────────────
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        setTimeout(() => navigate('/', { replace: true }), 600);
+        setTimeout(() => navigate('/dashboard', { replace: true }), 600);
       } else {
         setErrorMsg(
           'The sign-in link has expired or is invalid. Please request a new one.'
