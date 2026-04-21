@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { signInWithGoogle, supabase } from '../lib/supabase';
 
 /* ── Design tokens (Ethereal Clinic system) ───────────────────────────────── */
@@ -140,7 +139,6 @@ function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () =>
 
 /* ── Landing Page ─────────────────────────────────────────────────────────── */
 export default function SignIn() {
-  const navigate = useNavigate();
   const [theme, setTheme]       = useState<Theme>('dark');
   const [showModal, setShowModal] = useState(false);
   const c = tok(theme);
