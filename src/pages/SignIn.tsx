@@ -229,11 +229,11 @@ export default function SignIn() {
           .step-grid { grid-template-columns: 1fr !important; }
           .science-grid { flex-direction: column !important; }
           .specialist-cascade { margin-left: 0 !important; }
-          .theme-toggle-btn { display: none !important; }
-          .nav-login-btn { display: none !important; }
-          .nav-auth-right { gap: 6px !important; }
-          .landing-nav { padding: 0 16px !important; grid-template-columns: 1fr auto !important; }
-          .brand-btn { padding: 9px 16px !important; font-size: 12px !important; }
+          .theme-toggle-btn { width: 32px !important; height: 32px !important; font-size: 14px !important; }
+          .nav-login-btn { padding: 6px 10px !important; font-size: 12px !important; }
+          .nav-auth-right { gap: 4px !important; }
+          .landing-nav { padding: 0 14px !important; grid-template-columns: 1fr auto !important; }
+          .brand-btn { padding: 8px 14px !important; font-size: 12px !important; }
           .hero-inner { padding: 80px 20px 40px !important; }
           .hero-stats { gap: 24px !important; flex-wrap: wrap !important; }
           .section-padded { padding: 80px 20px !important; }
