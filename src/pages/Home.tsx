@@ -34,9 +34,7 @@ export default function Home() {
   const [history, setHistory] = useLocalStorage<HistoryEntry[]>(historyKey, []);
 
   const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
-  const todayKey = new Date().toISOString().split('T')[0];
-  const todayCount = history.filter(h => h.date.startsWith(todayKey)).length;
-  const limitReached = !isAdmin && !premium && todayCount >= FREE_LIMIT;
+  const limitReached = !isAdmin && !premium && history.length >= FREE_LIMIT;
 
   function handleFile(f: File) {
     setFile(f);
