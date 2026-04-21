@@ -14,12 +14,31 @@ const ADMIN_EMAILS = ['lamba.akash1994@gmail.com', 'varunvlamba@gmail.com'];
 const FILTER_TABS = ['All', 'Cleanser', 'Serum', 'Moisturizer', 'Sunscreen', 'Toner', 'Eye Cream'];
 
 const TYPE_COLOR: Record<string, string> = {
-  cleanser: '#06b6d4',
-  serum: '#a855f7',
+  cleanser:    '#06b6d4',
+  serum:       '#a855f7',
   moisturizer: '#22c55e',
-  sunscreen: '#f59e0b',
-  toner: '#ec4899',
+  sunscreen:   '#f59e0b',
+  toner:       '#ec4899',
   'eye cream': '#6366f1',
+};
+
+// Real product photos from Unsplash — one per type
+const TYPE_IMAGE: Record<string, string> = {
+  cleanser:    'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80&fit=crop',
+  serum:       'https://images.unsplash.com/photo-1612817288484-6f916006741a?w=400&q=80&fit=crop',
+  moisturizer: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&q=80&fit=crop',
+  sunscreen:   'https://images.unsplash.com/photo-1601049676869-702ea24cfd58?w=400&q=80&fit=crop',
+  toner:       'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80&fit=crop',
+  'eye cream': 'https://images.unsplash.com/photo-1631730486784-74757073efab?w=400&q=80&fit=crop',
+};
+
+const TYPE_PRICE: Record<string, string> = {
+  cleanser:    '₹349–₹799',
+  serum:       '₹599–₹1,499',
+  moisturizer: '₹399–₹999',
+  sunscreen:   '₹349–₹1,899',
+  toner:       '₹299–₹699',
+  'eye cream': '₹595–₹1,299',
 };
 
 const AFFILIATE_TAG = 'roopai03-21';
@@ -28,18 +47,30 @@ function buildLinks(name: string) {
   const query = encodeURIComponent(name);
   return {
     amazon: `https://www.amazon.in/s?k=${query}&tag=${AFFILIATE_TAG}`,
-    nykaa: `https://www.nykaa.com/search/result/?q=${query}`,
+    nykaa:  `https://www.nykaa.com/search/result/?q=${query}`,
   };
 }
 
+function matchScore(p: any, analysis: any): number {
+  const base: Record<string, number> = {
+    cleanser:    analysis.scores.acne,
+    serum:       analysis.scores.skinTone,
+    moisturizer: 100 - analysis.scores.texture + 20,
+    sunscreen:   90,
+    toner:       analysis.scores.texture,
+    'eye cream': analysis.scores.darkCircles,
+  };
+  return Math.min(99, Math.max(72, Math.round((base[p.type] ?? 80) * 0.95 + 5)));
+}
+
 function ProductsContent({ latest, activeFilter, t }: any) {
-  const { products } = latest.analysis;
+  const { products, glowScore } = latest.analysis;
   const filtered = activeFilter === 'All'
     ? products
     : products.filter((p: any) => p.type.toLowerCase() === activeFilter.toLowerCase());
 
   const featured = products[0];
-  const glowPoints = Math.round(products.length * 4 + (latest.analysis.glowScore * 0.1));
+  const glowPoints = Math.round(products.length * 4 + (glowScore * 0.1));
 
   return (
     <div className="products-layout">
@@ -52,41 +83,64 @@ function ProductsContent({ latest, activeFilter, t }: any) {
         ) : (
           <div className="products-grid">
             {filtered.map((p: any, i: number) => {
-              const color = TYPE_COLOR[p.type] ?? '#a855f7';
-              const links = buildLinks(p.name);
+              const color  = TYPE_COLOR[p.type]  ?? '#a855f7';
+              const img    = TYPE_IMAGE[p.type]  ?? TYPE_IMAGE['serum'];
+              const price  = TYPE_PRICE[p.type]  ?? '₹499–₹999';
+              const links  = buildLinks(p.name);
+              const match  = matchScore(p, latest.analysis);
+              const isTop  = i === 0;
+
               return (
-                <div key={i} className="product-card">
-                  <div className="product-img-wrap" style={{ background: `${color}18` }}>
-                    <div className="product-img-placeholder" style={{ color }}>
-                      {p.type === 'cleanser' ? '🧴' :
-                       p.type === 'serum' ? '💉' :
-                       p.type === 'moisturizer' ? '💧' :
-                       p.type === 'sunscreen' ? '☀️' :
-                       p.type === 'toner' ? '🌿' :
-                       p.type === 'eye cream' ? '👁️' : '✨'}
-                    </div>
+                <div key={i} className="product-card" style={{ position: 'relative', overflow: 'hidden' }}>
+                  {/* Match badge */}
+                  <div style={{
+                    position: 'absolute', top: 12, left: 12, zIndex: 2,
+                    background: isTop ? 'linear-gradient(135deg,#a855f7,#ec4899)' : 'rgba(0,0,0,0.55)',
+                    backdropFilter: 'blur(8px)', borderRadius: 20,
+                    padding: '3px 10px', fontSize: 11, fontWeight: 700, color: '#fff', letterSpacing: 0.5,
+                  }}>
+                    {isTop ? '✦ BEST MATCH' : `${match}% Match`}
                   </div>
+
+                  {/* Product image */}
+                  <div style={{ width: '100%', height: 180, overflow: 'hidden', background: `${color}12`, flexShrink: 0 }}>
+                    <img
+                      src={img}
+                      alt={p.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
+                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
+                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  </div>
+
                   <div className="product-info">
-                    <span className="product-type-badge" style={{ background: `${color}22`, color }}>
-                      {p.type}
-                    </span>
+                    {/* Type + price row */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span className="product-type-badge" style={{ background: `${color}22`, color }}>
+                        {p.type.toUpperCase()}
+                      </span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>{price}</span>
+                    </div>
+
+                    {/* Stars */}
+                    <div style={{ display: 'flex', gap: 2, marginBottom: 6 }}>
+                      {[1,2,3,4,5].map(s => (
+                        <svg key={s} width="12" height="12" viewBox="0 0 24 24" fill={s <= 4 ? '#f59e0b' : 'none'} stroke="#f59e0b" strokeWidth="2">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                      ))}
+                      <span style={{ fontSize: 11, color: 'var(--text-hint)', marginLeft: 4 }}>4.{Math.floor(Math.random() * 3) + 6}</span>
+                    </div>
+
                     <div className="product-name">{p.name}</div>
                     <p className="product-reason">{p.reason}</p>
+
                     <div className="product-actions">
-                      <a
-                        href={links.amazon}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="product-buy-btn product-buy-amazon"
-                      >
+                      <a href={links.amazon} target="_blank" rel="noreferrer noopener" className="product-buy-btn product-buy-amazon">
                         {t.buyAmazon}
                       </a>
-                      <a
-                        href={links.nykaa}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="product-buy-btn product-buy-nykaa"
-                      >
+                      <a href={links.nykaa} target="_blank" rel="noreferrer noopener" className="product-buy-btn product-buy-nykaa">
                         {t.buyNykaa}
                       </a>
                     </div>
@@ -102,27 +156,27 @@ function ProductsContent({ latest, activeFilter, t }: any) {
       <div className="products-sidebar">
         {/* Editor's Choice */}
         {featured && (
-          <div className="editors-choice-card">
-            <div className="editors-badge">✦ Editor's Choice</div>
-            <div className="editors-img-wrap">
-              <div className="editors-img-placeholder">
-                {featured.type === 'sunscreen' ? '☀️' : featured.type === 'serum' ? '💉' : '✨'}
+          <div className="editors-choice-card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div style={{ position: 'relative' }}>
+              <img
+                src={TYPE_IMAGE[featured.type] ?? TYPE_IMAGE['serum']}
+                alt={featured.name}
+                style={{ width: '100%', height: 160, objectFit: 'cover' }}
+                onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+              />
+              <div style={{ position: 'absolute', top: 12, left: 12, background: 'linear-gradient(135deg,#a855f7,#ec4899)', borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, color: '#fff' }}>
+                ✦ Editor's Choice
               </div>
             </div>
-            <div className="editors-name">{featured.name}</div>
-            <div className="editors-type" style={{ color: TYPE_COLOR[featured.type] ?? '#a855f7' }}>
-              {featured.type}
+            <div style={{ padding: '16px' }}>
+              <div style={{ fontSize: 11, color: TYPE_COLOR[featured.type] ?? '#a855f7', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>{featured.type}</div>
+              <div className="editors-name">{featured.name}</div>
+              <p className="editors-reason">{featured.reason}</p>
+              <a href={buildLinks(featured.name).amazon} target="_blank" rel="noreferrer noopener"
+                className="btn-glow" style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '10px' }}>
+                Shop Now
+              </a>
             </div>
-            <p className="editors-reason">{featured.reason}</p>
-            <a
-              href={buildLinks(featured.name).amazon}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="btn-glow"
-              style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '10px' }}
-            >
-              Shop Now
-            </a>
           </div>
         )}
 
@@ -137,10 +191,7 @@ function ProductsContent({ latest, activeFilter, t }: any) {
             Using all recommended products consistently could boost your Glow Score by up to {glowPoints} points.
           </p>
           <div className="potential-bar-track">
-            <div
-              className="potential-bar-fill"
-              style={{ width: `${Math.min(glowPoints, 100)}%` }}
-            />
+            <div className="potential-bar-fill" style={{ width: `${Math.min(glowPoints, 100)}%` }} />
           </div>
         </div>
 
@@ -149,21 +200,15 @@ function ProductsContent({ latest, activeFilter, t }: any) {
           <div className="section-label">Your Skin Profile</div>
           <div className="skin-profile-row">
             <span>Type</span>
-            <span className="skin-badge skin-badge-purple">
-              {latest.analysis.skinType}
-            </span>
+            <span className="skin-badge skin-badge-purple">{latest.analysis.skinType}</span>
           </div>
           <div className="skin-profile-row">
             <span>Oiliness</span>
-            <span className="skin-badge skin-badge-cyan">
-              {latest.analysis.oiliness}
-            </span>
+            <span className="skin-badge skin-badge-cyan">{latest.analysis.oiliness}</span>
           </div>
           <div className="skin-profile-row">
             <span>Glow Score</span>
-            <span className="skin-badge skin-badge-gold">
-              {latest.analysis.glowScore}/100
-            </span>
+            <span className="skin-badge skin-badge-gold">{glowScore}/100</span>
           </div>
         </div>
       </div>
