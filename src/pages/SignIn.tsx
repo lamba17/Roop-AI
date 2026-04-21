@@ -212,8 +212,8 @@ export default function SignIn() {
       {/* ── Font imports ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800&family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
-        .brand-btn { background: ${BRAND_GRADIENT}; color: #fff; padding: 16px 36px; border-radius: 9999px; font-family: 'Epilogue', sans-serif; font-weight: 800; font-size: 15px; border: none; cursor: pointer; box-shadow: 0 0 30px rgba(124,58,237,0.35); transition: transform 0.2s, box-shadow 0.2s; letter-spacing: -0.01em; }
-        .brand-btn:hover { transform: scale(1.04); box-shadow: 0 0 50px rgba(124,58,237,0.5); }
+        .brand-btn { background: ${BRAND_GRADIENT}; color: #fff; padding: 12px 28px; border-radius: 9999px; font-family: 'Epilogue', sans-serif; font-weight: 700; font-size: 14px; border: none; cursor: pointer; box-shadow: 0 0 24px rgba(124,58,237,0.3); transition: transform 0.2s, box-shadow 0.2s; letter-spacing: -0.01em; white-space: nowrap; }
+        .brand-btn:hover { transform: scale(1.03); box-shadow: 0 0 40px rgba(124,58,237,0.5); }
         .ghost-btn { background: ${c.glassBg}; backdrop-filter: blur(20px); color: ${c.onSurface}; padding: 16px 36px; border-radius: 9999px; font-family: 'Epilogue', sans-serif; font-weight: 700; font-size: 15px; border: 1px solid ${c.outlineVar}; cursor: pointer; transition: all 0.2s; }
         .ghost-btn:hover { border-color: rgba(124,58,237,0.5); }
         .text-grad { background: ${TEXT_GRADIENT}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
@@ -246,9 +246,9 @@ export default function SignIn() {
       <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, ...glass, borderBottom: `1px solid ${c.outlineVar}`, boxShadow: `0 20px 40px ${c.navShadow}` }}>
         <nav className="landing-nav" style={{ width: '100%', padding: '0 40px', height: 72, display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', boxSizing: 'border-box' }}>
           {/* Logo — far left */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 34, height: 34, objectFit: 'contain' }} />
-            <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 20, fontWeight: 900, letterSpacing: '-0.03em', background: BRAND_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>ROOP AI</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 32, height: 32, objectFit: 'contain', display: 'block' }} />
+            <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 19, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1, background: BRAND_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>ROOP AI</span>
           </div>
 
           {/* Nav links — true center */}
@@ -272,16 +272,18 @@ export default function SignIn() {
           </div>
 
           {/* Auth buttons — far right */}
-          <div className="nav-auth-right" style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'flex-end' }}>
+          <div className="nav-auth-right" style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
+            {/* Theme toggle — icon only */}
             <button className="theme-toggle-btn" onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
-              style={{ padding: '7px 14px', background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, borderRadius: 50, cursor: 'pointer', fontSize: 12, fontWeight: 600, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
-              {d ? '☀️ Light' : '🌙 Dark'}
+              title={d ? 'Switch to Light' : 'Switch to Dark'}
+              style={{ width: 36, height: 36, borderRadius: '50%', background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {d ? '☀️' : '🌙'}
             </button>
             <button className="nav-login-btn" onClick={() => setModalMode('login')}
-              style={{ padding: '9px 20px', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Epilogue', sans-serif", fontWeight: 600, color: c.onSurfaceVar, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>
+              style={{ padding: '8px 16px', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Epilogue', sans-serif", fontWeight: 600, color: c.onSurfaceVar, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>
               Login
             </button>
-            <button className="brand-btn" style={{ padding: '10px 22px', fontSize: 13 }} onClick={() => setModalMode('signup')}>
+            <button className="brand-btn" style={{ padding: '10px 20px', fontSize: 13, letterSpacing: '-0.01em' }} onClick={() => setModalMode('signup')}>
               Sign Up
             </button>
           </div>
