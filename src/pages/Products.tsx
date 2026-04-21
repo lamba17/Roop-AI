@@ -24,12 +24,12 @@ const TYPE_COLOR: Record<string, string> = {
 
 // Real product photos from Unsplash — one per type
 const TYPE_IMAGE: Record<string, string> = {
-  cleanser:    'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80&fit=crop',
-  serum:       'https://images.unsplash.com/photo-1612817288484-6f916006741a?w=400&q=80&fit=crop',
-  moisturizer: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&q=80&fit=crop',
-  sunscreen:   'https://images.unsplash.com/photo-1601049676869-702ea24cfd58?w=400&q=80&fit=crop',
-  toner:       'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80&fit=crop',
-  'eye cream': 'https://images.unsplash.com/photo-1631730486784-74757073efab?w=400&q=80&fit=crop',
+  cleanser:    'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&q=85&fit=crop',
+  serum:       'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=500&q=85&fit=crop',
+  moisturizer: 'https://images.unsplash.com/photo-1607602132700-068258431c7c?w=500&q=85&fit=crop',
+  sunscreen:   'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&q=85&fit=crop',
+  toner:       'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=500&q=85&fit=crop',
+  'eye cream': 'https://images.unsplash.com/photo-1617897903246-719242758050?w=500&q=85&fit=crop',
 };
 
 const TYPE_PRICE: Record<string, string> = {
@@ -103,14 +103,24 @@ function ProductsContent({ latest, activeFilter, t }: any) {
                   </div>
 
                   {/* Product image */}
-                  <div style={{ width: '100%', height: 180, overflow: 'hidden', background: `${color}12`, flexShrink: 0 }}>
+                  <div style={{ width: '100%', height: 220, overflow: 'hidden', background: `${color}12`, flexShrink: 0 }}>
                     <img
                       src={img}
                       alt={p.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
-                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
-                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                      className="product-card-img"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={e => {
+                        const el = e.currentTarget as HTMLImageElement;
+                        el.style.display = 'none';
+                        const parent = el.parentElement;
+                        if (parent) {
+                          parent.style.display = 'flex';
+                          parent.style.alignItems = 'center';
+                          parent.style.justifyContent = 'center';
+                          parent.style.fontSize = '52px';
+                          parent.innerHTML = p.type === 'cleanser' ? '🧴' : p.type === 'serum' ? '💧' : p.type === 'moisturizer' ? '🫙' : p.type === 'sunscreen' ? '☀️' : p.type === 'toner' ? '🌿' : '👁️';
+                        }
+                      }}
                     />
                   </div>
 
