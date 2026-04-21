@@ -418,6 +418,8 @@
 
   /* ── Dashboard Page ──────────────────────────────────────────────── */
   .page-dashboard { max-width: 1100px; }
+  .dash-row-1 { grid-template-columns: 300px 1fr; }
+  .dash-row-2 { grid-template-columns: 1fr 1fr; }
   .dashboard-welcome { margin-bottom: 28px; }
   .dashboard-greeting {
     font-family: 'Playfair Display', serif;
@@ -2404,6 +2406,8 @@
     .booking-layout { grid-template-columns: 1fr; }
     .booking-sidebar { display: none; }
     .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .dash-row-1 { grid-template-columns: 1fr; }
+    .dash-row-2 { grid-template-columns: 1fr; }
 
     /* Show logo in topbar on mobile */
     .mobile-topbar-logo {

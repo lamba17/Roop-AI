@@ -223,12 +223,28 @@ export default function SignIn() {
         @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .float-card { animation: float 4s ease-in-out infinite; }
         .float-card-2 { animation: float 5s ease-in-out infinite 1s; }
-        @media (max-width: 768px) { .hero-grid { grid-template-columns: 1fr !important; } .nav-links { display: none !important; } .step-grid { grid-template-columns: 1fr !important; } .science-grid { flex-direction: column !important; } .specialist-cascade { margin-left: 0 !important; } }
+        @media (max-width: 768px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .nav-links { display: none !important; }
+          .step-grid { grid-template-columns: 1fr !important; }
+          .science-grid { flex-direction: column !important; }
+          .specialist-cascade { margin-left: 0 !important; }
+          .theme-toggle-btn { display: none !important; }
+          .nav-login-btn { display: none !important; }
+          .nav-auth-right { gap: 6px !important; }
+          .landing-nav { padding: 0 16px !important; grid-template-columns: 1fr auto !important; }
+          .brand-btn { padding: 9px 16px !important; font-size: 12px !important; }
+          .hero-inner { padding: 80px 20px 40px !important; }
+          .hero-stats { gap: 24px !important; flex-wrap: wrap !important; }
+          .section-padded { padding: 80px 20px !important; }
+          .specialist-cascade { width: 100% !important; }
+          .specialist-cascade > div { margin-left: 0 !important; }
+        }
       `}</style>
 
       {/* ── Navbar ── */}
       <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, ...glass, borderBottom: `1px solid ${c.outlineVar}`, boxShadow: `0 20px 40px ${c.navShadow}` }}>
-        <nav style={{ width: '100%', padding: '0 40px', height: 72, display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', boxSizing: 'border-box' }}>
+        <nav className="landing-nav" style={{ width: '100%', padding: '0 40px', height: 72, display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', boxSizing: 'border-box' }}>
           {/* Logo — far left */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 34, height: 34, objectFit: 'contain' }} />
@@ -256,12 +272,12 @@ export default function SignIn() {
           </div>
 
           {/* Auth buttons — far right */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'flex-end' }}>
-            <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+          <div className="nav-auth-right" style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'flex-end' }}>
+            <button className="theme-toggle-btn" onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
               style={{ padding: '7px 14px', background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, borderRadius: 50, cursor: 'pointer', fontSize: 12, fontWeight: 600, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
               {d ? '☀️ Light' : '🌙 Dark'}
             </button>
-            <button onClick={() => setModalMode('login')}
+            <button className="nav-login-btn" onClick={() => setModalMode('login')}
               style={{ padding: '9px 20px', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Epilogue', sans-serif", fontWeight: 600, color: c.onSurfaceVar, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>
               Login
             </button>
@@ -278,7 +294,7 @@ export default function SignIn() {
         <div style={{ position: 'absolute', top: '20%', right: '-10%', width: 700, height: 700, borderRadius: '50%', background: `radial-gradient(circle, ${c.glowPurple} 0%, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: '10%', left: '-10%', width: 500, height: 500, borderRadius: '50%', background: `radial-gradient(circle, ${c.glowPink} 0%, transparent 70%)`, pointerEvents: 'none' }} />
 
-        <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '80px 40px', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
+        <div className="hero-grid hero-inner" style={{ maxWidth: 1200, margin: '0 auto', padding: '80px 40px', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
 
           {/* Left — Copy */}
           <div style={{ animation: 'fadeInUp 0.7s ease both' }}>
@@ -303,7 +319,7 @@ export default function SignIn() {
             </div>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: 48 }}>
+            <div className="hero-stats" style={{ display: 'flex', gap: 48 }}>
               {[['50K+', 'Analyses done', c.primary], ['4.9★', 'User rating', c.secondary], ['98%', 'AI accuracy', c.tertiary]].map(([v, l, clr]) => (
                 <div key={String(l)}>
                   <div style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 28, fontWeight: 800, color: String(clr), lineHeight: 1, letterSpacing: '-0.03em' }}>{v}</div>

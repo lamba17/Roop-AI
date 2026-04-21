@@ -182,7 +182,7 @@ function DashboardContent({ history, latest, score, navigate }: any) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
       {/* ── Row 1: Score + Metrics ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 16, alignItems: 'start' }}>
+      <div className="dash-row-1" style={{ display: 'grid', gap: 16, alignItems: 'start' }}>
 
         {/* Glow Score Card */}
         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 24, padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, position: 'relative', overflow: 'hidden' }}>
@@ -224,7 +224,7 @@ function DashboardContent({ history, latest, score, navigate }: any) {
       </div>
 
       {/* ── Row 2: Routine + Scan History ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
+      <div className="dash-row-2" style={{ display: 'grid', gap: 16, alignItems: 'start' }}>
 
         {/* Today's Routine */}
         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 24, padding: '24px' }}>
