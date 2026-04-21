@@ -8,6 +8,15 @@ import PremiumModal from '../components/PremiumModal';
 
 const ADMIN_EMAILS = ['lamba.akash1994@gmail.com', 'varunvlamba@gmail.com'];
 
+/**
+ * Build a real JustDial search URL from clinic name + city.
+ * Avoids the fake hardcoded JD IDs in the data which lead to wrong listings.
+ */
+function buildJDUrl(clinic: string, city: string): string {
+  const clinicName = clinic.split(',')[0].trim(); // take just the clinic name, drop address
+  return `https://www.justdial.com/${encodeURIComponent(city)}/search?q=${encodeURIComponent(clinicName)}&catid=0801`;
+}
+
 /* ── Doctor photo pools (Unsplash) ─────────────────────────────────────── */
 const FEMALE_PHOTOS = [
   'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=85&fit=crop&crop=faces',
@@ -116,7 +125,8 @@ interface Doc {
 }
 
 function SmallDoctorCard({ doc, idx }: { doc: Doc; idx: number }) {
-  const bookUrl = doc.justDialLink ?? doc.googleMapsLink;
+  // Use dynamic JustDial search URL — reliable, no fake IDs
+  const jdUrl = buildJDUrl(doc.clinic, doc.city ?? 'Delhi');
   const [imgOk, setImgOk] = useState(true);
 
   return (
@@ -141,9 +151,7 @@ function SmallDoctorCard({ doc, idx }: { doc: Doc; idx: number }) {
         <div className="small-doc-specialty">{doc.specialty}</div>
         <StarRating rating={doc.rating} />
         {doc.priceRange && <div className="small-doc-fee">{doc.priceRange}</div>}
-        {bookUrl && (
-          <a href={bookUrl} target="_blank" rel="noreferrer noopener" className="small-doc-book-btn">Book</a>
-        )}
+        <a href={jdUrl} target="_blank" rel="noreferrer noopener" className="small-doc-book-btn">Book</a>
       </div>
     </div>
   );
@@ -174,9 +182,9 @@ function SpecialistsContent({
     ? featured.specialty.split(/\s*[&,]\s*/).filter(Boolean)
     : [];
 
-  // Book Consultation: prefer JustDial, fallback to Google Maps
-  const featuredBookUrl = featured?.justDialLink ?? featured?.googleMapsLink;
-  const topBookUrl = topRated?.justDialLink ?? topRated?.googleMapsLink;
+  // Book Consultation: dynamic JustDial search URLs (no fake hardcoded IDs)
+  const featuredBookUrl = featured ? buildJDUrl(featured.clinic, city) : null;
+  const topBookUrl = topRated ? buildJDUrl(topRated.clinic, city) : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
@@ -313,11 +321,9 @@ function SpecialistsContent({
                       {featured.instagramHandle && (
                         <a href={`https://www.instagram.com/${featured.instagramHandle}`} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="Instagram"><IgIcon /></a>
                       )}
-                      {featured.justDialLink && (
-                        <a href={featured.justDialLink} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="JustDial">
-                          <span style={{ fontSize: 9, fontWeight: 800 }}>JD</span>
-                        </a>
-                      )}
+                      <a href={buildJDUrl(featured.clinic, city)} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="JustDial">
+                        <span style={{ fontSize: 9, fontWeight: 800 }}>JD</span>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -359,11 +365,9 @@ function SpecialistsContent({
                     {topRated.instagramHandle && (
                       <a href={`https://www.instagram.com/${topRated.instagramHandle}`} target="_blank" rel="noreferrer noopener" className="doc-social-icon"><IgIcon /></a>
                     )}
-                    {topRated.justDialLink && (
-                      <a href={topRated.justDialLink} target="_blank" rel="noreferrer noopener" className="doc-social-icon">
-                        <span style={{ fontSize: 9, fontWeight: 800 }}>JD</span>
-                      </a>
-                    )}
+                    <a href={buildJDUrl(topRated.clinic, city)} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="JustDial">
+                      <span style={{ fontSize: 9, fontWeight: 800 }}>JD</span>
+                    </a>
                     {topBookUrl && (
                       <a href={topBookUrl} target="_blank" rel="noreferrer noopener" className="doc-book-btn" style={{ fontSize: 11, padding: '6px 12px' }}>
                         Book
