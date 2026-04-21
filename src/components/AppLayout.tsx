@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 
 const TOP_NAV = [
   { label: 'DASHBOARD', path: '/dashboard' },
-  { label: 'ANALYSIS', path: '/' },
+  { label: 'ANALYSIS', path: '/scan' },
   { label: 'PRODUCTS', path: '/products' },
   { label: 'ROUTINE', path: '/routine' },
   { label: 'SPECIALISTS', path: '/specialists' },
@@ -24,7 +24,7 @@ const MOBILE_NAV = [
   },
   {
     label: 'Scan',
-    path: '/',
+    path: '/scan',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/>
@@ -70,8 +70,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { theme, toggle } = useTheme();
 
   function isActive(path: string) {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   }
 
   return (

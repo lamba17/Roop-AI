@@ -18,7 +18,7 @@ const NAV_ITEMS = [
   {
     id: 'analysis',
     label: 'Skin Analysis',
-    path: '/',
+    path: '/scan',
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10"/>
@@ -94,8 +94,7 @@ export default function Sidebar() {
     ?? 'Guest';
 
   function isActive(path: string) {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   }
 
   return (
