@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signInWithGoogle, supabase } from '../lib/supabase';
+import { useTheme } from '../context/ThemeContext';
 
 /* ── Design tokens (Ethereal Clinic system) ───────────────────────────────── */
 type Theme = 'dark' | 'light';
@@ -176,8 +177,12 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
 
 /* ── Landing Page ─────────────────────────────────────────────────────────── */
 export default function SignIn() {
+  const { forceTheme } = useTheme();
   const [theme, setTheme]         = useState<Theme>('light');
   const [modalMode, setModalMode] = useState<'login' | 'signup' | null>(null);
+
+  // Force light theme whenever the landing page is mounted (covers SPA navigation too)
+  useEffect(() => { forceTheme('light'); }, []);
   const c = tok(theme);
   const d = theme === 'dark';
 
