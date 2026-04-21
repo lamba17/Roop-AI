@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import UserMenu from './UserMenu';
@@ -67,7 +68,10 @@ const MOBILE_NAV = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { theme, toggle } = useTheme();
+  const { theme, toggle, forceTheme } = useTheme();
+
+  // Always dark inside the app
+  useEffect(() => { forceTheme('dark'); }, []);
 
   function isActive(path: string) {
     return location.pathname === path || location.pathname.startsWith(path + '/');

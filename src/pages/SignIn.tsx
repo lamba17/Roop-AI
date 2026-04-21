@@ -176,7 +176,7 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
 
 /* ── Landing Page ─────────────────────────────────────────────────────────── */
 export default function SignIn() {
-  const [theme, setTheme]         = useState<Theme>('dark');
+  const [theme, setTheme]         = useState<Theme>('light');
   const [modalMode, setModalMode] = useState<'login' | 'signup' | null>(null);
   const c = tok(theme);
   const d = theme === 'dark';

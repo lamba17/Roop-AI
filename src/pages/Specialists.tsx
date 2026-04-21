@@ -2,40 +2,31 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DERMATOLOGISTS, CITY_COORDS } from '../data/dermatologists';
 import AppLayout from '../components/AppLayout';
-import { useLanguage } from '../context/LanguageContext';
-import { T } from '../data/translations';
 import { useAuth } from '../lib/supabase';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
 
 const ADMIN_EMAILS = ['lamba.akash1994@gmail.com', 'varunvlamba@gmail.com'];
 
-const FEMALE_PHOTOS = [
-  'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=85&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=85&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=400&q=85&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1638202993928-7267aad84c31?w=400&q=85&fit=crop&crop=face',
-];
-const MALE_PHOTOS = [
-  'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&q=85&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=85&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&q=85&fit=crop&crop=face',
+// Avatar color palette — cycles through based on index
+const AVATAR_COLORS = [
+  ['#7c3aed', 'rgba(124,58,237,0.18)'],   // purple
+  ['#db2777', 'rgba(219,39,119,0.18)'],   // pink
+  ['#0891b2', 'rgba(8,145,178,0.18)'],    // cyan
+  ['#059669', 'rgba(5,150,105,0.18)'],    // green
+  ['#d97706', 'rgba(217,119,6,0.18)'],    // amber
+  ['#7c3aed', 'rgba(124,58,237,0.18)'],
+  ['#be185d', 'rgba(190,24,93,0.18)'],
+  ['#0e7490', 'rgba(14,116,144,0.18)'],
+  ['#047857', 'rgba(4,120,87,0.18)'],
+  ['#b45309', 'rgba(180,83,9,0.18)'],
 ];
 
-const FEMALE_NAMES = new Set([
-  'Archana','Deepti','Shweta','Priya','Ritu','Neha','Lipy','Monica','Deepali','Niti',
-  'Sonal','Renu','Shrilata','Rinky','Sejal','Harshna','Geeta','Shefali','Madhuri',
-  'Rasya','Swetha','Navya','Deepika','Chaitra','Pooja','Vandana','Janani','Uma',
-  'Meena','Sudha','Lakshmi','Sneha','Anita','Geetika','Nidhi','Aparna','Rekha',
-  'Seema','Sunita','Kavitha','Usha','Nisha','Divya','Swati','Pallavi','Vatsan',
-]);
-
-function getDoctorPhoto(name: string, idx: number): string {
-  const firstName = name.split(' ').slice(1).find(p => p.length > 1) ?? '';
-  const isFemale = FEMALE_NAMES.has(firstName);
-  return isFemale
-    ? FEMALE_PHOTOS[idx % FEMALE_PHOTOS.length]
-    : MALE_PHOTOS[idx % MALE_PHOTOS.length];
+function getInitials(name: string): string {
+  const parts = name.replace('Dr. ', '').split(' ');
+  return parts.length >= 2
+    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+    : parts[0].slice(0, 2).toUpperCase();
 }
 
 function getNearestCity(lat: number, lng: number): string {
@@ -56,7 +47,7 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {[1,2,3,4,5].map(s => (
-        <svg key={s} width="12" height="12" viewBox="0 0 24 24"
+        <svg key={s} width="11" height="11" viewBox="0 0 24 24"
           fill={s <= Math.round(rating) ? '#f59e0b' : 'none'}
           stroke="#f59e0b" strokeWidth="2">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -67,42 +58,25 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-function SmallDoctorCard({ doc, idx }: { doc: any; idx: number }) {
+function DoctorAvatar({ name, idx, size = 52 }: { name: string; idx: number; size?: number }) {
+  const [color, bg] = AVATAR_COLORS[idx % AVATAR_COLORS.length];
   return (
-    <div className="small-doc-card">
-      <div className="small-doc-photo-wrap">
-        <img
-          src={getDoctorPhoto(doc.name, idx)}
-          alt={doc.name}
-          className="small-doc-photo"
-          onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-        />
-      </div>
-      <div className="small-doc-body">
-        <div className="small-doc-name">{doc.name}</div>
-        <div className="small-doc-specialty">{doc.specialty}</div>
-        <StarRating rating={doc.rating} />
-        {doc.priceRange && <div className="small-doc-fee">{doc.priceRange}</div>}
-        {doc.googleMapsLink ? (
-          <a
-            href={doc.googleMapsLink}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="small-doc-book-btn"
-          >
-            Book
-          </a>
-        ) : (
-          <span className="small-doc-book-btn" style={{ opacity: 0.5, cursor: 'default' }}>Book</span>
-        )}
-      </div>
+    <div style={{
+      width: size, height: size, borderRadius: size * 0.28,
+      background: bg, border: `1.5px solid ${color}44`,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0, color, fontWeight: 800,
+      fontSize: size * 0.34, fontFamily: "'DM Sans', system-ui, sans-serif",
+      letterSpacing: '-0.5px',
+    }}>
+      {getInitials(name)}
     </div>
   );
 }
 
 function MapIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
       <circle cx="12" cy="10" r="3"/>
     </svg>
@@ -110,7 +84,7 @@ function MapIcon() {
 }
 function IgIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
       <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
@@ -118,35 +92,83 @@ function IgIcon() {
   );
 }
 
-interface SpecialistsContentProps {
+interface Doc {
+  name: string;
+  clinic: string;
+  rating: number;
+  specialty: string;
+  priceRange?: string;
+  googleMapsLink?: string;
+  justDialLink?: string;
+  instagramHandle?: string;
+  city?: string;
+}
+
+function DoctorCard({ doc, idx }: { doc: Doc; idx: number }) {
+  const [color] = AVATAR_COLORS[idx % AVATAR_COLORS.length];
+  return (
+    <div className="spec-card">
+      <div className="spec-card-top">
+        <DoctorAvatar name={doc.name} idx={idx} size={46} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="spec-card-name">{doc.name}</div>
+          {doc.city && <div style={{ fontSize: 10, color: color, fontWeight: 600, marginBottom: 2 }}>📍 {doc.city}</div>}
+          <div className="spec-card-specialty">{doc.specialty}</div>
+        </div>
+      </div>
+      <div className="spec-card-clinic">{doc.clinic}</div>
+      <StarRating rating={doc.rating} />
+      {doc.priceRange && <div className="spec-card-fee">{doc.priceRange}</div>}
+      <div className="spec-card-actions">
+        {doc.googleMapsLink && (
+          <a href={doc.googleMapsLink} target="_blank" rel="noreferrer noopener" className="spec-link-btn spec-maps-btn">
+            <MapIcon /> Maps
+          </a>
+        )}
+        {doc.instagramHandle && (
+          <a href={`https://www.instagram.com/${doc.instagramHandle}`} target="_blank" rel="noreferrer noopener" className="spec-link-btn spec-ig-btn">
+            <IgIcon /> IG
+          </a>
+        )}
+        {doc.justDialLink && (
+          <a href={doc.justDialLink} target="_blank" rel="noreferrer noopener" className="spec-link-btn spec-jd-btn">
+            JD
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface ContentProps {
   city: string;
   setCity: (c: string) => void;
   locating: boolean;
   locError: string | null;
   handleLocate: () => void;
   searchQuery: string;
-  searchResults: any[] | null;
+  searchResults: (Doc & { city: string })[] | null;
   cities: string[];
-  doctors: any[];
-  featured: any;
-  rest: any[];
+  doctors: Doc[];
+  featured: Doc | undefined;
+  rest: Doc[];
   onScanClick: () => void;
 }
 
 function SpecialistsContent({
   city, setCity, locating, locError, handleLocate,
   searchQuery, searchResults, cities, featured, rest, onScanClick,
-}: SpecialistsContentProps) {
+}: ContentProps) {
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const topRated = rest[0];
-  const smallCards = rest.slice(1, 4);
+  const otherDoctors = rest.slice(1); // remaining 8+ doctors
 
-  const specialtyTags = featured
+  const featuredSpecialties = featured
     ? featured.specialty.split(/\s*[&,]\s*/).filter(Boolean)
     : [];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
 
       {/* Clinical Perspective Card */}
       <div className="clinical-perspective-card">
@@ -156,7 +178,7 @@ function SpecialistsContent({
             <div className="clinical-label">Clinical Perspective</div>
             <p className="clinical-quote-v2">
               "If dark circles persist despite consistent cream use, it is critical to{' '}
-              <strong style={{ color: 'var(--text-primary)' }}>consult a dermatologist</strong>{' '}
+              <strong style={{ color: '#e8e8f0' }}>consult a dermatologist</strong>{' '}
               to rule out hyperpigmentation or vascular issues that topical treatments cannot address."
             </p>
             <div className="clinical-verified-badge">
@@ -220,7 +242,7 @@ function SpecialistsContent({
       {searchResults !== null ? (
         /* Search results */
         <div>
-          <div className="doctors-section-label" style={{ marginBottom: 12 }}>
+          <div className="doctors-section-label" style={{ marginBottom: 14 }}>
             {searchResults.length > 0
               ? `${searchResults.length} result${searchResults.length !== 1 ? 's' : ''} for "${searchQuery}"`
               : `No results for "${searchQuery}"`}
@@ -234,52 +256,42 @@ function SpecialistsContent({
               <p style={{ margin: 0 }}>Try a different name, specialty, or city.</p>
             </div>
           ) : (
-            <div className="specialist-cards-grid">
-              {searchResults.map((doc, i) => <SmallDoctorCard key={i} doc={doc} idx={i} />)}
+            <div className="spec-grid">
+              {searchResults.map((doc, i) => <DoctorCard key={i} doc={doc} idx={i} />)}
             </div>
           )}
         </div>
       ) : (
         <>
-          {/* Hero: Featured + Top Rated */}
+          {/* Hero: Featured + Top Rated side by side */}
           <div className="specialist-hero-grid">
 
-            {/* Featured Doctor — large card */}
+            {/* Featured Doctor */}
             {featured && (
-              <div className="featured-doc-card">
-                <div className="featured-doc-photo-wrap">
-                  <img
-                    src={getDoctorPhoto(featured.name, 0)}
-                    alt={featured.name}
-                    className="featured-doc-photo"
-                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                  />
-                </div>
-                <div className="featured-doc-info">
-                  <div className="featured-doc-specialties">
-                    {specialtyTags.map((tag: string, i: number) => (
-                      <span key={i} className="doc-specialty-tag">{tag}</span>
-                    ))}
-                    {!featured.specialty.toLowerCase().includes('dermatosurgery') && (
-                      <span className="doc-specialty-tag doc-specialty-tag-alt">Dermatosurgery</span>
-                    )}
+              <div className="featured-doc-card" style={{ flexDirection: 'column' }}>
+                <div className="featured-doc-info" style={{ padding: '24px' }}>
+                  <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16 }}>
+                    <DoctorAvatar name={featured.name} idx={0} size={68} />
+                    <div>
+                      <div className="featured-doc-specialties" style={{ marginBottom: 8 }}>
+                        {featuredSpecialties.map((tag: string, i: number) => (
+                          <span key={i} className="doc-specialty-tag">{tag}</span>
+                        ))}
+                        {!featured.specialty.toLowerCase().includes('dermatosurgery') && (
+                          <span className="doc-specialty-tag doc-specialty-tag-alt">Dermatosurgery</span>
+                        )}
+                      </div>
+                      <h3 className="featured-doc-name" style={{ fontSize: 17, marginBottom: 4 }}>{featured.name}</h3>
+                      <p className="featured-doc-clinic">{featured.clinic}</p>
+                    </div>
                   </div>
-                  <h3 className="featured-doc-name">{featured.name}</h3>
-                  <p className="featured-doc-clinic">{featured.clinic}</p>
-                  <div className="featured-doc-fee-row">
-                    <StarRating rating={featured.rating} />
-                    <span className="featured-doc-fee">
-                      Consultation · {featured.priceRange ?? '₹900–₹1,500'}
-                    </span>
+                  <StarRating rating={featured.rating} />
+                  <div className="featured-doc-fee-row" style={{ marginTop: 8 }}>
+                    <span className="featured-doc-fee">Consultation · {featured.priceRange ?? '₹900–₹1,500'}</span>
                   </div>
-                  <div className="featured-doc-actions">
+                  <div className="featured-doc-actions" style={{ marginTop: 16 }}>
                     {featured.googleMapsLink ? (
-                      <a
-                        href={featured.googleMapsLink}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="doc-book-btn"
-                      >
+                      <a href={featured.googleMapsLink} target="_blank" rel="noreferrer noopener" className="doc-book-btn">
                         Book Consultation
                       </a>
                     ) : (
@@ -298,7 +310,7 @@ function SpecialistsContent({
                       )}
                       {featured.justDialLink && (
                         <a href={featured.justDialLink} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="JustDial">
-                          <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: 0 }}>JD</span>
+                          <span style={{ fontSize: 9, fontWeight: 800 }}>JD</span>
                         </a>
                       )}
                     </div>
@@ -307,7 +319,7 @@ function SpecialistsContent({
               </div>
             )}
 
-            {/* Top Rated Doctor */}
+            {/* Top Rated */}
             {topRated && (
               <div className="top-rated-doc-card">
                 <div className="top-rated-badge">TOP RATED SPECIALIST</div>
@@ -317,28 +329,19 @@ function SpecialistsContent({
                     <p className="top-rated-clinic">{topRated.clinic}</p>
                     <StarRating rating={topRated.rating} />
                   </div>
-                  <img
-                    src={getDoctorPhoto(topRated.name, 1)}
-                    alt={topRated.name}
-                    className="top-rated-photo"
-                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                  />
+                  <DoctorAvatar name={topRated.name} idx={1} size={58} />
                 </div>
                 <p className="top-rated-known-for">
                   <strong>Known for:</strong> advanced skin therapies and surgical treatments in dermatology
                 </p>
                 <div className="top-rated-footer">
-                  <span className="top-rated-fee">{topRated.priceRange ?? '₹3,000'}</span>
+                  <span className="top-rated-fee">{topRated.priceRange ?? '₹1,000–₹2,500'}</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     {topRated.googleMapsLink && (
-                      <a href={topRated.googleMapsLink} target="_blank" rel="noreferrer noopener" className="doc-social-icon">
-                        <MapIcon />
-                      </a>
+                      <a href={topRated.googleMapsLink} target="_blank" rel="noreferrer noopener" className="doc-social-icon"><MapIcon /></a>
                     )}
                     {topRated.instagramHandle && (
-                      <a href={`https://www.instagram.com/${topRated.instagramHandle}`} target="_blank" rel="noreferrer noopener" className="doc-social-icon">
-                        <IgIcon />
-                      </a>
+                      <a href={`https://www.instagram.com/${topRated.instagramHandle}`} target="_blank" rel="noreferrer noopener" className="doc-social-icon"><IgIcon /></a>
                     )}
                     {topRated.justDialLink && (
                       <a href={topRated.justDialLink} target="_blank" rel="noreferrer noopener" className="doc-social-icon">
@@ -351,13 +354,16 @@ function SpecialistsContent({
             )}
           </div>
 
-          {/* More Specialists — small cards */}
-          {smallCards.length > 0 && (
-            <div className="specialist-cards-grid">
-              {smallCards.map((doc: any, i: number) => (
-                <SmallDoctorCard key={i} doc={doc} idx={i + 2} />
-              ))}
-            </div>
+          {/* All remaining doctors */}
+          {otherDoctors.length > 0 && (
+            <>
+              <div className="doctors-section-label">More Specialists in {city}</div>
+              <div className="spec-grid">
+                {otherDoctors.map((doc, i) => (
+                  <DoctorCard key={i} doc={doc} idx={i + 2} />
+                ))}
+              </div>
+            </>
           )}
         </>
       )}
@@ -379,8 +385,6 @@ function SpecialistsContent({
 
 export default function Specialists() {
   const navigate = useNavigate();
-  const { lang } = useLanguage();
-  const t = T[lang];
   const { user } = useAuth();
   const { premium, refresh: refreshPremium } = usePremium(user ?? null);
   const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
@@ -427,10 +431,7 @@ export default function Specialists() {
     );
   }
 
-  // Suppress unused variable warning for t
-  void t;
-
-  const contentProps: SpecialistsContentProps = {
+  const contentProps: ContentProps = {
     city, setCity, locating, locError, handleLocate,
     searchQuery, searchResults, cities, doctors,
     featured, rest, onScanClick: () => navigate('/scan'),
@@ -448,7 +449,7 @@ export default function Specialists() {
 
       <div className="page-specialists fade-in">
 
-        {/* Search bar — always visible */}
+        {/* Search bar */}
         <div className="specialists-search-bar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
             <circle cx="11" cy="11" r="8"/>

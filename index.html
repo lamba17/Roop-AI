@@ -7,7 +7,12 @@
     <title>roop-ai</title>
     <script>
       (function() {
-        var t = localStorage.getItem('roop_theme_v3') || 'dark';
+        var t;
+        if (window.location.pathname === '/') {
+          t = 'light';
+        } else {
+          t = localStorage.getItem('roop_theme_v3') || 'dark';
+        }
         document.documentElement.setAttribute('data-theme', t);
       })();
     </script>
