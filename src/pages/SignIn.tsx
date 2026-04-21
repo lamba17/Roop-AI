@@ -52,9 +52,16 @@ function Spinner({ size = 20 }: { size?: number }) {
 function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () => void }) {
   const [gLoading, setGLoading] = useState(false);
   const [email, setEmail]       = useState('');
-  const [mLoading, setMLoading] = useState(false);
-  const [sent, setSent]         = useState(false);
+  const [eLoading, setELoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const [error, setError]       = useState<string | null>(null);
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '14px 18px', background: c.surfaceLow,
+    border: `1px solid ${c.outlineVar}`, borderRadius: 14, color: c.onSurface,
+    fontSize: 14, fontFamily: "'Manrope', sans-serif", outline: 'none',
+    marginBottom: 10, boxSizing: 'border-box',
+  };
 
   async function handleGoogle() {
     setError(null); setGLoading(true);
@@ -62,26 +69,22 @@ function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () =>
     catch (e) { setError(e instanceof Error ? e.message : 'Sign-in failed.'); setGLoading(false); }
   }
 
-  async function handleMagic(ev: React.FormEvent) {
+  async function handleEmailOtp(ev: React.FormEvent) {
     ev.preventDefault();
     if (!email.trim()) return;
-    setError(null); setMLoading(true);
+    setError(null); setELoading(true);
     try {
       const { error: e } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
       });
       if (e) throw new Error(e.message);
-      setSent(true);
-    } catch (e) { setError(e instanceof Error ? e.message : 'Failed.'); }
-    finally { setMLoading(false); }
+      setEmailSent(true);
+    } catch (e) { setError(e instanceof Error ? e.message : 'Failed to send link.'); }
+    finally { setELoading(false); }
   }
 
-  const glass: React.CSSProperties = {
-    background: c.glassBg,
-    backdropFilter: 'blur(24px)',
-    WebkitBackdropFilter: 'blur(24px)',
-  };
+  const glass: React.CSSProperties = { background: c.glassBg, backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' };
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(23,16,32,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
@@ -90,48 +93,65 @@ function SignInModal({ c, onClose }: { c: ReturnType<typeof tok>; onClose: () =>
 
         <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 20, background: 'none', border: 'none', fontSize: 24, color: c.onSurfaceVar, cursor: 'pointer', lineHeight: 1, padding: 4 }}>×</button>
 
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          {/* Logo in modal */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
-            <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 36, height: 36, objectFit: 'contain' }} />
-            <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em', background: TEXT_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>ROOP AI</span>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 16 }}>
+            <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+            <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 17, fontWeight: 800, letterSpacing: '-0.02em', background: TEXT_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>ROOP AI</span>
           </div>
-          <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: '1.6rem', fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.03em', color: c.onSurface }}>Begin Your Analysis</h2>
-          <p style={{ fontSize: 14, color: c.onSurfaceVar, margin: 0, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>Sign in to unlock your full skin profile & personalised routine.</p>
+          <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: '1.5rem', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.03em', color: c.onSurface }}>Begin Your Analysis</h2>
+          <p style={{ fontSize: 13, color: c.onSurfaceVar, margin: 0, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>Sign in to unlock your personalised skin profile.</p>
         </div>
 
-        {error && <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(147,0,10,0.15)', borderRadius: 14, border: '1px solid rgba(255,180,171,0.2)' }}><p style={{ margin: 0, fontSize: 13, color: '#ffb4ab', fontFamily: "'Manrope', sans-serif" }}>{error}</p></div>}
+        {/* Error */}
+        {error && (
+          <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(147,0,10,0.15)', borderRadius: 14, border: '1px solid rgba(255,180,171,0.2)' }}>
+            <p style={{ margin: 0, fontSize: 13, color: '#ffb4ab', fontFamily: "'Manrope', sans-serif" }}>{error}</p>
+          </div>
+        )}
 
+        {/* Google */}
         <button onClick={handleGoogle} disabled={gLoading}
-          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '15px 20px', background: '#fff', color: '#1a1a2e', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: gLoading ? 'not-allowed' : 'pointer', opacity: gLoading ? 0.7 : 1, boxShadow: `0 4px 20px ${c.shadow}`, marginBottom: 8 }}>
-          {gLoading ? <Spinner size={20} /> : <GoogleIcon />}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '14px 20px', background: '#fff', color: '#1a1a2e', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: gLoading ? 'not-allowed' : 'pointer', opacity: gLoading ? 0.7 : 1, boxShadow: `0 4px 20px ${c.shadow}`, marginBottom: 20 }}>
+          {gLoading ? <Spinner size={18} /> : <GoogleIcon />}
           {gLoading ? 'Connecting…' : 'Continue with Google'}
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
+        {/* Divider */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{ flex: 1, height: 1, background: c.outlineVar }} />
-          <span style={{ fontSize: 12, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", letterSpacing: 0.5 }}>or email</span>
+          <span style={{ fontSize: 11, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", letterSpacing: 0.5 }}>or sign in with email</span>
           <div style={{ flex: 1, height: 1, background: c.outlineVar }} />
         </div>
 
-        {sent ? (
-          <div style={{ padding: '16px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 16, marginBottom: 16 }}>
-            <p style={{ margin: 0, fontSize: 13, color: '#4ade80', fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>✅ Magic link sent to <strong>{email}</strong>. Check your inbox.</p>
+        {/* Email magic link */}
+        {emailSent ? (
+          <div style={{ padding: '20px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 16, textAlign: 'center' }}>
+            <div style={{ fontSize: 32, marginBottom: 10 }}>📬</div>
+            <p style={{ margin: '0 0 6px', fontSize: 14, fontWeight: 700, color: '#4ade80', fontFamily: "'Manrope', sans-serif" }}>Check your inbox</p>
+            <p style={{ margin: 0, fontSize: 13, color: c.onSurfaceVar, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>
+              Magic link sent to <strong style={{ color: c.onSurface }}>{email}</strong>. Click it to sign in instantly.
+            </p>
+            <button onClick={() => { setEmailSent(false); setEmail(''); }}
+              style={{ marginTop: 14, background: 'none', border: 'none', color: c.onSurfaceVar, fontSize: 12, fontFamily: "'Manrope', sans-serif", cursor: 'pointer', textDecoration: 'underline' }}>
+              Use a different email
+            </button>
           </div>
         ) : (
-          <form onSubmit={handleMagic}>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" required
-              style={{ width: '100%', padding: '14px 18px', background: c.surfaceLow, border: `1px solid ${c.outlineVar}`, borderRadius: 14, color: c.onSurface, fontSize: 14, fontFamily: "'Manrope', sans-serif", outline: 'none', marginBottom: 10, boxSizing: 'border-box' }}
+          <form onSubmit={handleEmailOtp}>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+              placeholder="your@email.com" required style={inputStyle}
               onFocus={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.5)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'; }}
               onBlur={e => { e.currentTarget.style.borderColor = c.outlineVar; e.currentTarget.style.boxShadow = 'none'; }}
             />
-            <button type="submit" disabled={mLoading || !email.trim()}
-              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '15px', background: BRAND_GRADIENT, color: '#fff', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: mLoading || !email.trim() ? 'not-allowed' : 'pointer', opacity: mLoading || !email.trim() ? 0.6 : 1, boxShadow: '0 0 30px rgba(124,58,237,0.3)' }}>
-              {mLoading ? <><Spinner size={18} /> Sending…</> : '✉️  Send Magic Link'}
+            <button type="submit" disabled={eLoading || !email.trim()}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px', background: BRAND_GRADIENT, color: '#fff', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: eLoading || !email.trim() ? 'not-allowed' : 'pointer', opacity: eLoading || !email.trim() ? 0.6 : 1, boxShadow: '0 0 24px rgba(124,58,237,0.3)' }}>
+              {eLoading ? <><Spinner size={16} /> Sending…</> : '✉️  Send Magic Link'}
             </button>
           </form>
         )}
-        <p style={{ textAlign: 'center', fontSize: 11, color: c.onSurfaceVar, marginTop: 20, marginBottom: 0, fontFamily: "'Inter', sans-serif", letterSpacing: 0.3 }}>🔒 Encrypted · Free to start · No card needed</p>
+
+        <p style={{ textAlign: 'center', fontSize: 11, color: c.onSurfaceVar, marginTop: 20, marginBottom: 0, fontFamily: "'Inter', sans-serif', letterSpacing: 0.3" }}>🔒 Encrypted · Free to start · No card needed</p>
       </div>
     </div>
   );
