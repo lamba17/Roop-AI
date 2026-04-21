@@ -232,7 +232,7 @@ export default function SignIn() {
           {/* Logo — far left */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 34, height: 34, objectFit: 'contain' }} />
-            <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', background: TEXT_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>ROOP AI</span>
+            <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 20, fontWeight: 900, letterSpacing: '-0.03em', background: BRAND_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>ROOP AI</span>
           </div>
 
           {/* Nav links — true center */}
