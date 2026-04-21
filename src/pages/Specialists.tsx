@@ -9,12 +9,13 @@ import PremiumModal from '../components/PremiumModal';
 const ADMIN_EMAILS = ['lamba.akash1994@gmail.com', 'varunvlamba@gmail.com'];
 
 /**
- * Build a real JustDial search URL from clinic name + city.
- * Avoids the fake hardcoded JD IDs in the data which lead to wrong listings.
+ * Build a real JustDial search URL.
+ * Searches by doctor name first, then clinic name — avoids fake hardcoded IDs.
  */
-function buildJDUrl(clinic: string, city: string): string {
-  const clinicName = clinic.split(',')[0].trim(); // take just the clinic name, drop address
-  return `https://www.justdial.com/${encodeURIComponent(city)}/search?q=${encodeURIComponent(clinicName)}&catid=0801`;
+function buildJDUrl(name: string, clinic: string, city: string): string {
+  const clinicName = clinic.split(',')[0].trim();
+  const q = `${name} ${clinicName}`;
+  return `https://www.justdial.com/${encodeURIComponent(city)}/search?q=${encodeURIComponent(q)}&catid=0801`;
 }
 
 /* ── Doctor photo pools (Unsplash) ─────────────────────────────────────── */
@@ -125,8 +126,8 @@ interface Doc {
 }
 
 function SmallDoctorCard({ doc, idx }: { doc: Doc; idx: number }) {
-  // Use dynamic JustDial search URL — reliable, no fake IDs
-  const jdUrl = buildJDUrl(doc.clinic, doc.city ?? 'Delhi');
+  const cityName = doc.city ?? 'Delhi';
+  const jdUrl   = buildJDUrl(doc.name, doc.clinic, cityName);
   const [imgOk, setImgOk] = useState(true);
 
   return (
@@ -151,7 +152,26 @@ function SmallDoctorCard({ doc, idx }: { doc: Doc; idx: number }) {
         <div className="small-doc-specialty">{doc.specialty}</div>
         <StarRating rating={doc.rating} />
         {doc.priceRange && <div className="small-doc-fee">{doc.priceRange}</div>}
-        <a href={jdUrl} target="_blank" rel="noreferrer noopener" className="small-doc-book-btn">Book</a>
+
+        {/* Action row: icons + Book button */}
+        <div className="small-doc-actions">
+          <div style={{ display: 'flex', gap: 5 }}>
+            {doc.googleMapsLink && (
+              <a href={doc.googleMapsLink} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="Google Maps">
+                <MapIcon />
+              </a>
+            )}
+            {doc.instagramHandle && (
+              <a href={`https://www.instagram.com/${doc.instagramHandle}`} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="Instagram">
+                <IgIcon />
+              </a>
+            )}
+            <a href={jdUrl} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="JustDial">
+              <span style={{ fontSize: 9, fontWeight: 800 }}>JD</span>
+            </a>
+          </div>
+          <a href={jdUrl} target="_blank" rel="noreferrer noopener" className="small-doc-book-btn">Book</a>
+        </div>
       </div>
     </div>
   );
@@ -182,9 +202,9 @@ function SpecialistsContent({
     ? featured.specialty.split(/\s*[&,]\s*/).filter(Boolean)
     : [];
 
-  // Book Consultation: dynamic JustDial search URLs (no fake hardcoded IDs)
-  const featuredBookUrl = featured ? buildJDUrl(featured.clinic, city) : null;
-  const topBookUrl = topRated ? buildJDUrl(topRated.clinic, city) : null;
+  // Book Consultation: dynamic JustDial search by name + clinic (no fake hardcoded IDs)
+  const featuredBookUrl = featured ? buildJDUrl(featured.name, featured.clinic, city) : null;
+  const topBookUrl = topRated ? buildJDUrl(topRated.name, topRated.clinic, city) : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
@@ -321,7 +341,7 @@ function SpecialistsContent({
                       {featured.instagramHandle && (
                         <a href={`https://www.instagram.com/${featured.instagramHandle}`} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="Instagram"><IgIcon /></a>
                       )}
-                      <a href={buildJDUrl(featured.clinic, city)} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="JustDial">
+                      <a href={buildJDUrl(featured.name, featured.clinic, city)} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="JustDial">
                         <span style={{ fontSize: 9, fontWeight: 800 }}>JD</span>
                       </a>
                     </div>
@@ -365,7 +385,7 @@ function SpecialistsContent({
                     {topRated.instagramHandle && (
                       <a href={`https://www.instagram.com/${topRated.instagramHandle}`} target="_blank" rel="noreferrer noopener" className="doc-social-icon"><IgIcon /></a>
                     )}
-                    <a href={buildJDUrl(topRated.clinic, city)} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="JustDial">
+                    <a href={buildJDUrl(topRated.name, topRated.clinic, city)} target="_blank" rel="noreferrer noopener" className="doc-social-icon" title="JustDial">
                       <span style={{ fontSize: 9, fontWeight: 800 }}>JD</span>
                     </a>
                     {topBookUrl && (

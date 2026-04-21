@@ -1668,6 +1668,13 @@
     font-family: 'DM Sans', system-ui, sans-serif;
   }
   .small-doc-book-btn:hover { background: rgba(168,85,247,0.22); }
+  .small-doc-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    gap: 6px;
+  }
 
   /* Urgent evaluation CTA */
   .urgent-eval-section {
