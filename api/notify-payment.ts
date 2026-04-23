@@ -27,9 +27,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (!email) return res.status(400).json({ error: 'Missing email' });
 
-  const planLabel = plan === 'yearly'
-    ? gateway === 'Razorpay' ? 'Yearly (₹799/yr)' : 'Yearly ($39.99/yr)'
-    : gateway === 'Razorpay' ? 'Monthly (₹99/mo)' : 'Monthly ($4.99/mo)';
+  const planLabel =
+    plan === 'trial'   ? 'First Week Trial (₹25)' :
+    plan === 'monthly' ? 'Monthly (₹49/mo)' :
+    plan === 'yearly'  ? 'Yearly (₹399/yr)' :
+    plan;
 
   try {
     await transporter.sendMail({
