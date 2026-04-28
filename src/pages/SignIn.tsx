@@ -84,7 +84,11 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
         email: email.trim(),
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          ...(mode === 'signup' && { data: { full_name: name.trim(), phone: phone ? `+91${phone}` : null } }),
+          ...(mode === 'signup' && { data: {
+          full_name: name.trim(),
+          first_name: name.trim().split(' ')[0],
+          phone: phone ? `+91${phone}` : null,
+        } }),
         },
       });
       if (e) throw new Error(e.message);
