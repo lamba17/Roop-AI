@@ -61,6 +61,15 @@ function buildWelcomeHTML(name: string, plan?: string) {
     </a>
   </div>
 
+  <div style="background: rgba(37,211,102,0.08); border: 1px solid rgba(37,211,102,0.25); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; text-align: center;">
+    <p style="margin: 0 0 6px; font-size: 13px; color: #25D366; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">📱 Stay Connected on WhatsApp</p>
+    <p style="margin: 0 0 14px; font-size: 13px; color: #aaa; line-height: 1.5;">Save our number for personalised skin tips, reminders &amp; exclusive offers — delivered straight to your WhatsApp.</p>
+    <a href="https://wa.me/917567221085" style="background: #25D366; color: #fff; padding: 11px 28px; border-radius: 50px; text-decoration: none; font-size: 14px; font-weight: 600;">
+      💬 Save on WhatsApp
+    </a>
+    <p style="margin: 10px 0 0; font-size: 11px; color: #555;">Once saved, send us a "Hi" and we'll send your first skin tip 🌿</p>
+  </div>
+
   <p style="font-size: 12px; color: #555; text-align: center; margin-top: 28px;">
     Questions? Reply to this email or contact us at roopaiofficial58@gmail.com
   </p>
