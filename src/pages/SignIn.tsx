@@ -84,7 +84,7 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
         email: email.trim(),
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          ...(mode === 'signup' && { data: { full_name: name.trim(), phone: phone.trim() || null } }),
+          ...(mode === 'signup' && { data: { full_name: name.trim(), phone: phone ? `+91${phone}` : null } }),
         },
       });
       if (e) throw new Error(e.message);
@@ -165,12 +165,30 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
               placeholder="your@email.com" required style={inputStyle}
               onFocus={focusIn} onBlur={focusOut} />
             {isSignup && (
-              <div style={{ position: 'relative' }}>
-                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                  placeholder="📱 WhatsApp number (optional)"
-                  style={{ ...inputStyle, paddingRight: 80 }}
-                  onFocus={focusIn} onBlur={focusOut} />
-                <span style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-65%)', fontSize: 10, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", background: c.surfaceHigh, padding: '2px 8px', borderRadius: 20, pointerEvents: 'none' }}>optional</span>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+                {/* +91 prefix */}
+                <span style={{
+                  position: 'absolute', left: 14, fontSize: 14, fontWeight: 600,
+                  color: c.onSurfaceVar, fontFamily: "'Manrope', sans-serif",
+                  pointerEvents: 'none', userSelect: 'none',
+                }}>+91</span>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={e => {
+                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setPhone(val);
+                  }}
+                  placeholder="WhatsApp number (optional)"
+                  maxLength={10}
+                  style={{ ...inputStyle, paddingLeft: 48, paddingRight: 80, marginBottom: 0 }}
+                  onFocus={focusIn} onBlur={focusOut}
+                />
+                <span style={{
+                  position: 'absolute', right: 14, fontSize: 10, color: c.onSurfaceVar,
+                  fontFamily: "'Inter', sans-serif", background: c.surfaceHigh,
+                  padding: '2px 8px', borderRadius: 20, pointerEvents: 'none',
+                }}>optional</span>
               </div>
             )}
             <button type="submit" disabled={eLoading || !canSubmit}
