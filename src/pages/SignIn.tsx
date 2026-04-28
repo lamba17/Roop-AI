@@ -54,6 +54,7 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
   const [gLoading, setGLoading] = useState(false);
   const [email, setEmail]       = useState('');
   const [name, setName]         = useState('');
+  const [phone, setPhone]       = useState('');
   const [eLoading, setELoading] = useState(false);
   const [sent, setSent]         = useState(false);
   const [error, setError]       = useState<string | null>(null);
@@ -83,7 +84,7 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
         email: email.trim(),
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          ...(mode === 'signup' && { data: { full_name: name.trim() } }),
+          ...(mode === 'signup' && { data: { full_name: name.trim(), phone: phone.trim() || null } }),
         },
       });
       if (e) throw new Error(e.message);
@@ -146,8 +147,9 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
             <p style={{ margin: 0, fontSize: 13, color: c.onSurfaceVar, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>
               Magic link sent to <strong style={{ color: c.onSurface }}>{email}</strong>. Click it to {isSignup ? 'activate your account' : 'sign in'} instantly.
             </p>
-            <button onClick={() => { setSent(false); setEmail(''); setName(''); }}
-              style={{ marginTop: 14, background: 'none', border: 'none', color: c.onSurfaceVar, fontSize: 12, fontFamily: "'Manrope', sans-serif", cursor: 'pointer', textDecoration: 'underline' }}>
+            <button
+              style={{ marginTop: 14, background: 'none', border: 'none', color: c.onSurfaceVar, fontSize: 12, fontFamily: "'Manrope', sans-serif", cursor: 'pointer', textDecoration: 'underline' }}
+              onClick={() => { setSent(false); setEmail(''); setName(''); setPhone(''); }}>
               Use a different email
             </button>
           </div>
@@ -162,6 +164,15 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
               placeholder="your@email.com" required style={inputStyle}
               onFocus={focusIn} onBlur={focusOut} />
+            {isSignup && (
+              <div style={{ position: 'relative' }}>
+                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+                  placeholder="📱 WhatsApp number (optional)"
+                  style={{ ...inputStyle, paddingRight: 80 }}
+                  onFocus={focusIn} onBlur={focusOut} />
+                <span style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-65%)', fontSize: 10, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", background: c.surfaceHigh, padding: '2px 8px', borderRadius: 20, pointerEvents: 'none' }}>optional</span>
+              </div>
+            )}
             <button type="submit" disabled={eLoading || !canSubmit}
               style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px', background: BRAND_GRADIENT, color: '#fff', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: eLoading || !canSubmit ? 'not-allowed' : 'pointer', opacity: eLoading || !canSubmit ? 0.6 : 1, boxShadow: '0 0 24px rgba(124,58,237,0.3)' }}>
               {eLoading ? <><Spinner size={16} /> Sending…</> : isSignup ? '✨  Create Account' : '✉️  Send Magic Link'}
