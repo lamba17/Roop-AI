@@ -1,6 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MAKEUP_ARTISTS, CITY_COORDS } from '../data/makeupArtists';
 import type { MakeupArtist } from '../data/makeupArtists';
+
+const ALL_ARTISTS = Object.entries(MAKEUP_ARTISTS).flatMap(([city, arts]) =>
+  arts.map(a => ({ ...a, city }))
+);
 
 /* ── Photo pools ─────────────────────────────────────────────────────────── */
 const ARTIST_PHOTOS = [
@@ -144,9 +148,21 @@ export default function MakeupArtistFinder() {
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [featuredImgOk, setFeaturedImgOk] = useState(true);
   const [topImgOk, setTopImgOk] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const artists = MAKEUP_ARTISTS[city] ?? [];
   const [featured, topRated, ...otherArtists] = artists;
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return null;
+    const q = searchQuery.toLowerCase();
+    return ALL_ARTISTS.filter(a =>
+      a.name.toLowerCase().includes(q) ||
+      a.studio.toLowerCase().includes(q) ||
+      a.specialty.toLowerCase().includes(q) ||
+      a.city.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
 
   const featuredTags = featured
     ? featured.specialty.split(/\s*[&,]\s*/).filter(Boolean)
@@ -174,6 +190,47 @@ export default function MakeupArtistFinder() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+
+      {/* Search bar */}
+      <div className="specialists-search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="Search by name, studio, specialty or city…"
+          className="specialists-search-input"
+        />
+        {searchQuery && (
+          <button onClick={() => setSearchQuery('')} className="specialists-search-clear">✕</button>
+        )}
+      </div>
+
+      {/* Search results */}
+      {searchResults !== null ? (
+        <div>
+          <div className="doctors-section-label" style={{ marginBottom: 14 }}>
+            {searchResults.length > 0
+              ? `${searchResults.length} result${searchResults.length !== 1 ? 's' : ''} for "${searchQuery}"`
+              : `No results for "${searchQuery}"`}
+          </div>
+          {searchResults.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 20px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, color: 'var(--text-muted)', fontSize: 14 }}>
+              <div style={{ fontSize: 32, marginBottom: 10 }}>💄</div>
+              <p style={{ margin: 0 }}>Try a different name, specialty, or city.</p>
+            </div>
+          ) : (
+            <div className="specialist-cards-grid">
+              {searchResults.map((artist, i) => (
+                <SmallArtistCard key={i} artist={artist} idx={i} />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
 
       {/* Glam Perspective banner */}
       <div className="clinical-perspective-card">
@@ -374,6 +431,9 @@ export default function MakeupArtistFinder() {
           💄 Start Glam Analysis
         </a>
       </div>
+
+        </>
+      )}
     </div>
   );
 }

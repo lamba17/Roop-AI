@@ -7,6 +7,7 @@ import Results from './pages/Results';
 import Routine from './pages/Routine';
 import Products from './pages/Products';
 import Specialists from './pages/Specialists';
+import MakeupArtists from './pages/MakeupArtists';
 import SpecialistProfile from './pages/SpecialistProfile';
 import Booking from './pages/Booking';
 import GlamResults from './pages/GlamResults';
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/routine" element={<Routine />} />
           <Route path="/products" element={<Products />} />
           <Route path="/specialists" element={<Specialists />} />
+          <Route path="/makeup-artists" element={<MakeupArtists />} />
           <Route path="/specialists/:city/:index" element={<SpecialistProfile />} />
           <Route path="/booking/:city/:index" element={<Booking />} />
           <Route path="/progress" element={<Progress />} />
