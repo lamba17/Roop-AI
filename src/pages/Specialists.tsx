@@ -2,11 +2,6 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DERMATOLOGISTS, CITY_COORDS } from '../data/dermatologists';
 import AppLayout from '../components/AppLayout';
-import { useAuth } from '../lib/supabase';
-import { usePremium } from '../hooks/usePremium';
-import PremiumModal from '../components/PremiumModal';
-
-const ADMIN_EMAILS = ['lamba.akash1994@gmail.com', 'varunvlamba@gmail.com'];
 
 /**
  * Build a real JustDial search URL.
@@ -430,11 +425,6 @@ function SpecialistsContent({
 /* ── Page shell ─────────────────────────────────────────────────────────── */
 export default function Specialists() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { premium, refresh: refreshPremium } = usePremium(user ?? null);
-  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
-  const hasFullAccess = isAdmin || premium;
-  const [showPremium, setShowPremium] = useState(false);
 
   const cities = Object.keys(DERMATOLOGISTS);
   const [city, setCity] = useState('Delhi');
@@ -484,14 +474,6 @@ export default function Specialists() {
 
   return (
     <AppLayout>
-      {showPremium && user && (
-        <PremiumModal
-          user={user}
-          onClose={() => setShowPremium(false)}
-          onUpgraded={() => { setShowPremium(false); refreshPremium(); }}
-        />
-      )}
-
       <div className="page-specialists fade-in">
         {/* Search */}
         <div className="specialists-search-bar">
@@ -510,33 +492,7 @@ export default function Specialists() {
           )}
         </div>
 
-        {!hasFullAccess ? (
-          <div className="locked-section">
-            <div className="locked-blur-preview" aria-hidden="true">
-              <SpecialistsContent {...contentProps} />
-            </div>
-            <div className="locked-overlay">
-              <div className="locked-overlay-inner">
-                <div style={{ fontSize: 44, marginBottom: 12 }}>🔒</div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-primary)' }}>
-                  Unlock Specialist Finder
-                </h3>
-                <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.6, maxWidth: 280 }}>
-                  Find verified dermatologists near you, book consultations, and get expert skin care advice.
-                </p>
-                <button onClick={() => setShowPremium(true)} className="btn-glow"
-                  style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}>
-                  🚀 Try Full Access — ₹25 for 7 days
-                </button>
-                <p style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 10 }}>
-                  Then just ₹49/month · Cancel anytime · No surprises
-                </p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <SpecialistsContent {...contentProps} />
-        )}
+        <SpecialistsContent {...contentProps} />
       </div>
     </AppLayout>
   );

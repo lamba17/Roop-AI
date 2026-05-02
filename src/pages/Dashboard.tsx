@@ -572,9 +572,21 @@ export default function Dashboard() {
               </div>
               <button
                 onClick={() => setScoreMode(null)}
-                style={{ background: 'none', border: 'none', fontSize: 11, color: 'var(--text-hint)', cursor: 'pointer', textDecoration: 'underline', padding: 0, fontFamily: "'DM Sans', system-ui, sans-serif" }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  background: 'rgba(124,58,237,0.10)', border: '1.5px solid rgba(124,58,237,0.35)',
+                  borderRadius: 50, padding: '6px 14px', cursor: 'pointer',
+                  fontSize: 12, fontWeight: 700, color: '#a855f7', letterSpacing: 0.3,
+                  fontFamily: "'DM Sans', system-ui, sans-serif",
+                  transition: 'background 0.18s, border-color 0.18s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.2)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.6)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.10)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.35)'; }}
               >
-                Switch mode
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/>
+                </svg>
+                Switch Mode
               </button>
             </div>
 
