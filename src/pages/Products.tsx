@@ -414,8 +414,9 @@ export default function Products() {
 
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
   const [glamHistory] = useLocalStorage<GlamHistoryEntry[]>('roop_glam_history', []);
+  const [scoreMode] = useLocalStorage<'glow' | 'glam' | null>('roop_score_mode', null);
 
-  const [productTab, setProductTab] = useState<'skin' | 'makeup'>('skin');
+  const [productTab, setProductTab] = useState<'skin' | 'makeup'>(scoreMode === 'glam' ? 'makeup' : 'skin');
   const [activeFilter, setActiveFilter] = useState('All');
 
   const latestSkin = history[0];
@@ -474,37 +475,39 @@ export default function Products() {
           </p>
         </div>
 
-        {/* Skin / Makeup tab switcher */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-          <button
-            onClick={() => handleTabSwitch('skin')}
-            disabled={!latestSkin}
-            style={{
-              padding: '9px 20px', borderRadius: 999, fontSize: 13, fontWeight: 700, cursor: latestSkin ? 'pointer' : 'not-allowed',
-              border: `1.5px solid ${effectiveTab === 'skin' ? '#a855f7' : 'var(--border)'}`,
-              background: effectiveTab === 'skin' ? 'rgba(168,85,247,0.12)' : 'transparent',
-              color: effectiveTab === 'skin' ? '#a855f7' : 'var(--text-muted)',
-              opacity: latestSkin ? 1 : 0.4,
-              transition: 'all 0.2s',
-            }}
-          >
-            🌿 Skin Products
-          </button>
-          <button
-            onClick={() => handleTabSwitch('makeup')}
-            disabled={!latestGlam}
-            style={{
-              padding: '9px 20px', borderRadius: 999, fontSize: 13, fontWeight: 700, cursor: latestGlam ? 'pointer' : 'not-allowed',
-              border: `1.5px solid ${effectiveTab === 'makeup' ? '#ec4899' : 'var(--border)'}`,
-              background: effectiveTab === 'makeup' ? 'rgba(236,72,153,0.12)' : 'transparent',
-              color: effectiveTab === 'makeup' ? '#ec4899' : 'var(--text-muted)',
-              opacity: latestGlam ? 1 : 0.4,
-              transition: 'all 0.2s',
-            }}
-          >
-            💄 Makeup Products
-          </button>
-        </div>
+        {/* Tab switcher — only shown when no mode is locked */}
+        {!scoreMode && (
+          <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+            <button
+              onClick={() => handleTabSwitch('skin')}
+              disabled={!latestSkin}
+              style={{
+                padding: '9px 20px', borderRadius: 999, fontSize: 13, fontWeight: 700, cursor: latestSkin ? 'pointer' : 'not-allowed',
+                border: `1.5px solid ${effectiveTab === 'skin' ? '#a855f7' : 'var(--border)'}`,
+                background: effectiveTab === 'skin' ? 'rgba(168,85,247,0.12)' : 'transparent',
+                color: effectiveTab === 'skin' ? '#a855f7' : 'var(--text-muted)',
+                opacity: latestSkin ? 1 : 0.4,
+                transition: 'all 0.2s',
+              }}
+            >
+              🌿 Skin Products
+            </button>
+            <button
+              onClick={() => handleTabSwitch('makeup')}
+              disabled={!latestGlam}
+              style={{
+                padding: '9px 20px', borderRadius: 999, fontSize: 13, fontWeight: 700, cursor: latestGlam ? 'pointer' : 'not-allowed',
+                border: `1.5px solid ${effectiveTab === 'makeup' ? '#ec4899' : 'var(--border)'}`,
+                background: effectiveTab === 'makeup' ? 'rgba(236,72,153,0.12)' : 'transparent',
+                color: effectiveTab === 'makeup' ? '#ec4899' : 'var(--text-muted)',
+                opacity: latestGlam ? 1 : 0.4,
+                transition: 'all 0.2s',
+              }}
+            >
+              💄 Makeup Products
+            </button>
+          </div>
+        )}
 
         {/* Category filter tabs */}
         <div className="products-filters">

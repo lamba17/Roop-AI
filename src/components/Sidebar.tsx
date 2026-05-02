@@ -131,11 +131,13 @@ export default function Sidebar() {
     }
   }
 
-  // Hide scan items that don't match the user's chosen mode
+  // Hide nav items that don't apply to the user's chosen mode
   function isHidden(id: string) {
     if (!scoreMode) return false;
-    if (id === 'analysis' && scoreMode === 'glam') return true;
-    if (id === 'glam' && scoreMode === 'glow') return true;
+    if (id === 'analysis' && scoreMode === 'glam') return true;   // hide Skin Analysis for glam users
+    if (id === 'glam' && scoreMode === 'glow') return true;       // hide Makeup Analysis for glow users
+    if (id === 'specialists' && scoreMode === 'glam') return true; // hide Specialists for glam users
+    if (id === 'makeup-artists' && scoreMode === 'glow') return true; // hide Makeup Artists for glow users
     return false;
   }
 

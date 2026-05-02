@@ -271,6 +271,7 @@ export default function Routine() {
 
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
   const [glamHistory] = useLocalStorage<GlamHistoryEntry[]>('roop_glam_history', []);
+  const [scoreMode] = useLocalStorage<'glow' | 'glam' | null>('roop_score_mode', null);
 
   const latestSkin = history[0];
   const latestGlam = glamHistory[0];
@@ -279,8 +280,10 @@ export default function Routine() {
   const hasGlamHistory = !!latestGlam;
   const hasAnything = hasGlowHistory || hasGlamHistory;
 
-  /* Default to glam tab if only glam history exists */
+  /* Lock tab to user's chosen score mode; fall back to data-driven default */
   const [routineTab, setRoutineTab] = useState<'skin' | 'glam'>(() =>
+    scoreMode === 'glam' ? 'glam' :
+    scoreMode === 'glow' ? 'skin' :
     !hasGlowHistory && hasGlamHistory ? 'glam' : 'skin'
   );
 
@@ -351,8 +354,8 @@ export default function Routine() {
           <p className="routine-subtitle">{subtitle}</p>
         </div>
 
-        {/* Tab switcher */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+        {/* Tab switcher — only shown when no mode is locked */}
+        {!scoreMode && <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
           <button
             onClick={() => hasGlowHistory && setRoutineTab('skin')}
             disabled={!hasGlowHistory}
@@ -383,7 +386,7 @@ export default function Routine() {
           >
             💄 Glam Routine
           </button>
-        </div>
+        </div>}
 
         {/* No-data-for-this-tab state */}
         {effectiveTab === 'skin' && !latestSkin && (
