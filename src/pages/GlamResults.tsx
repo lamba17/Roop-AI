@@ -11,8 +11,6 @@ import {
 
 /* ── Design tokens ─────────────────────────────────────────────────── */
 const SURFACE      = '#120b1b';
-const SURFACE_LOW  = '#171021';
-const SURFACE_CONT = '#1e1629';
 const SURFACE_HIGH = '#251b31';
 const SURFACE_TOP  = '#2b2138';
 const PRIMARY      = '#bd9dff';
@@ -32,14 +30,6 @@ const NEON_SHADOW = '0 0 40px -5px rgba(189, 157, 255, 0.08)';
 
 const fontHeadline: React.CSSProperties = { fontFamily: "'Epilogue', system-ui, sans-serif" };
 const fontBody: React.CSSProperties = { fontFamily: "'Manrope', system-ui, sans-serif" };
-
-/* ── Helpers ────────────────────────────────────────────────────────── */
-function barColor(score: number) {
-  if (score === 0) return OUTLINE;
-  if (score >= 75) return PRIMARY;
-  if (score >= 50) return '#f59e0b';
-  return SECONDARY;
-}
 
 /* ── Animated glam score ring ───────────────────────────────────────── */
 function GlamRing({ score }: { score: number }) {
