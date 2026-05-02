@@ -14,9 +14,16 @@
   --bg-elevated:   #16163a;
   --border:        #1e1e3a;
   --border-subtle: rgba(168,85,247,0.15);
+  --border-glow:   rgba(124,58,237,0.35);
   --text-primary:  #e8e8f5;
   --text-muted:    #8888aa;
   --text-hint:     #44445a;
+  --inner-card:    #12122a;
+  --inner-border:  #1e1e3a;
+  --input-bg:      rgba(20,20,42,0.8);
+  --select-bg:     #1a1a30;
+  --bar-track:     #1e1e3a;
+  /* Accent colours — same for both themes */
   --purple:        #7c3aed;
   --purple-light:  #a855f7;
   --pink:          #db2777;
@@ -56,6 +63,22 @@
   --shadow-card:   0 4px 24px rgba(0,0,0,0.08);
 }
 
+[data-theme="light"] {
+  --bg-primary:    #faf8ff;
+  --bg-card:       #ffffff;
+  --bg-elevated:   #ede9fe;
+  --border:        #ddd6fe;
+  --border-glow:   rgba(124,58,237,0.20);
+  --text-primary:  #1a1630;
+  --text-muted:    #55557a;
+  --text-hint:     #9090b8;
+  --inner-card:    #f5f3ff;
+  --inner-border:  #e4dcff;
+  --input-bg:      rgba(245,243,255,0.9);
+  --select-bg:     #f0ecff;
+  --bar-track:     #e8e3ff;
+}
+
 /* ─── BASE ────────────────────────────────────────────────────────────── */
 @layer base {
   * { box-sizing: border-box; }
@@ -66,6 +89,7 @@
     font-family: 'DM Sans', system-ui, sans-serif;
     overflow-x: hidden;
     margin: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
   ::-webkit-scrollbar { width: 5px; }
@@ -768,6 +792,33 @@
     transition: background 0.2s;
   }
   .results-share-btn:hover { background: rgba(37,211,102,0.2); }
+
+  /* Glass morphism card */
+  .glass-card {
+    background: rgba(13,13,31,0.75);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+    transition: background 0.3s ease, border-color 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
+  }
+  .glass-card:hover {
+    border-color: rgba(124,58,237,0.45);
+    box-shadow: 0 12px 60px rgba(124,58,237,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
+    transform: translateY(-2px);
+  }
+  [data-theme="light"] .glass-card {
+    background: rgba(255,255,255,0.92);
+    border-color: rgba(124,58,237,0.18);
+    box-shadow: 0 4px 32px rgba(124,58,237,0.07), inset 0 1px 0 rgba(255,255,255,1);
+  }
+  [data-theme="light"] .glass-card:hover {
+    border-color: rgba(124,58,237,0.35);
+    box-shadow: 0 8px 48px rgba(124,58,237,0.12), inset 0 1px 0 rgba(255,255,255,1);
+  }
 
   /* ── Locked / premium gate ─────────────────────────────────────── */
   .locked-section {
@@ -2184,9 +2235,18 @@
   /* Mesh bg (kept for SignIn / legacy pages) */
   .mesh-bg {
     background:
-      radial-gradient(ellipse 100% 80% at 50% -10%, rgba(124,58,237,0.2) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 90% 90%, rgba(219,39,119,0.13) 0%, transparent 55%),
-      #07070f;
+      radial-gradient(ellipse 100% 80% at 50% -10%, rgba(124,58,237,0.22) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 90%,  rgba(219,39,119,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 10% 80%,  rgba(124,58,237,0.12) 0%, transparent 50%),
+      #050510;
+    transition: background 0.3s ease;
+  }
+  [data-theme="light"] .mesh-bg {
+    background:
+      radial-gradient(ellipse 100% 80% at 50% -10%, rgba(168,85,247,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 90%,  rgba(219,39,119,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 10% 80%,  rgba(124,58,237,0.06) 0%, transparent 50%),
+      #faf8ff;
   }
   .hero-glow {
     position: absolute; inset: 0;
@@ -2203,11 +2263,17 @@
   }
   .pulse-ring::after { inset: -22px; border-color: rgba(219,39,119,0.3); animation-delay: 0.8s; }
 
-  /* Header glass (SignIn page) */
+  /* Header glass */
   .header-glass {
-    background: rgba(7,7,15,0.85);
+    background: rgba(5,5,16,0.85);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(124,58,237,0.18);
+    transition: background 0.3s ease;
+  }
+  [data-theme="light"] .header-glass {
+    background: rgba(250,248,255,0.92);
+    border-bottom-color: rgba(124,58,237,0.15);
   }
 
   /* Feature pill */
@@ -2222,6 +2288,41 @@
   }
   .feature-pill:hover { background: rgba(124,58,237,0.18); border-color: rgba(168,85,247,0.4); }
 
+  /* WhatsApp float */
+  .whatsapp-float {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 50;
+    width: 54px;
+    height: 54px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: white;
+  }
+  .whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(37,211,102,0.65);
+  }
+
+  /* ── Light mode text overrides ─────────────────────────────────────── */
+  [data-theme="light"] .section-label { color: var(--text-muted); }
+  [data-theme="light"] .gradient-text { filter: saturate(1.1) brightness(0.85); }
+  [data-theme="light"] .btn-outline { background: rgba(124,58,237,0.06); color: #7c3aed; border-color: rgba(124,58,237,0.3); }
+  [data-theme="light"] .btn-outline:hover { background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.5); }
+  [data-theme="light"] .shimmer { background: linear-gradient(90deg, var(--bg-elevated) 0%, rgba(124,58,237,0.12) 50%, var(--bg-elevated) 100%); }
+  [data-theme="light"] .spinner { border-color: var(--border); border-top-color: #a855f7; }
+  [data-theme="light"] .feature-pill { background: rgba(124,58,237,0.07); border-color: rgba(124,58,237,0.18); color: rgba(26,22,48,0.75); }
+  [data-theme="light"] .skin-badge-purple { background: rgba(124,58,237,0.10); color: #6d28d9; }
+  [data-theme="light"] .skin-badge-cyan   { background: rgba(6,182,212,0.10);  color: #0891b2; }
+  [data-theme="light"] .skin-badge-gold   { background: rgba(245,158,11,0.10); color: #b45309; }
+
   /* ── Theme Toggle Button ─────────────────────────────────────────── */
   .theme-toggle-btn {
     display: flex;
@@ -2229,6 +2330,10 @@
     gap: 8px;
     width: 100%;
     padding: 10px 12px;
+
+  /* Concern tag */
+  .concern-tag {
+    padding: 6px 14px;
     border-radius: 10px;
     border: 1px solid var(--border);
     background: var(--bg-elevated);

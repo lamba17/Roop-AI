@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 interface GlowRingProps {
   score: number;
   size?: number;
+  label?: string;
+  color?: string;
 }
 
 function glowColor(score: number) {
@@ -11,7 +13,7 @@ function glowColor(score: number) {
   return '#ef4444';
 }
 
-export default function GlowRing({ score, size = 140 }: GlowRingProps) {
+export default function GlowRing({ score, size = 140, label = 'GLOW SCORE', color: colorProp }: GlowRingProps) {
   const [displayed, setDisplayed] = useState(0);
   const r = 54;
   const cx = size / 2;
@@ -34,7 +36,7 @@ export default function GlowRing({ score, size = 140 }: GlowRingProps) {
     return () => clearInterval(tick);
   }, [score]);
 
-  const color = glowColor(score);
+  const color = colorProp ?? glowColor(score);
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -52,7 +54,7 @@ export default function GlowRing({ score, size = 140 }: GlowRingProps) {
         {displayed}
       </text>
       <text x={cx} y={cy + 14} textAnchor="middle" fill="#888" fontSize="9" letterSpacing="1">
-        GLOW SCORE
+        {label}
       </text>
     </svg>
   );

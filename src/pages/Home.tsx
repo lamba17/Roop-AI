@@ -1,60 +1,87 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import UploadZone from '../components/UploadZone';
-import { useLanguage } from '../context/LanguageContext';
+import Logo from '../components/Logo';
+import UserMenu from '../components/UserMenu';
+import ThemeToggle from '../components/ThemeToggle';
 import { fileToBase64 } from '../utils/imageUtils';
-import { selfieStore } from '../utils/selfieStore';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
+import { useGlamAnalysis } from '../hooks/useGlamAnalysis';
+import { useGuideAnalysis } from '../hooks/useGuideAnalysis';
+import { useBridalPlan } from '../hooks/useBridalPlan';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useAuth, uploadSelfie } from '../lib/supabase';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
-import AppLayout from '../components/AppLayout';
-import type { HistoryEntry } from '../types/analysis';
+import { useThemeColors } from '../hooks/useTheme';
+import type { HistoryEntry, AppMode } from '../types/analysis';
 
-const FREE_LIMIT = 1;
-const ADMIN_EMAILS = ['lamba.akash1994@gmail.com', 'varunvlamba@gmail.com'];
+const FREE_LIMIT = 9999; // unlimited on Testing branch
 
-const ANALYSIS_TIPS = [
-  { icon: '☀️', title: 'Natural Lighting', desc: 'Stand near a window in soft daylight for best results.' },
-  { icon: '🧼', title: 'Clean Face', desc: 'Remove makeup and cleanse before scanning.' },
-  { icon: '📐', title: 'Neutral Angle', desc: 'Look straight into the camera at eye level.' },
+const MODES: Array<{ id: AppMode; icon: string; label: string; sub: string; dual: boolean; premium?: boolean; heading: string; tagline: string }> = [
+  { id: 'glow', icon: '🌿', label: 'GLOW SCORE', sub: 'No makeup · Skin health',     dual: false, heading: 'Your AI-Powered Skin Coach',  tagline: 'Upload a bare-face selfie — get your Glow Score, daily routine, product picks, and dermatologist insights.' },
+  { id: 'glam', icon: '💄', label: 'GLAM SCORE', sub: 'Makeup selfie · Makeup coach', dual: false, heading: 'Your AI-Powered Makeup Coach', tagline: "Upload a makeup selfie — get your Glam Score, what's missing from your look, and expert correction tips." },
+];
+
+const PARTICLES: Array<[number, number, number, number, string]> = [
+  [5, 8, 18, 0, '#7c3aed'], [3, 25, 24, 3, '#db2777'],
+  [4, 55, 20, 6, '#a855f7'], [6, 72, 28, 1.5, '#db2777'],
+  [3, 88, 16, 9, '#7c3aed'], [4, 42, 22, 4.5, '#f59e0b'],
 ];
 
 export default function Home() {
   const navigate = useNavigate();
-  const { lang } = useLanguage();
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | undefined>();
-  const { analyze, loading, error } = useSkinAnalysis();
+  const location = useLocation();
+  const tc = useThemeColors();
+  const [mode, setMode] = useState<AppMode>((location.state as any)?.mode ?? 'glow');
+  const [skinFile, setSkinFile] = useState<File | null>(null);
+  const [skinPreview, setSkinPreview] = useState<string | undefined>();
+  const [makeupFile, setMakeupFile] = useState<File | null>(null);
+  const [makeupPreview, setMakeupPreview] = useState<string | undefined>();
   const [showPremium, setShowPremium] = useState(false);
+
+  const { analyze: analyzeGlow, loading: glowLoading, error: glowError } = useSkinAnalysis();
+  const { analyze: analyzeGlam, loading: glamLoading, error: glamError } = useGlamAnalysis();
+  // guide/bridal reserved for future release
+  const _analyzeGuide = useGuideAnalysis().analyze;
+  const _analyzeBridal = useBridalPlan().analyze;
+  void _analyzeGuide; void _analyzeBridal;
+
+  const [history, setHistory] = useLocalStorage<HistoryEntry[]>('roop_history', []);
   const { user } = useAuth();
   const { premium, refresh: refreshPremium } = usePremium(user);
-  const historyKey = user ? `roop_history_${user.id}` : 'roop_history';
-  const [history, setHistory] = useLocalStorage<HistoryEntry[]>(historyKey, []);
 
-  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
-  const limitReached = !isAdmin && !premium && history.length >= FREE_LIMIT;
+  const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
+    ?? user?.email?.split('@')[0] ?? null;
 
-  function handleFile(f: File) {
-    setFile(f);
-    const url = URL.createObjectURL(f);
-    setPreview(url);
+  const todayKey = new Date().toISOString().split('T')[0];
+  const todayCount = history.filter(h => h.date.startsWith(todayKey)).length;
+  const limitReached = !premium && todayCount >= FREE_LIMIT;
+
+  const selectedMode = MODES.find(m => m.id === mode)!;
+  const error = glowError || glamError;
+
+  function handleSkinFile(f: File) {
+    setSkinFile(f);
+    setSkinPreview(URL.createObjectURL(f));
+  }
+  function handleMakeupFile(f: File) {
+    setMakeupFile(f);
+    setMakeupPreview(URL.createObjectURL(f));
+  }
+  function handleModeSelect(m: AppMode) {
+    setMode(m);
+    setSkinFile(null); setSkinPreview(undefined);
+    setMakeupFile(null); setMakeupPreview(undefined);
   }
 
-  async function handleAnalyze() {
-    if (!file || !user) return;
-    const base64 = await fileToBase64(file);
-    const result = await analyze(base64, lang);
+  async function handleGlowAnalyze() {
+    if (!user || !skinFile) return;
+    const base64 = await fileToBase64(skinFile);
+    const result = await analyzeGlow(base64);
     if (!result) return;
-
     let imageUrl = '';
-    try {
-      imageUrl = await uploadSelfie(user.id, file);
-    } catch {
-      // Storage upload failed — store empty string
-    }
-
+    try { imageUrl = await uploadSelfie(user.id, skinFile); } catch { /* use empty */ }
     const entry: HistoryEntry = {
       id: Date.now().toString(),
       date: new Date().toISOString(),
@@ -62,170 +89,191 @@ export default function Home() {
       imageUrl,
       analysis: result,
     };
+    setHistory([entry, ...history].slice(0, 10));
+    navigate('/results', { state: { entry, localImageUrl: skinPreview } });
+  }
 
-    const updated = [entry, ...history].slice(0, 10);
-    setHistory(updated);
-    selfieStore.set(`data:image/jpeg;base64,${base64}`);
-    navigate('/results', { state: { entry } });
+  async function handleGlamAnalyze() {
+    if (!user || !makeupFile) return;
+    const base64 = await fileToBase64(makeupFile);
+    const analysis = await analyzeGlam(base64);
+    if (!analysis) return;
+    navigate('/glam-results', { state: { analysis, imageUrl: makeupPreview } });
   }
 
   return (
-    <AppLayout>
-      {/* Premium modal */}
+    <div className="mesh-bg" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+      {PARTICLES.map(([size, left, dur, delay, color], i) => (
+        <span key={i} className="particle" style={{ width: size, height: size, left: `${left}%`, bottom: '-10px', background: color, animationDuration: `${dur}s`, animationDelay: `${delay}s`, boxShadow: `0 0 ${size * 3}px ${color}` }} />
+      ))}
+      <div className="hero-glow" />
+
       {showPremium && user && (
-        <PremiumModal
-          user={user}
-          onClose={() => setShowPremium(false)}
-          onUpgraded={() => { setShowPremium(false); refreshPremium(); }}
-        />
+        <PremiumModal user={user} onClose={() => setShowPremium(false)} onUpgraded={() => { setShowPremium(false); refreshPremium(); }} />
       )}
 
-      <div className="page-analysis">
-        {/* Left: Upload area */}
-        <div className="analysis-main">
-          <div className="analysis-header">
-            <span className="page-eyebrow">AI-Powered Analysis</span>
-            <h1 className="analysis-title">Upload Skin <span className="gradient-text">Profile</span></h1>
-            <p className="analysis-subtitle">
-              Upload a clear selfie to receive your personalised Glow Score, skin report, routine, and product recommendations.
+      <header className="header-glass" style={{ position: 'sticky', top: 0, zIndex: 40, padding: '0 24px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Logo size="sm" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {user && (
+            <button onClick={() => navigate('/progress')} className="btn-outline" style={{ fontSize: 13, padding: '8px 18px', gap: 6 }}>
+              <span style={{ fontSize: 15 }}>📊</span>Progress
+            </button>
+          )}
+          <ThemeToggle />
+          <UserMenu />
+        </div>
+      </header>
+
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px 60px', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 540, width: '100%' }}>
+
+          {/* Hero Copy */}
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            {firstName && (
+              <p style={{ fontSize: 14, color: tc.textSoft, fontFamily: "'DM Sans', system-ui, sans-serif", fontWeight: 500, margin: '0 0 6px', animation: 'fadeIn 0.5s ease both', letterSpacing: 0.2 }}>
+                Welcome back,{' '}
+                <span style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', fontWeight: 700 }}>
+                  {firstName}!
+                </span>
+              </p>
+            )}
+            <h1 key={mode} style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 700, margin: '0 0 10px', lineHeight: 1.2, letterSpacing: '-0.3px', animation: 'fadeIn 0.4s ease both', color: tc.textPrimary }}>
+              {selectedMode.heading}
+            </h1>
+            <p key={mode + '-sub'} style={{ fontSize: 14, color: tc.textBody, lineHeight: 1.6, margin: '0 auto', maxWidth: 380, fontFamily: "'DM Sans', system-ui, sans-serif", animation: 'fadeIn 0.5s ease 0.1s both' }}>
+              {selectedMode.tagline}
             </p>
           </div>
 
-          {!user ? (
-            /* Sign-in gate */
-            <div className="analysis-signin-gate">
-              <div className="signin-gate-icon">🔒</div>
-              <h3 className="signin-gate-title">Sign in to analyse your skin</h3>
-              <p className="signin-gate-desc">
-                Create a free account to get your Glow Score, personalised routine, and more.
-              </p>
+          {/* Mode Selector */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20, animation: 'fadeInUp 0.6s ease 0.2s both' }}>
+            {MODES.map((m) => (
               <button
-                onClick={() => navigate('/signin')}
-                className="btn-glow"
-                style={{ justifyContent: 'center' }}
+                key={m.id}
+                onClick={() => handleModeSelect(m.id)}
+                style={{
+                  background: mode === m.id ? 'rgba(168,85,247,0.15)' : tc.cardBg,
+                  border: `1.5px solid ${mode === m.id ? 'rgba(168,85,247,0.6)' : tc.cardBorder}`,
+                  borderRadius: 16, padding: '14px 12px', cursor: 'pointer',
+                  textAlign: 'left', transition: 'all 0.2s', position: 'relative',
+                  boxShadow: mode === m.id ? '0 0 20px rgba(168,85,247,0.15)' : 'none',
+                }}
               >
-                <span>🔑</span> Sign In / Create Account
-              </button>
-            </div>
-          ) : (
-            <>
-              {/* Upload zone */}
-              <div className="analysis-upload-wrap">
-                <UploadZone onFile={handleFile} preview={preview} />
-              </div>
-
-              {/* Limit warning */}
-              {limitReached && (
-                <div className="analysis-limit-banner">
-                  <p>⚠️ You've used your <strong>{FREE_LIMIT} free scan</strong> for today.</p>
-                  <button
-                    onClick={() => setShowPremium(true)}
-                    className="btn-glow"
-                    style={{ justifyContent: 'center', fontSize: 13, padding: '10px 20px' }}
-                  >
-                    🚀 Try Full Access — ₹25 for 7 days
-                  </button>
-                </div>
-              )}
-
-              {/* API Error */}
-              {error && (
-                <div className="analysis-error-banner">
-                  <p>{error}</p>
-                </div>
-              )}
-
-              {/* Analyse button */}
-              <button
-                onClick={handleAnalyze}
-                disabled={!file || loading || limitReached}
-                className="btn-glow analysis-cta"
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />
-                    Analysing your skin…
-                  </>
-                ) : (
-                  <>
-                    <span style={{ fontSize: 18 }}>✨</span>
-                    Analyse My Skin
-                  </>
+                {m.premium && (
+                  <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, fontWeight: 700, letterSpacing: 0.5, background: 'linear-gradient(135deg,#ec4899,#a855f7)', color: '#fff', padding: '2px 6px', borderRadius: 20 }}>
+                    PRO
+                  </span>
                 )}
+                <div style={{ fontSize: 22, marginBottom: 6 }}>{m.icon}</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: mode === m.id ? '#a855f7' : tc.textPrimary, letterSpacing: 0.5, marginBottom: 2 }}>{m.label}</div>
+                <div style={{ fontSize: 11, color: tc.textMuted, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4 }}>{m.sub}</div>
               </button>
-            </>
-          )}
+            ))}
+          </div>
 
-          <p className="analysis-privacy">
-            🔒 &nbsp;Your photo is never stored on our servers without your consent
-          </p>
-        </div>
-
-        {/* Right: Tips + Previous Analysis */}
-        <div className="analysis-sidebar">
-          {/* Tips panel */}
-          <div className="analysis-tips-panel">
-            <div className="tips-header">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              <span>Analysis Tips</span>
-            </div>
-            <div className="tips-list">
-              {ANALYSIS_TIPS.map(tip => (
-                <div key={tip.title} className="tip-item">
-                  <div className="tip-icon">{tip.icon}</div>
+          {/* Upload Card */}
+          <div className="glass-card" style={{ animation: 'fadeInUp 0.7s cubic-bezier(0.25,0.46,0.45,0.94) 0.35s both' }}>
+            {!user ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16, padding: '32px 16px' }}>
+                <div style={{ width: 64, height: 64, borderRadius: 18, background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(168,85,247,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🔒</div>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: tc.textPrimary, marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>Sign in to analyse your skin</div>
+                  <div style={{ fontSize: 13, color: tc.textMuted, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5 }}>Create a free account to get your Glow Score, Glam Score, and more.</div>
+                </div>
+                <button onClick={() => navigate('/signin')} className="btn-glow" style={{ fontSize: 15, padding: '13px 32px', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 16 }}>🔑</span>Sign In / Create Account
+                </button>
+              </div>
+            ) : selectedMode.dual ? (
+              /* Dual upload zone */
+              <div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 4 }}>
                   <div>
-                    <div className="tip-title">{tip.title}</div>
-                    <div className="tip-desc">{tip.desc}</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#a855f7', letterSpacing: 1, marginBottom: 8, textAlign: 'center' }}>🌿 SKIN SELFIE (no makeup)</div>
+                    <UploadZone onFile={handleSkinFile} preview={skinPreview} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#ec4899', letterSpacing: 1, marginBottom: 8, textAlign: 'center' }}>💄 GLAM SELFIE (with makeup)</div>
+                    <UploadZone onFile={handleMakeupFile} preview={makeupPreview} />
                   </div>
                 </div>
+              </div>
+            ) : mode === 'glam' ? (
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#ec4899', letterSpacing: 1, marginBottom: 10, textAlign: 'center' }}>💄 Upload your makeup selfie</div>
+                <UploadZone onFile={handleMakeupFile} preview={makeupPreview} />
+              </div>
+            ) : (
+              <UploadZone onFile={handleSkinFile} preview={skinPreview} />
+            )}
+
+            {/* Free limit warning */}
+            {user && mode === 'glow' && limitReached && (
+              <div style={{ marginTop: 14, padding: '14px 16px', background: 'rgba(168,85,247,0.07)', borderRadius: 12, border: '1px solid rgba(168,85,247,0.25)' }}>
+                <p style={{ margin: '0 0 10px', fontSize: 13, color: tc.textBody, lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
+                  ⚠️ You've used all <strong>3 free analyses</strong> for today.
+                </p>
+                <button onClick={() => setShowPremium(true)} className="btn-glow" style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '11px' }}>
+                  ✨ Upgrade for Unlimited Analyses
+                </button>
+              </div>
+            )}
+
+            {/* Error */}
+            {user && error && (
+              <div style={{ marginTop: 14, padding: '12px 16px', background: 'rgba(239,68,68,0.08)', borderRadius: 12, border: '1px solid rgba(239,68,68,0.25)' }}>
+                <p style={{ margin: 0, fontSize: 13, color: '#f87171', fontFamily: "'DM Sans', sans-serif" }}>{error}</p>
+              </div>
+            )}
+
+            {/* CTA — Glow */}
+            {user && mode === 'glow' && (
+              <button
+                onClick={handleGlowAnalyze}
+                disabled={!skinFile || glowLoading || limitReached}
+                className="btn-glow"
+                style={{ width: '100%', marginTop: 18, fontSize: 16, padding: '15px', justifyContent: 'center' }}
+              >
+                {glowLoading ? (
+                  <><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />Analysing&hellip;</>
+                ) : (
+                  <><span style={{ fontSize: 18 }}>🌿</span>Analyse My Skin</>
+                )}
+              </button>
+            )}
+
+            {/* CTA — Glam */}
+            {user && mode === 'glam' && (
+              <button
+                onClick={handleGlamAnalyze}
+                disabled={!makeupFile || glamLoading}
+                className="btn-glow"
+                style={{ width: '100%', marginTop: 18, fontSize: 16, padding: '15px', justifyContent: 'center', background: 'linear-gradient(135deg, #db2777, #a855f7, #db2777)', backgroundSize: '200% auto' }}
+              >
+                {glamLoading ? (
+                  <><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />Analysing&hellip;</>
+                ) : (
+                  <><span style={{ fontSize: 18 }}>💄</span>Get My Glam Score</>
+                )}
+              </button>
+            )}
+
+            {/* Feature pills */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6, marginTop: 16 }}>
+              {[['✦','Glow Score'],['💄','Glam Score']].map(([icon, label]) => (
+                <span key={label} className="feature-pill">
+                  <span style={{ color: '#a855f7', fontSize: 11 }}>{icon}</span>{label}
+                </span>
               ))}
             </div>
           </div>
 
-          {/* Previous analysis */}
-          {history.length > 0 && (
-            <div className="analysis-prev-panel">
-              <div className="prev-header">Previous Analysis</div>
-              {history.slice(0, 2).map(entry => (
-                <div
-                  key={entry.id}
-                  className="prev-item"
-                  onClick={() => navigate('/results', { state: { entry } })}
-                >
-                  {entry.imageUrl ? (
-                    <img src={entry.imageUrl} alt="prev" className="prev-thumb"
-                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-                  ) : (
-                    <div className="prev-thumb prev-thumb-placeholder">🤳</div>
-                  )}
-                  <div className="prev-info">
-                    <div className="prev-date">
-                      {new Date(entry.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                    </div>
-                    <div className="prev-type">{entry.analysis.skinType} skin</div>
-                  </div>
-                  <div className="prev-score">{entry.score}</div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Premium upgrade */}
-          {user && !isAdmin && !premium && (
-            <div className="analysis-upgrade-panel">
-              <div className="upgrade-icon">🚀</div>
-              <div className="upgrade-title">Try Full Access</div>
-              <div className="upgrade-desc">Unlimited analyses, PDF reports, advanced insights</div>
-              <button onClick={() => setShowPremium(true)} className="btn-glow" style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '10px 16px' }}>
-                ₹25 for 7 days
-              </button>
-              <p style={{ fontSize: 11, color: 'var(--text-hint)', margin: '8px 0 0', textAlign: 'center' }}>Then ₹49/month · Cancel anytime</p>
-            </div>
-          )}
+          <p style={{ textAlign: 'center', fontSize: 12, color: tc.textHint, marginTop: 20, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif", animation: 'fadeIn 0.8s ease 1s both' }}>
+            🔒 &nbsp;Your photos are never stored on our servers
+          </p>
         </div>
-      </div>
-    </AppLayout>
+      </main>
+    </div>
   );
 }

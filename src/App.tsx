@@ -9,6 +9,9 @@ import Products from './pages/Products';
 import Specialists from './pages/Specialists';
 import SpecialistProfile from './pages/SpecialistProfile';
 import Booking from './pages/Booking';
+import GlamResults from './pages/GlamResults';
+import GuideResults from './pages/GuideResults';
+import BridalResults from './pages/BridalResults';
 import Progress from './pages/Progress';
 import SignIn from './pages/SignIn';
 import AuthCallback from './pages/AuthCallback';
@@ -24,6 +27,9 @@ export default function App() {
           <Route path="/scan" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/results" element={<Results />} />
+          <Route path="/glam-results" element={<GlamResults />} />
+          <Route path="/guide-results" element={<GuideResults />} />
+          <Route path="/bridal-results" element={<BridalResults />} />
           <Route path="/routine" element={<Routine />} />
           <Route path="/products" element={<Products />} />
           <Route path="/specialists" element={<Specialists />} />
