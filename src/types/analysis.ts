@@ -122,6 +122,14 @@ export interface BridalPhase {
   keyProducts: string[];
 }
 
+export interface GlamHistoryEntry {
+  id: string;
+  date: string;
+  score: number;
+  imageUrl: string;
+  analysis: GlamAnalysis;
+}
+
 export interface BridalPlan {
   weddingLook: string;
   skinReadinessScore: number;

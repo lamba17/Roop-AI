@@ -14,7 +14,7 @@ import { useAuth, uploadSelfie } from '../lib/supabase';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
 import { useThemeColors } from '../hooks/useTheme';
-import type { HistoryEntry, AppMode } from '../types/analysis';
+import type { HistoryEntry, GlamHistoryEntry, AppMode } from '../types/analysis';
 
 const FREE_LIMIT = 9999; // unlimited on Testing branch
 
@@ -48,6 +48,7 @@ export default function Home() {
   void _analyzeGuide; void _analyzeBridal;
 
   const [history, setHistory] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const [glamHistory, setGlamHistory] = useLocalStorage<GlamHistoryEntry[]>('roop_glam_history', []);
   const { user } = useAuth();
   const { premium, refresh: refreshPremium } = usePremium(user);
 
@@ -98,6 +99,16 @@ export default function Home() {
     const base64 = await fileToBase64(makeupFile);
     const analysis = await analyzeGlam(base64);
     if (!analysis) return;
+    let imageUrl = '';
+    try { imageUrl = await uploadSelfie(user.id, makeupFile); } catch { /* use empty */ }
+    const entry: GlamHistoryEntry = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      score: analysis.glamScore,
+      imageUrl: imageUrl || makeupPreview || '',
+      analysis,
+    };
+    setGlamHistory([entry, ...glamHistory].slice(0, 10));
     navigate('/glam-results', { state: { analysis, imageUrl: makeupPreview } });
   }
 
