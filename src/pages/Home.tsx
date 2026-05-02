@@ -43,7 +43,7 @@ export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
   const tc = useThemeColors();
-  const [mode, setMode] = useState<AppMode>((location.state as any)?.mode ?? 'glow');
+  const [mode] = useState<AppMode>((location.state as any)?.mode ?? 'glow');
   const [skinFile, setSkinFile] = useState<File | null>(null);
   const [skinPreview, setSkinPreview] = useState<string | undefined>();
   const [makeupFile, setMakeupFile] = useState<File | null>(null);
@@ -80,12 +80,6 @@ export default function Home() {
     setMakeupFile(f);
     setMakeupPreview(URL.createObjectURL(f));
   }
-  function handleModeSelect(m: AppMode) {
-    setMode(m);
-    setSkinFile(null); setSkinPreview(undefined);
-    setMakeupFile(null); setMakeupPreview(undefined);
-  }
-
   async function handleGlowAnalyze() {
     if (!user || !skinFile) return;
     const base64 = await fileToBase64(skinFile);
@@ -165,76 +159,36 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Mode Selector */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20, animation: 'fadeInUp 0.6s ease 0.2s both' }}>
-            {MODES.map((m) => {
-              const isActive = mode === m.id;
-              const isGlam = m.id === 'glam';
-              const activeColor = isGlam ? '#ec4899' : '#a855f7';
-              const activeBg = isGlam ? 'rgba(236,72,153,0.12)' : 'rgba(168,85,247,0.12)';
-              const activeBorder = isGlam ? 'rgba(236,72,153,0.6)' : 'rgba(168,85,247,0.6)';
-              const activeGlow = isGlam ? '0 0 20px rgba(236,72,153,0.15)' : '0 0 20px rgba(168,85,247,0.15)';
-
-              return (
-                <button
-                  key={m.id}
-                  onClick={() => handleModeSelect(m.id)}
-                  style={{
-                    background: isActive ? activeBg : tc.cardBg,
-                    border: `1.5px solid ${isActive ? activeBorder : tc.cardBorder}`,
-                    borderRadius: 16, padding: '14px 12px', cursor: 'pointer',
-                    textAlign: 'left', transition: 'all 0.2s', position: 'relative',
-                    boxShadow: isActive ? activeGlow : 'none',
-                  }}
-                >
-                  {m.premium && (
-                    <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, fontWeight: 700, letterSpacing: 0.5, background: 'linear-gradient(135deg,#ec4899,#a855f7)', color: '#fff', padding: '2px 6px', borderRadius: 20 }}>
-                      PRO
-                    </span>
-                  )}
-                  <div style={{ fontSize: 22, marginBottom: 6 }}>{m.icon}</div>
-                  <div style={{ fontSize: 12, fontWeight: 800, color: isActive ? activeColor : tc.textPrimary, letterSpacing: 0.5, marginBottom: 2 }}>{m.label}</div>
-                  <div style={{ fontSize: 11, color: tc.textMuted, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4, marginBottom: isActive ? 8 : 0 }}>{m.sub}</div>
-                  {isActive && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
-                      {m.features.map(f => (
-                        <span key={f} style={{
-                          fontSize: 9, fontWeight: 700, letterSpacing: 0.3,
-                          padding: '2px 7px', borderRadius: 999,
-                          background: `${activeColor}18`,
-                          color: activeColor,
-                          border: `1px solid ${activeColor}30`,
-                        }}>{f}</span>
-                      ))}
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Glam feature showcase — shown when glam mode is active */}
-          {mode === 'glam' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16, animation: 'fadeInUp 0.5s ease 0.25s both' }}>
-              {[
-                { icon: '💄', title: 'Glam Score', desc: 'AI rates your makeup 0–100 against pro standards', color: '#ec4899' },
-                { icon: '👁️', title: 'Look Analysis', desc: 'Eyes, Face & Lips scored individually', color: '#a855f7' },
-                { icon: '🏅', title: 'Shade Match', desc: 'Foundation shades from 6 top Indian brands', color: '#f59e0b' },
-                { icon: '✨', title: 'Pro Corrections', desc: 'Expert tips to perfect your technique', color: '#06b6d4' },
-              ].map(f => (
-                <div key={f.title} style={{
-                  background: tc.cardBg, border: `1px solid ${tc.cardBorder}`,
-                  borderRadius: 14, padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start',
-                }}>
-                  <div style={{ fontSize: 20, lineHeight: 1, marginTop: 1, flexShrink: 0 }}>{f.icon}</div>
-                  <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: f.color, marginBottom: 2 }}>{f.title}</div>
-                    <div style={{ fontSize: 11, color: tc.textMuted, lineHeight: 1.4 }}>{f.desc}</div>
-                  </div>
+          {/* Mode badge */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20, animation: 'fadeInUp 0.6s ease 0.2s both' }}>
+            {mode === 'glam' ? (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '7px 16px', borderRadius: 999, background: 'rgba(236,72,153,0.12)', border: '1px solid rgba(236,72,153,0.35)' }}>
+                <span style={{ fontSize: 16 }}>💄</span>
+                <div>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#ec4899', letterSpacing: 0.5 }}>GLAM SCORE</span>
+                  <span style={{ fontSize: 11, color: 'rgba(236,72,153,0.7)', marginLeft: 6 }}>Makeup selfie · AI Coach</span>
                 </div>
-              ))}
-            </div>
-          )}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginLeft: 4 }}>
+                  {['Glam Score', 'Shade Match', 'Look Analysis', 'Pro Tips'].map(f => (
+                    <span key={f} style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 999, background: 'rgba(236,72,153,0.14)', color: '#ec4899', border: '1px solid rgba(236,72,153,0.25)' }}>{f}</span>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '7px 16px', borderRadius: 999, background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.35)' }}>
+                <span style={{ fontSize: 16 }}>🌿</span>
+                <div>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#a855f7', letterSpacing: 0.5 }}>GLOW SCORE</span>
+                  <span style={{ fontSize: 11, color: 'rgba(168,85,247,0.7)', marginLeft: 6 }}>No makeup · Skin health</span>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginLeft: 4 }}>
+                  {['Glow Score', 'Skin Routine', 'Product Picks', 'Derm Advice'].map(f => (
+                    <span key={f} style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 999, background: 'rgba(168,85,247,0.14)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.25)' }}>{f}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Upload Card */}
           <div className="glass-card" style={{ animation: 'fadeInUp 0.7s cubic-bezier(0.25,0.46,0.45,0.94) 0.35s both' }}>
