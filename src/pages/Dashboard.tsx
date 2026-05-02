@@ -586,7 +586,7 @@ export default function Dashboard() {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/>
                 </svg>
-                Switch Mode
+                {activeMode === 'glam' ? '🌿 Switch to Glow Mode' : '💄 Switch to Glam Mode'}
               </button>
             </div>
 
