@@ -1,10 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { GlamAnalysis, GlamScores } from '../types/analysis';
-import Logo from '../components/Logo';
-import ThemeToggle from '../components/ThemeToggle';
-import { useThemeColors } from '../hooks/useTheme';
-import GlowRing from '../components/GlowRing';
-import MakeupProductCard from '../components/MakeupProductCard';
+import AppLayout from '../components/AppLayout';
 import MakeupArtistFinder from '../components/MakeupArtistFinder';
 import { useEffect, useState } from 'react';
 import {
@@ -13,92 +9,152 @@ import {
   type FoundationBrand, type Undertone,
 } from '../data/foundationShades';
 
-/* ── helpers ─────────────────────────────────────────────────────────── */
+/* ── Design tokens ─────────────────────────────────────────────────── */
+const SURFACE      = '#120b1b';
+const SURFACE_LOW  = '#171021';
+const SURFACE_CONT = '#1e1629';
+const SURFACE_HIGH = '#251b31';
+const SURFACE_TOP  = '#2b2138';
+const PRIMARY      = '#bd9dff';
+const PRIMARY_DIM  = '#8a4cfc';
+const SECONDARY    = '#ff6a9f';
+const ON_SURFACE   = '#eee1f8';
+const ON_MUTED     = '#b2a7bd';
+const OUTLINE      = '#4d4457';
+
+const GLASS: React.CSSProperties = {
+  background: 'rgba(43, 33, 56, 0.6)',
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
+};
+
+const NEON_SHADOW = '0 0 40px -5px rgba(189, 157, 255, 0.08)';
+
+const fontHeadline: React.CSSProperties = { fontFamily: "'Epilogue', system-ui, sans-serif" };
+const fontBody: React.CSSProperties = { fontFamily: "'Manrope', system-ui, sans-serif" };
+
+/* ── Helpers ────────────────────────────────────────────────────────── */
 function barColor(score: number) {
-  if (score === 0)  return '#44445a';
-  if (score >= 75)  return '#22c55e';
-  if (score >= 50)  return '#f59e0b';
-  return '#ef4444';
+  if (score === 0) return OUTLINE;
+  if (score >= 75) return PRIMARY;
+  if (score >= 50) return '#f59e0b';
+  return SECONDARY;
 }
 
-function StatusPill({ score }: { score: number }) {
-  const applied = score > 0;
+/* ── Animated glam score ring ───────────────────────────────────────── */
+function GlamRing({ score }: { score: number }) {
+  const [displayed, setDisplayed] = useState(0);
+  const r = 120, size = 256, cx = 128, cy = 128;
+  const circ = 2 * Math.PI * r;
+  const dash = (displayed / 100) * circ;
+
+  useEffect(() => {
+    setDisplayed(0);
+    const start = Date.now();
+    const tick = setInterval(() => {
+      const p = Math.min((Date.now() - start) / 1400, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      setDisplayed(Math.round(e * score));
+      if (p >= 1) clearInterval(tick);
+    }, 16);
+    return () => clearInterval(tick);
+  }, [score]);
+
   return (
-    <span style={{
-      fontSize: 10, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase',
-      padding: '2px 7px', borderRadius: 20,
-      background: applied ? 'rgba(34,197,94,0.12)' : 'rgba(68,68,90,0.3)',
-      color: applied ? '#22c55e' : '#44445a',
-      border: `1px solid ${applied ? 'rgba(34,197,94,0.25)' : 'rgba(68,68,90,0.4)'}`,
-      flexShrink: 0,
-    }}>
-      {applied ? '✓ Applied' : '✕ Not applied'}
-    </span>
+    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{
+        position: 'absolute', width: 200, height: 200, borderRadius: '50%',
+        background: `radial-gradient(circle, ${SECONDARY}18 0%, ${PRIMARY}10 40%, transparent 70%)`,
+        pointerEvents: 'none',
+      }} />
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'relative', zIndex: 1 }}>
+        <defs>
+          <linearGradient id="glamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={PRIMARY} />
+            <stop offset="100%" stopColor={SECONDARY} />
+          </linearGradient>
+        </defs>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke={SURFACE_TOP} strokeWidth={8} />
+        <circle
+          cx={cx} cy={cy} r={r} fill="none"
+          stroke="url(#glamGrad)" strokeWidth={12} strokeLinecap="round"
+          strokeDasharray={`${dash} ${circ}`}
+          transform={`rotate(-90 ${cx} ${cy})`}
+          style={{ transition: 'stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)' }}
+        />
+        <text x={cx} y={cy - 14} textAnchor="middle" fill={ON_SURFACE} fontSize="72" fontWeight="900" {...{ style: { ...fontHeadline } }}>
+          {displayed}
+        </text>
+        <text x={cx} y={cy + 16} textAnchor="middle" fill={SECONDARY} fontSize="11" fontWeight="700" letterSpacing="3" {...{ style: { ...fontBody, textTransform: 'uppercase' } }}>
+          GLAM SCORE
+        </text>
+        <text x={cx} y={cy + 38} textAnchor="middle" fill={ON_MUTED} fontSize="12" fontWeight="600" letterSpacing="1" {...{ style: fontBody }}>
+          {score >= 80 ? 'Elite Level' : score >= 65 ? 'Pro Level' : score >= 50 ? 'Rising Star' : 'Developing'}
+        </text>
+      </svg>
+    </div>
   );
 }
 
-function AnimatedBar({ score, delay = 0 }: { score: number; delay?: number }) {
+/* ── Animated score bar ─────────────────────────────────────────────── */
+function AnimatedBar({ score, color, delay = 0 }: { score: number; color: string; delay?: number }) {
   const [width, setWidth] = useState(0);
   useEffect(() => {
     const t = setTimeout(() => setWidth(score), delay + 200);
     return () => clearTimeout(t);
   }, [score, delay]);
-
   return (
-    <div style={{ height: 6, background: 'var(--bar-track)', borderRadius: 999, overflow: 'hidden', flex: 1 }}>
+    <div style={{ height: 8, background: SURFACE_TOP, borderRadius: 999, overflow: 'hidden' }}>
       <div style={{
         height: '100%', width: `${width}%`,
-        background: barColor(score), borderRadius: 999,
-        transition: `width 1.1s cubic-bezier(.4,0,.2,1) ${delay}ms`,
+        background: color, borderRadius: 999,
+        transition: `width 1.2s cubic-bezier(.4,0,.2,1) ${delay}ms`,
+        boxShadow: `0 0 10px ${color}66`,
       }} />
     </div>
   );
 }
 
-function ScoreRow({ label, score, delay = 0 }: { label: string; score: number; delay?: number }) {
+function ScoreRow({ label, score, color, delay = 0 }: { label: string; score: number; color: string; delay?: number }) {
+  const applied = score > 0;
   return (
-    <div style={{ marginBottom: 14 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-        <span style={{ fontSize: 13, color: 'var(--text-muted)', flex: 1, fontFamily: "'DM Sans', sans-serif" }}>{label}</span>
-        <StatusPill score={score} />
-        <span style={{ fontSize: 13, fontWeight: 700, color: barColor(score), minWidth: 28, textAlign: 'right' }}>
-          {score}
-        </span>
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <span style={{ ...fontBody, fontSize: 15, fontWeight: 700, color: ON_SURFACE }}>{label}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{
+            ...fontBody, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1,
+            padding: '2px 8px', borderRadius: 999,
+            background: applied ? `${PRIMARY}18` : `${OUTLINE}30`,
+            color: applied ? PRIMARY : OUTLINE,
+          }}>
+            {applied ? '✓ Applied' : '✕ None'}
+          </span>
+          <span style={{ ...fontHeadline, fontSize: 18, fontWeight: 900, color }}>{score}%</span>
+        </div>
       </div>
-      <AnimatedBar score={score} delay={delay} />
+      <AnimatedBar score={score} color={color} delay={delay} />
     </div>
   );
 }
 
-function ScoreSection({
-  title, emoji, accentColor, rows, scores, delayBase, animClass,
-}: {
-  title: string; emoji: string; accentColor: string;
-  rows: Array<{ label: string; key: keyof GlamScores }>;
-  scores: GlamScores; delayBase: number; animClass: string;
-}) {
+/* ── Section heading ───────────────────────────────────────────────── */
+function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`glass-card card-in ${animClass}`} style={{ borderColor: `${accentColor}33` }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 10, fontSize: 18,
-          background: `${accentColor}18`, border: `1px solid ${accentColor}33`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-        }}>{emoji}</div>
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: accentColor }}>
-          {title}
-        </span>
-      </div>
-      {rows.map(({ label, key }, i) => (
-        <ScoreRow key={key} label={label} score={scores[key]} delay={delayBase + i * 80} />
-      ))}
+    <div style={{ ...fontBody, fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: SECONDARY, marginBottom: 16 }}>
+      {children}
     </div>
   );
 }
 
-function SectionLabel({ children, color = '#ec4899' }: { children: string; color?: string }) {
+/* ── Glass card wrapper ─────────────────────────────────────────────── */
+function GlassCard({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color, marginBottom: 12 }}>
+    <div style={{
+      ...GLASS, borderRadius: 20, padding: '28px 28px', marginBottom: 16,
+      boxShadow: NEON_SHADOW, border: `1px solid ${OUTLINE}26`,
+      ...style,
+    }}>
       {children}
     </div>
   );
@@ -108,75 +164,36 @@ function SectionLabel({ children, color = '#ec4899' }: { children: string; color
 const BRANDS: FoundationBrand[] = ['maybelline', 'loreal', 'lakme', 'myglamm', 'faces', 'nykaa'];
 
 function FoundationShadeSection({ depthScore, undertone }: { depthScore: number; undertone: Undertone }) {
-  const tc = useThemeColors();
   const shades = getShadeRecommendation(depthScore, undertone);
   if (!shades) return null;
-
   const depthLabel = getDepthLabel(depthScore);
   const undertoneLabel = undertone.charAt(0).toUpperCase() + undertone.slice(1);
-  const undertoneDesc =
-    undertone === 'warm' ? 'golden / yellow-olive cast' :
-    undertone === 'cool' ? 'pink / rosy cast' :
-    'balanced / no dominant cast';
 
   return (
-    <div className="glass-card card-in card-in-9" style={{ borderColor: 'rgba(245,158,11,0.25)', background: 'rgba(245,158,11,0.03)' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
-          🎨
-        </div>
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', color: '#f59e0b' }}>
-          Your Foundation Shade Matches
-        </span>
-      </div>
-
-      {/* Skin tone summary */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
-        <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)', letterSpacing: 0.5 }}>
+    <GlassCard style={{ border: `1px solid rgba(245,158,11,0.2)`, background: 'rgba(245,158,11,0.03)' }}>
+      <SectionHeading>Foundation Shade Matches</SectionHeading>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+        <span style={{ ...fontBody, fontSize: 11, fontWeight: 700, padding: '3px 12px', borderRadius: 999, background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)' }}>
           {depthLabel} · Depth {depthScore}/10
         </span>
-        <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: 'rgba(168,85,247,0.12)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.25)', letterSpacing: 0.5 }}>
+        <span style={{ ...fontBody, fontSize: 11, fontWeight: 700, padding: '3px 12px', borderRadius: 999, background: `${PRIMARY}18`, color: PRIMARY, border: `1px solid ${PRIMARY}30` }}>
           {undertoneLabel} Undertone
         </span>
-        <span style={{ fontSize: 11, color: tc.textHint, fontFamily: "'DM Sans', sans-serif", alignSelf: 'center' }}>
-          ({undertoneDesc})
-        </span>
       </div>
-
-      <p style={{ fontSize: 13, color: tc.textMuted, fontFamily: "'DM Sans', sans-serif", marginBottom: 16, lineHeight: 1.5 }}>
-        Based on your visible skin tone, here are your best-match shades across popular Indian foundation brands — all available on Nykaa &amp; Amazon.
-      </p>
-
-      {/* Brand cards grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
         {BRANDS.map((brand) => {
           const shade = shades[brand];
           const color = BRAND_COLORS[brand];
-          const nykaaUrl = getNykaaLink(brand, shade);
-          const amazonUrl = getAmazonLink(brand, shade);
           return (
-            <div key={brand} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${color}30`, borderRadius: 12, padding: '12px 14px' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color, marginBottom: 4 }}>
-                {BRAND_LABELS[brand]}
-              </div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: tc.textPrimary, marginBottom: 2, fontFamily: "'DM Sans', sans-serif" }}>
-                {shade}
-              </div>
-              <div style={{ fontSize: 11, color: tc.textHint, marginBottom: 10, fontFamily: "'DM Sans', sans-serif" }}>
-                {PRICE_RANGE[brand]}
-              </div>
+            <div key={brand} style={{ background: SURFACE_HIGH, border: `1px solid ${color}30`, borderRadius: 14, padding: '14px 16px' }}>
+              <div style={{ ...fontBody, fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color, marginBottom: 4 }}>{BRAND_LABELS[brand]}</div>
+              <div style={{ ...fontHeadline, fontSize: 14, fontWeight: 700, color: ON_SURFACE, marginBottom: 2 }}>{shade}</div>
+              <div style={{ ...fontBody, fontSize: 11, color: ON_MUTED, marginBottom: 12 }}>{PRICE_RANGE[brand]}</div>
               <div style={{ display: 'flex', gap: 6 }}>
-                <a href={nykaaUrl} target="_blank" rel="noreferrer noopener" style={{
-                  fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 20, textDecoration: 'none',
-                  background: 'rgba(236,72,153,0.12)', color: '#ec4899', border: '1px solid rgba(236,72,153,0.25)',
-                }}>
+                <a href={getNykaaLink(brand, shade)} target="_blank" rel="noreferrer noopener" style={{ ...fontBody, fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 999, textDecoration: 'none', background: `${SECONDARY}18`, color: SECONDARY, border: `1px solid ${SECONDARY}30` }}>
                   💄 Nykaa
                 </a>
-                <a href={amazonUrl} target="_blank" rel="noreferrer noopener" style={{
-                  fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 20, textDecoration: 'none',
-                  background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)',
-                }}>
+                <a href={getAmazonLink(brand, shade)} target="_blank" rel="noreferrer noopener" style={{ ...fontBody, fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 999, textDecoration: 'none', background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)' }}>
                   🛒 Amazon
                 </a>
               </div>
@@ -184,10 +201,50 @@ function FoundationShadeSection({ depthScore, undertone }: { depthScore: number;
           );
         })}
       </div>
-
-      <p style={{ marginTop: 14, fontSize: 12, color: tc.textHint, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5, fontStyle: 'italic' }}>
-        💡 Tip: Always swatch on your jawline in natural light. Go one shade deeper if you prefer a sun-kissed finish.
+      <p style={{ ...fontBody, marginTop: 14, fontSize: 12, color: ON_MUTED, lineHeight: 1.6, fontStyle: 'italic' }}>
+        💡 Always swatch on your jawline in natural light. Go one shade deeper for a sun-kissed finish.
       </p>
+    </GlassCard>
+  );
+}
+
+/* ── Product card ───────────────────────────────────────────────────── */
+function GlamProductCard({ product }: { product: { name: string; type: string; reason: string; amazonLink?: string; nykaaLink?: string } }) {
+  const typeColor = product.type === 'lipstick' || product.type === 'gloss' ? SECONDARY : PRIMARY;
+  return (
+    <div style={{
+      background: SURFACE_HIGH, borderRadius: 16, padding: '18px 20px',
+      border: `1px solid ${OUTLINE}20`, marginBottom: 10,
+      display: 'flex', gap: 14, alignItems: 'flex-start',
+      transition: 'transform 0.2s, border-color 0.2s',
+    }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.borderColor = `${PRIMARY}40`; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.borderColor = `${OUTLINE}20`; }}
+    >
+      <div style={{ width: 42, height: 42, borderRadius: 12, background: `${typeColor}18`, border: `1px solid ${typeColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+        {product.type === 'lipstick' || product.type === 'gloss' ? '💋' : product.type === 'eyeshadow' || product.type === 'eyeliner' || product.type === 'mascara' ? '👁' : '✨'}
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+          <div>
+            <div style={{ ...fontBody, fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: typeColor, marginBottom: 2 }}>{product.type}</div>
+            <div style={{ ...fontHeadline, fontSize: 15, fontWeight: 700, color: ON_SURFACE }}>{product.name}</div>
+          </div>
+        </div>
+        <p style={{ ...fontBody, fontSize: 13, color: ON_MUTED, lineHeight: 1.5, margin: '6px 0 10px' }}>{product.reason}</p>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {product.nykaaLink && (
+            <a href={product.nykaaLink} target="_blank" rel="noreferrer noopener" style={{ ...fontBody, fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 999, textDecoration: 'none', background: `${SECONDARY}18`, color: SECONDARY, border: `1px solid ${SECONDARY}30` }}>
+              💄 Nykaa
+            </a>
+          )}
+          {product.amazonLink && (
+            <a href={product.amazonLink} target="_blank" rel="noreferrer noopener" style={{ ...fontBody, fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 999, textDecoration: 'none', background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)' }}>
+              🛒 Amazon
+            </a>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -196,178 +253,240 @@ function FoundationShadeSection({ depthScore, undertone }: { depthScore: number;
 export default function GlamResults() {
   const location = useLocation();
   const navigate = useNavigate();
-  const tc = useThemeColors();
   const { analysis, imageUrl } = (location.state ?? {}) as { analysis: GlamAnalysis; imageUrl?: string };
 
   if (!analysis) {
     return (
-      <div className="mesh-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 18 }}>
-        <p style={{ color: 'var(--text-muted)', fontFamily: "'DM Sans', sans-serif" }}>No analysis found.</p>
-        <button onClick={() => navigate('/')} className="btn-primary">Go Home</button>
-      </div>
+      <AppLayout>
+        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 18 }}>
+          <div style={{ ...fontBody, color: ON_MUTED, fontSize: 16 }}>No analysis found.</div>
+          <button
+            onClick={() => navigate('/')}
+            style={{ ...fontBody, background: `linear-gradient(135deg, ${PRIMARY_DIM}, ${SECONDARY})`, color: '#fff', border: 'none', borderRadius: 999, padding: '12px 28px', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+          >
+            ← Go Back
+          </button>
+        </div>
+      </AppLayout>
     );
   }
 
   const s = analysis.scores;
 
-  const FACE_ROWS: Array<{ label: string; key: keyof GlamScores }> = [
-    { label: 'Foundation',  key: 'foundation' },
-    { label: 'Concealer',   key: 'concealer'  },
-    { label: 'Powder',      key: 'powder'     },
-    { label: 'Blush',       key: 'blush'      },
-    { label: 'Highlighter', key: 'highlighter'},
+  const FACE_ROWS: Array<{ label: string; key: keyof GlamScores; color: string }> = [
+    { label: 'Foundation',  key: 'foundation',  color: PRIMARY },
+    { label: 'Concealer',   key: 'concealer',   color: PRIMARY },
+    { label: 'Powder',      key: 'powder',       color: '#f59e0b' },
+    { label: 'Blush',       key: 'blush',        color: SECONDARY },
+    { label: 'Highlighter', key: 'highlighter',  color: '#f59e0b' },
   ];
-  const EYE_ROWS: Array<{ label: string; key: keyof GlamScores }> = [
-    { label: 'Eyeshadow',     key: 'eyeshadow'   },
-    { label: 'Eyeliner',      key: 'eyeliner'    },
-    { label: 'Mascara',       key: 'mascara'     },
-    { label: 'Brow Products', key: 'browProducts'},
+  const EYE_ROWS: Array<{ label: string; key: keyof GlamScores; color: string }> = [
+    { label: 'Eyeshadow',     key: 'eyeshadow',    color: PRIMARY },
+    { label: 'Eyeliner',      key: 'eyeliner',      color: '#6366f1' },
+    { label: 'Mascara',       key: 'mascara',       color: PRIMARY },
+    { label: 'Brow Products', key: 'browProducts',  color: '#6366f1' },
   ];
-  const LIP_ROWS: Array<{ label: string; key: keyof GlamScores }> = [
-    { label: 'Lipstick',  key: 'lipstick'},
-    { label: 'Lip Gloss', key: 'gloss'   },
-    { label: 'Lip Balm',  key: 'balm'    },
+  const LIP_ROWS: Array<{ label: string; key: keyof GlamScores; color: string }> = [
+    { label: 'Lipstick',  key: 'lipstick', color: SECONDARY },
+    { label: 'Lip Gloss', key: 'gloss',    color: SECONDARY },
+    { label: 'Lip Balm',  key: 'balm',     color: '#f59e0b' },
   ];
+
+  const [isWide, setIsWide] = useState(typeof window !== 'undefined' ? window.innerWidth >= 768 : true);
+  useEffect(() => {
+    const handler = () => setIsWide(window.innerWidth >= 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   return (
-    <div className="mesh-bg fade-in" style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
-      <div className="hero-glow" style={{ opacity: 0.6 }} />
+    <AppLayout>
+      <div style={{ background: SURFACE, minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+        {/* Ambient background glows */}
+        <div style={{ position: 'fixed', top: '20%', left: '-5%', width: 400, height: 400, background: `${PRIMARY}0d`, borderRadius: '50%', filter: 'blur(120px)', pointerEvents: 'none', zIndex: 0 }} />
+        <div style={{ position: 'fixed', bottom: '20%', right: '-5%', width: 400, height: 400, background: `${SECONDARY}0d`, borderRadius: '50%', filter: 'blur(120px)', pointerEvents: 'none', zIndex: 0 }} />
 
-      <header className="header-glass" style={{ position: 'sticky', top: 0, zIndex: 40, padding: '0 20px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Logo size="sm" />
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button onClick={() => navigate('/')} className="btn-outline" style={{ fontSize: 12, padding: '7px 14px' }}>← Back</button>
-          <ThemeToggle />
-          <button onClick={() => navigate('/')} className="btn-primary" style={{ fontSize: 12, padding: '7px 14px' }}>New Scan</button>
-        </div>
-      </header>
+        <div style={{ maxWidth: 960, margin: '0 auto', padding: '32px 20px 80px', position: 'relative', zIndex: 1 }}>
 
-      <div style={{ maxWidth: 700, margin: '0 auto', padding: '28px 16px 80px', position: 'relative', zIndex: 1 }}>
+          {/* ── Page header ──────────────────────────────────────────── */}
+          <div style={{ marginBottom: 36 }}>
+            <div style={{ ...fontBody, fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: SECONDARY, marginBottom: 8 }}>
+              AI Makeup Diagnosis
+            </div>
+            <h1 style={{ ...fontHeadline, fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, color: ON_SURFACE, margin: '0 0 8px', lineHeight: 1.1, letterSpacing: '-1px' }}>
+              Your Glam <span style={{ background: `linear-gradient(135deg, ${PRIMARY}, ${SECONDARY})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Report</span>
+            </h1>
+            <p style={{ ...fontBody, fontSize: 16, color: ON_MUTED, margin: 0 }}>
+              {analysis.currentLook} · <span style={{ color: PRIMARY }}>{analysis.makeupStyle} Style</span>
+            </p>
+          </div>
 
-        {/* ── Hero Score Card ─────────────────────────────────────────── */}
-        <div className="glass-card card-in card-in-1" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16, padding: '32px 24px' }}>
-          {imageUrl && (
-            <img src={imageUrl} alt="Makeup selfie" style={{ width: 88, height: 88, borderRadius: '50%', objectFit: 'cover', border: '3px solid transparent', background: 'linear-gradient(#0d0d1f,#0d0d1f) padding-box, linear-gradient(135deg,#ec4899,#a855f7) border-box', boxShadow: '0 0 24px rgba(236,72,153,0.3)' }} />
+          {/* ── Dashboard grid: score ring + analysis ────────────────── */}
+          <div style={{ display: 'grid', gridTemplateColumns: isWide ? 'clamp(260px, 35%, 340px) 1fr' : '1fr', gap: 16, marginBottom: 16, alignItems: 'start' }}>
+            {/* Score ring card */}
+            <GlassCard style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, padding: '32px 24px', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: -40, left: -40, width: 160, height: 160, background: `${PRIMARY_DIM}12`, borderRadius: '50%', filter: 'blur(60px)' }} />
+              <div style={{ position: 'absolute', bottom: -40, right: -40, width: 160, height: 160, background: `${SECONDARY}10`, borderRadius: '50%', filter: 'blur(60px)' }} />
+              {imageUrl && (
+                <img src={imageUrl} alt="Glam selfie" style={{ width: 68, height: 68, borderRadius: '50%', objectFit: 'cover', marginBottom: 16, border: `2px solid ${PRIMARY}40`, boxShadow: `0 0 20px ${PRIMARY}30` }} />
+              )}
+              <GlamRing score={analysis.glamScore} />
+              <p style={{ ...fontBody, fontSize: 13, color: ON_MUTED, textAlign: 'center', marginTop: 16, maxWidth: 200, lineHeight: 1.5 }}>
+                Top performer for tonal balance &amp; technique.
+              </p>
+            </GlassCard>
+
+            {/* Look analysis bars */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Face */}
+              <GlassCard style={{ padding: '22px 24px' }}>
+                <SectionHeading>Face Makeup</SectionHeading>
+                {FACE_ROWS.map((r, i) => (
+                  <ScoreRow key={r.key} label={r.label} score={s[r.key]} color={r.color} delay={i * 80} />
+                ))}
+              </GlassCard>
+
+              {/* Eyes */}
+              <GlassCard style={{ padding: '22px 24px' }}>
+                <SectionHeading>Eye Makeup</SectionHeading>
+                {EYE_ROWS.map((r, i) => (
+                  <ScoreRow key={r.key} label={r.label} score={s[r.key]} color={r.color} delay={100 + i * 80} />
+                ))}
+              </GlassCard>
+            </div>
+          </div>
+
+          {/* Lip products — full width */}
+          <GlassCard style={{ padding: '22px 24px' }}>
+            <SectionHeading>Lip Products</SectionHeading>
+            <div style={{ display: 'grid', gridTemplateColumns: isWide ? 'repeat(3, 1fr)' : '1fr', gap: '0 40px' }}>
+              {LIP_ROWS.map((r, i) => (
+                <ScoreRow key={r.key} label={r.label} score={s[r.key]} color={r.color} delay={200 + i * 80} />
+              ))}
+            </div>
+          </GlassCard>
+
+          {/* ── Report + skin tone match ──────────────────────────────── */}
+          <GlassCard style={{ background: `${PRIMARY}08`, border: `1px solid ${PRIMARY}20` }}>
+            <SectionHeading>AI Diagnosis</SectionHeading>
+            <p style={{ ...fontBody, fontSize: 15, color: ON_SURFACE, lineHeight: 1.7, margin: '0 0 12px' }}>{analysis.report}</p>
+            <p style={{ ...fontBody, fontSize: 13, color: SECONDARY, fontStyle: 'italic', margin: 0 }}>{analysis.skinToneMatch}</p>
+            <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
+              <span style={{ ...fontBody, fontSize: 11, fontWeight: 700, padding: '4px 14px', borderRadius: 999, background: `${PRIMARY}18`, color: PRIMARY, border: `1px solid ${PRIMARY}30` }}>
+                {analysis.currentLook}
+              </span>
+              <span style={{ ...fontBody, fontSize: 11, fontWeight: 700, padding: '4px 14px', borderRadius: 999, background: `${SECONDARY}18`, color: SECONDARY, border: `1px solid ${SECONDARY}30` }}>
+                {analysis.makeupStyle} Style
+              </span>
+              <span style={{ ...fontBody, fontSize: 11, fontWeight: 700, padding: '4px 14px', borderRadius: 999, background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)' }}>
+                Overall: {s.overall}/100
+              </span>
+            </div>
+          </GlassCard>
+
+          {/* ── What's missing ───────────────────────────────────────── */}
+          {analysis.missingElements.length > 0 && (
+            <GlassCard style={{ background: `${SECONDARY}05`, border: `1px solid ${SECONDARY}25` }}>
+              <SectionHeading>Missing From Your Look</SectionHeading>
+              <p style={{ ...fontBody, fontSize: 14, color: ON_MUTED, marginBottom: 16, fontStyle: 'italic' }}>
+                "{analysis.missingElements.length > 1 ? 'Suggesting ' : 'Suggesting a '}
+                <span style={{ color: SECONDARY, fontWeight: 700 }}>{analysis.missingElements[0].split(' ').slice(0, 4).join(' ')}</span>
+                {' '}to complete your look."
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {analysis.missingElements.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                    <span style={{ ...fontBody, fontSize: 12, fontWeight: 700, color: SECONDARY, background: `${SECONDARY}18`, border: `1px solid ${SECONDARY}30`, borderRadius: 6, padding: '2px 8px', flexShrink: 0, marginTop: 1 }}>✕</span>
+                    <p style={{ ...fontBody, margin: 0, fontSize: 14, color: ON_SURFACE, lineHeight: 1.6 }}>{item}</p>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
           )}
 
-          <GlowRing score={analysis.glamScore} size={168} label="GLAM SCORE" color="#ec4899" />
-
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <span className="skin-badge skin-badge-purple">{analysis.currentLook}</span>
-            <span className="skin-badge skin-badge-cyan" style={{ textTransform: 'capitalize' }}>{analysis.makeupStyle} Style</span>
-          </div>
-
-          <p style={{ fontSize: 14, color: tc.textBody, lineHeight: 1.7, maxWidth: 460, margin: 0, fontFamily: "'DM Sans', sans-serif" }}>
-            {analysis.report}
-          </p>
-          <p style={{ fontSize: 13, color: 'rgba(236,72,153,0.8)', margin: 0, fontFamily: "'DM Sans', sans-serif", fontStyle: 'italic' }}>
-            {analysis.skinToneMatch}
-          </p>
-
-          {/* Overall score pill */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 20px', borderRadius: 100, background: 'rgba(236,72,153,0.08)', border: '1px solid rgba(236,72,153,0.25)' }}>
-            <span style={{ fontSize: 13, color: tc.textBody, fontFamily: "'DM Sans', sans-serif" }}>Overall Finish</span>
-            <span style={{ fontSize: 18, fontWeight: 800, color: barColor(s.overall) }}>{s.overall}</span>
-            <span style={{ fontSize: 12, color: tc.textHint }}>/100</span>
-          </div>
-        </div>
-
-        {/* ── Face Makeup Scores ───────────────────────────────────────── */}
-        <ScoreSection
-          title="Face Makeup"
-          emoji="✨"
-          accentColor="#f59e0b"
-          rows={FACE_ROWS}
-          scores={s}
-          delayBase={0}
-          animClass="card-in-2"
-        />
-
-        {/* ── Eye Makeup Scores ────────────────────────────────────────── */}
-        <ScoreSection
-          title="Eye Makeup"
-          emoji="👁"
-          accentColor="#6366f1"
-          rows={EYE_ROWS}
-          scores={s}
-          delayBase={100}
-          animClass="card-in-3"
-        />
-
-        {/* ── Lip Products Scores ──────────────────────────────────────── */}
-        <ScoreSection
-          title="Lip Products"
-          emoji="💋"
-          accentColor="#ec4899"
-          rows={LIP_ROWS}
-          scores={s}
-          delayBase={200}
-          animClass="card-in-4"
-        />
-
-        {/* ── What's Missing ───────────────────────────────────────────── */}
-        {analysis.missingElements.length > 0 && (
-          <div className="glass-card card-in card-in-5" style={{ borderColor: 'rgba(245,158,11,0.25)', background: 'rgba(245,158,11,0.04)' }}>
-            <SectionLabel color="#f59e0b">What's Missing From Your Look</SectionLabel>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {analysis.missingElements.map((item, i) => (
-                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#f59e0b', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 6, padding: '2px 8px', flexShrink: 0, marginTop: 1 }}>✕</span>
-                  <p style={{ margin: 0, fontSize: 14, color: tc.textBody, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>{item}</p>
+          {/* ── Corrections ──────────────────────────────────────────── */}
+          <GlassCard style={{ background: `${PRIMARY}06`, border: `1px solid ${PRIMARY}18` }}>
+            <SectionHeading>{analysis.corrections.length} Things to Improve</SectionHeading>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {analysis.corrections.map((c, i) => (
+                <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: `${PRIMARY}18`, border: `1px solid ${PRIMARY}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ ...fontHeadline, fontSize: 12, fontWeight: 900, color: PRIMARY }}>{i + 1}</span>
+                  </div>
+                  <p style={{ ...fontBody, margin: 0, fontSize: 14, color: ON_SURFACE, lineHeight: 1.6, paddingTop: 4 }}>{c}</p>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          </GlassCard>
 
-        {/* ── 3 Corrections ───────────────────────────────────────────── */}
-        <div className="glass-card card-in card-in-6" style={{ borderColor: 'rgba(236,72,153,0.2)', background: 'rgba(236,72,153,0.04)' }}>
-          <SectionLabel>{`${analysis.corrections.length} Things to Improve`}</SectionLabel>
-          {analysis.corrections.map((c, i) => (
-            <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: i < analysis.corrections.length - 1 ? 12 : 0 }}>
-              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(236,72,153,0.15)', border: '1px solid rgba(236,72,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#ec4899', flexShrink: 0 }}>
-                {i + 1}
-              </div>
-              <p style={{ margin: 0, fontSize: 14, color: tc.textBody, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>{c}</p>
+          {/* ── Pro tip ──────────────────────────────────────────────── */}
+          <GlassCard style={{ background: `${PRIMARY}08`, border: `1px solid ${PRIMARY}25`, display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+            <div style={{ width: 48, height: 48, borderRadius: 14, background: `${PRIMARY}18`, border: `1px solid ${PRIMARY}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+              ✨
             </div>
-          ))}
-        </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ ...fontBody, fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: PRIMARY, marginBottom: 8 }}>Pro Tutorial Tip</div>
+              <p style={{ ...fontBody, margin: '0 0 10px', fontSize: 14, color: ON_SURFACE, lineHeight: 1.7 }}>{analysis.tutorialTip}</p>
+              <p style={{ ...fontBody, margin: 0, fontSize: 13, color: SECONDARY, fontStyle: 'italic' }}>💄 Try next: {analysis.lookSuggestion}</p>
+            </div>
+          </GlassCard>
 
-        {/* ── Pro Tip ──────────────────────────────────────────────────── */}
-        <div className="glass-card card-in card-in-7" style={{ display: 'flex', gap: 16, alignItems: 'flex-start', background: 'rgba(168,85,247,0.07)', borderColor: 'rgba(168,85,247,0.25)' }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>✨</div>
-          <div>
-            <SectionLabel color="#a855f7">Pro Tutorial Tip</SectionLabel>
-            <p style={{ margin: '0 0 8px', fontSize: 14, color: tc.textBody, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif" }}>{analysis.tutorialTip}</p>
-            <p style={{ margin: 0, fontSize: 13, color: 'rgba(236,72,153,0.8)', fontStyle: 'italic', fontFamily: "'DM Sans', sans-serif" }}>💄 Try next: {analysis.lookSuggestion}</p>
+          {/* ── Recommended Products ─────────────────────────────────── */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ ...fontBody, fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: SECONDARY, marginBottom: 6 }}>
+                Curation Engine
+              </div>
+              <h2 style={{ ...fontHeadline, fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', fontWeight: 900, color: ON_SURFACE, margin: '0 0 8px', letterSpacing: '-0.5px' }}>
+                Elite <span style={{ fontStyle: 'italic', background: `linear-gradient(135deg, ${PRIMARY}, ${SECONDARY})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Recommendations</span>
+              </h2>
+              <p style={{ ...fontBody, fontSize: 14, color: ON_MUTED, margin: 0 }}>
+                Based on your analysis — curated missing layers for your look.
+              </p>
+            </div>
+            {analysis.products.map((p, i) => (
+              <GlamProductCard key={i} product={p} />
+            ))}
           </div>
+
+          {/* ── Foundation Shade Finder ──────────────────────────────── */}
+          <FoundationShadeSection
+            depthScore={analysis.depthScore ?? 5}
+            undertone={(analysis.undertone as Undertone) ?? 'neutral'}
+          />
+
+          {/* ── Makeup Artists Near You ──────────────────────────────── */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ ...fontBody, fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: SECONDARY, marginBottom: 6 }}>
+                Artist Network
+              </div>
+              <h2 style={{ ...fontHeadline, fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', fontWeight: 900, color: ON_SURFACE, margin: '0 0 8px', letterSpacing: '-0.5px' }}>
+                Artists <span style={{ color: SECONDARY }}>Near You</span>
+              </h2>
+              <p style={{ ...fontBody, fontSize: 14, color: ON_MUTED, margin: 0 }}>
+                Discover elite beauty creators in your city, curated by GLAM AI.
+              </p>
+            </div>
+            <GlassCard style={{ padding: '24px 28px' }}>
+              <MakeupArtistFinder />
+            </GlassCard>
+          </div>
+
+          {/* ── New scan CTA ─────────────────────────────────────────── */}
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <button
+              onClick={() => navigate('/scan')}
+              style={{ ...fontHeadline, background: `linear-gradient(135deg, ${PRIMARY_DIM}, ${SECONDARY})`, color: '#fff', border: 'none', borderRadius: 999, padding: '16px 40px', fontSize: 15, fontWeight: 700, cursor: 'pointer', letterSpacing: 1, textTransform: 'uppercase', boxShadow: `0 0 30px ${PRIMARY_DIM}40`, transition: 'transform 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.05)')}
+              onMouseLeave={e => (e.currentTarget.style.transform = '')}
+            >
+              ✨ New Glam Scan
+            </button>
+          </div>
+
         </div>
-
-        {/* ── Recommended Products ─────────────────────────────────────── */}
-        <div className="glass-card card-in card-in-8">
-          <SectionLabel>Recommended Makeup Products</SectionLabel>
-          <p style={{ fontSize: 12, color: tc.textHint, marginBottom: 14, fontFamily: "'DM Sans', sans-serif" }}>
-            Picks suited to your look · Shop on Amazon &amp; Nykaa
-          </p>
-          {analysis.products.map((p, i) => <MakeupProductCard key={i} product={p} />)}
-        </div>
-
-        {/* ── Foundation Shade Finder ──────────────────────────────────── */}
-        <FoundationShadeSection
-          depthScore={analysis.depthScore ?? 5}
-          undertone={(analysis.undertone as Undertone) ?? 'neutral'}
-        />
-
-        {/* ── Makeup Artists Near You ──────────────────────────────────── */}
-        <div className="glass-card card-in card-in-10" style={{ borderColor: 'rgba(236,72,153,0.2)', background: 'rgba(236,72,153,0.03)' }}>
-          <SectionLabel>Makeup Artists Near You</SectionLabel>
-          <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 700, margin: '0 0 16px', color: tc.textPrimary }}>
-            Book a Pro in Your City
-          </h3>
-          <MakeupArtistFinder />
-        </div>
-
       </div>
-    </div>
+    </AppLayout>
   );
 }
