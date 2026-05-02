@@ -126,11 +126,9 @@ export default function Home() {
       <header className="header-glass" style={{ position: 'sticky', top: 0, zIndex: 40, padding: '0 24px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Logo size="sm" />
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {user && (
-            <button onClick={() => navigate('/progress')} className="btn-outline" style={{ fontSize: 13, padding: '8px 18px', gap: 6 }}>
-              <span style={{ fontSize: 15 }}>📊</span>Progress
-            </button>
-          )}
+          <button onClick={() => navigate(-1)} className="btn-outline" style={{ fontSize: 13, padding: '8px 18px', gap: 6 }}>
+            <span style={{ fontSize: 15 }}>←</span>Back
+          </button>
           <ThemeToggle />
           <UserMenu />
         </div>
