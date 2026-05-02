@@ -2330,6 +2330,17 @@
     gap: 8px;
     width: 100%;
     padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    justify-content: space-between;
+  }
 
   /* Concern tag */
   .concern-tag {
