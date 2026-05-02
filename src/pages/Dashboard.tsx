@@ -544,7 +544,7 @@ export default function Dashboard() {
 
         {/* ── Mode not chosen yet: show picker ── */}
         {!scoreMode ? (
-          <DashboardModePicker firstName={firstName} onPick={m => setScoreMode(m)} />
+          <DashboardModePicker firstName={firstName} onPick={m => { setScoreMode(m); navigate('/scan'); }} />
         ) : (
           <>
             {/* Welcome Header */}
