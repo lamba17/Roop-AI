@@ -206,6 +206,48 @@ function matchesMakeupFilter(type: string, filter: string): boolean {
   return type === f;
 }
 
+/* ── Search bar ─────────────────────────────────────────────────────── */
+function ProductSearchBar({ value, onChange, isGlam }: { value: string; onChange: (v: string) => void; isGlam: boolean }) {
+  const accent = isGlam ? '#ec4899' : '#a855f7';
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 10,
+      background: 'var(--bg-card)', border: `1.5px solid var(--border)`,
+      borderRadius: 14, padding: '10px 16px', marginBottom: 16,
+      transition: 'border-color 0.2s',
+    }}
+      onFocusCapture={e => (e.currentTarget as HTMLDivElement).style.borderColor = accent}
+      onBlurCapture={e => (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)'}
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={isGlam ? 'Search makeup products, brands…' : 'Search skincare products, brands…'}
+        style={{
+          flex: 1, background: 'none', border: 'none', outline: 'none',
+          fontSize: 14, color: 'var(--text-primary)', fontFamily: "'DM Sans', system-ui, sans-serif",
+        }}
+      />
+      {value && (
+        <button
+          onClick={() => onChange('')}
+          style={{
+            background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 50,
+            width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'var(--text-muted)', fontSize: 12, flexShrink: 0,
+          }}
+        >
+          ✕
+        </button>
+      )}
+    </div>
+  );
+}
+
 /* ── Price range filter UI ───────────────────────────────────────────── */
 function PriceRangeFilter({ value, onChange }: { value: PriceRange; onChange: (v: PriceRange) => void }) {
   return (
@@ -237,30 +279,36 @@ function PriceRangeFilter({ value, onChange }: { value: PriceRange; onChange: (v
 }
 
 /* ── Merge AI products with static catalogue ─────────────────────────── */
-function mergeWithStatic(aiProducts: any[], staticCatalogue: StaticProduct[], priceRange: PriceRange): StaticProduct[] {
+function mergeWithStatic(aiProducts: any[], staticCatalogue: StaticProduct[], priceRange: PriceRange, searchQuery: string): StaticProduct[] {
   const rangeConfig = PRICE_RANGES.find(r => r.key === priceRange) ?? PRICE_RANGES[0];
 
-  // Convert AI products to StaticProduct shape
   const fromAI: StaticProduct[] = aiProducts.map((p: any) => ({
-    name: p.name,
-    brand: '',
-    type: p.type,
-    price: 599,
-    priceLabel: '₹599',
-    reason: p.reason,
-    rating: 4.4,
+    name: p.name, brand: '', type: p.type,
+    price: 599, priceLabel: '₹599',
+    reason: p.reason, rating: 4.4,
   }));
 
-  // Merge: deduplicate by name (AI first, then static)
   const seen = new Set(fromAI.map(p => p.name.toLowerCase()));
   const extras = staticCatalogue.filter(p => !seen.has(p.name.toLowerCase()));
   const all = [...fromAI, ...extras];
 
-  // Apply price filter (AI products without real price always pass through)
+  const q = searchQuery.trim().toLowerCase();
+
   return all.filter(p => {
-    if (rangeConfig.key === 'all') return true;
-    if (p.brand === '') return true; // AI-generated, no price data
-    return p.price >= rangeConfig.min && p.price <= rangeConfig.max;
+    // Price filter
+    if (rangeConfig.key !== 'all' && p.brand !== '') {
+      if (p.price < rangeConfig.min || p.price > rangeConfig.max) return false;
+    }
+    // Search filter
+    if (q) {
+      return (
+        p.name.toLowerCase().includes(q) ||
+        p.brand.toLowerCase().includes(q) ||
+        p.type.toLowerCase().includes(q) ||
+        p.reason.toLowerCase().includes(q)
+      );
+    }
+    return true;
   });
 }
 
@@ -339,10 +387,10 @@ function ProductCard({
 }
 
 /* ── Skin Products Section ───────────────────────────────────────────── */
-function SkinProductsContent({ latest, activeFilter, priceRange, t }: { latest: HistoryEntry; activeFilter: string; priceRange: PriceRange; t: any }) {
+function SkinProductsContent({ latest, activeFilter, priceRange, searchQuery, t }: { latest: HistoryEntry; activeFilter: string; priceRange: PriceRange; searchQuery: string; t: any }) {
   const { products, glowScore, scores } = latest.analysis;
 
-  const merged = mergeWithStatic(products, STATIC_SKIN_PRODUCTS, priceRange);
+  const merged = mergeWithStatic(products, STATIC_SKIN_PRODUCTS, priceRange, searchQuery);
   const filtered = activeFilter === 'All'
     ? merged
     : merged.filter(p => p.type.toLowerCase() === activeFilter.toLowerCase());
@@ -358,8 +406,8 @@ function SkinProductsContent({ latest, activeFilter, priceRange, t }: { latest: 
         {filtered.length === 0 ? (
           <div className="products-empty">
             <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
-            <p>No products found in this price range for the selected category.</p>
-            <p style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 4 }}>Try a wider budget filter.</p>
+            <p>{searchQuery ? `No results for "${searchQuery}".` : 'No products found in this price range for the selected category.'}</p>
+            <p style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 4 }}>{searchQuery ? 'Try a different keyword or clear the search.' : 'Try a wider budget filter.'}</p>
           </div>
         ) : (
           <div className="products-grid">
@@ -423,10 +471,10 @@ function SkinProductsContent({ latest, activeFilter, priceRange, t }: { latest: 
 }
 
 /* ── Makeup Products Section ─────────────────────────────────────────── */
-function MakeupProductsContent({ latest, activeFilter, priceRange, t }: { latest: GlamHistoryEntry; activeFilter: string; priceRange: PriceRange; t: any }) {
+function MakeupProductsContent({ latest, activeFilter, priceRange, searchQuery, t }: { latest: GlamHistoryEntry; activeFilter: string; priceRange: PriceRange; searchQuery: string; t: any }) {
   const { products, glamScore, makeupStyle, currentLook } = latest.analysis;
 
-  const merged = mergeWithStatic(products, STATIC_MAKEUP_PRODUCTS, priceRange);
+  const merged = mergeWithStatic(products, STATIC_MAKEUP_PRODUCTS, priceRange, searchQuery);
   const filtered = merged.filter(p => matchesMakeupFilter(p.type, activeFilter));
   const featured = filtered[0] ?? merged[0];
   const glamPoints = Math.round(filtered.length * 5 + glamScore * 0.15);
@@ -437,8 +485,8 @@ function MakeupProductsContent({ latest, activeFilter, priceRange, t }: { latest
         {filtered.length === 0 ? (
           <div className="products-empty">
             <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
-            <p>No makeup products found in this price range for the selected category.</p>
-            <p style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 4 }}>Try a wider budget filter.</p>
+            <p>{searchQuery ? `No results for "${searchQuery}".` : 'No makeup products found in this price range for the selected category.'}</p>
+            <p style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 4 }}>{searchQuery ? 'Try a different keyword or clear the search.' : 'Try a wider budget filter.'}</p>
           </div>
         ) : (
           <div className="products-grid">
@@ -515,6 +563,7 @@ export default function Products() {
   const [productTab, setProductTab] = useState<'skin' | 'makeup'>(scoreMode === 'glam' ? 'makeup' : 'skin');
   const [activeFilter, setActiveFilter] = useState('All');
   const [priceRange, setPriceRange] = useState<PriceRange>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const latestSkin = history[0];
   const latestGlam = glamHistory[0];
@@ -545,6 +594,7 @@ export default function Products() {
     setProductTab(tab);
     setActiveFilter('All');
     setPriceRange('all');
+    setSearchQuery('');
   }
 
   function handleFilterSwitch(f: string) {
@@ -601,6 +651,9 @@ export default function Products() {
           </div>
         )}
 
+        {/* Search bar */}
+        <ProductSearchBar value={searchQuery} onChange={setSearchQuery} isGlam={isGlam} />
+
         {/* Price range filter */}
         <PriceRangeFilter value={priceRange} onChange={v => { setPriceRange(v); }} />
 
@@ -639,10 +692,10 @@ export default function Products() {
         {/* Content */}
         <>
           {effectiveTab === 'skin' && latestSkin && (
-            <SkinProductsContent latest={latestSkin} activeFilter={activeFilter} priceRange={priceRange} t={t} />
+            <SkinProductsContent latest={latestSkin} activeFilter={activeFilter} priceRange={priceRange} searchQuery={searchQuery} t={t} />
           )}
           {effectiveTab === 'makeup' && latestGlam && (
-            <MakeupProductsContent latest={latestGlam} activeFilter={activeFilter} priceRange={priceRange} t={t} />
+            <MakeupProductsContent latest={latestGlam} activeFilter={activeFilter} priceRange={priceRange} searchQuery={searchQuery} t={t} />
           )}
         </>
       </div>
