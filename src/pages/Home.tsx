@@ -213,6 +213,29 @@ export default function Home() {
             })}
           </div>
 
+          {/* Glam feature showcase — shown when glam mode is active */}
+          {mode === 'glam' && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16, animation: 'fadeInUp 0.5s ease 0.25s both' }}>
+              {[
+                { icon: '💄', title: 'Glam Score', desc: 'AI rates your makeup 0–100 against pro standards', color: '#ec4899' },
+                { icon: '👁️', title: 'Look Analysis', desc: 'Eyes, Face & Lips scored individually', color: '#a855f7' },
+                { icon: '🏅', title: 'Shade Match', desc: 'Foundation shades from 6 top Indian brands', color: '#f59e0b' },
+                { icon: '✨', title: 'Pro Corrections', desc: 'Expert tips to perfect your technique', color: '#06b6d4' },
+              ].map(f => (
+                <div key={f.title} style={{
+                  background: tc.cardBg, border: `1px solid ${tc.cardBorder}`,
+                  borderRadius: 14, padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start',
+                }}>
+                  <div style={{ fontSize: 20, lineHeight: 1, marginTop: 1, flexShrink: 0 }}>{f.icon}</div>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: f.color, marginBottom: 2 }}>{f.title}</div>
+                    <div style={{ fontSize: 11, color: tc.textMuted, lineHeight: 1.4 }}>{f.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Upload Card */}
           <div className="glass-card" style={{ animation: 'fadeInUp 0.7s cubic-bezier(0.25,0.46,0.45,0.94) 0.35s both' }}>
             {!user ? (

@@ -28,6 +28,17 @@ const NAV_ITEMS = [
     ),
   },
   {
+    id: 'glam',
+    label: 'Makeup Analysis',
+    path: '/glam',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22c-1 0-2-.4-2.7-1.1L3.1 14.7A4 4 0 0 1 2 12V7a2 2 0 0 1 2-2l5-1.5a2 2 0 0 1 1 0L15 5a2 2 0 0 1 2 2v5a4 4 0 0 1-1.2 2.8L14.7 20.9A3.7 3.7 0 0 1 12 22z"/>
+        <circle cx="12" cy="10" r="2"/>
+      </svg>
+    ),
+  },
+  {
     id: 'routine',
     label: 'Routine',
     path: '/routine',
@@ -94,7 +105,17 @@ export default function Sidebar() {
     ?? 'Guest';
 
   function isActive(path: string) {
+    if (path === '/glam') return location.pathname === '/glam-results';
+    if (path === '/scan') return location.pathname === '/scan';
     return location.pathname === path || location.pathname.startsWith(path + '/');
+  }
+
+  function handleNavClick(path: string) {
+    if (path === '/glam') {
+      navigate('/scan', { state: { mode: 'glam' } });
+    } else {
+      navigate(path);
+    }
   }
 
   return (
@@ -125,11 +146,16 @@ export default function Sidebar() {
         {NAV_ITEMS.map(item => (
           <button
             key={item.id}
-            onClick={() => navigate(item.path)}
-            className={`sidebar-nav-item ${isActive(item.path) ? 'active' : ''}`}
+            onClick={() => handleNavClick(item.path)}
+            className={`sidebar-nav-item ${isActive(item.path) ? 'active' : ''} ${item.id === 'glam' ? 'sidebar-nav-glam' : ''}`}
           >
             <span className="sidebar-nav-icon">{item.icon}</span>
             <span>{item.label}</span>
+            {item.id === 'glam' && (
+              <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 700, letterSpacing: 0.5, padding: '2px 6px', borderRadius: 20, background: 'linear-gradient(135deg,#ec4899,#a855f7)', color: '#fff', flexShrink: 0 }}>
+                AI
+              </span>
+            )}
           </button>
         ))}
       </nav>

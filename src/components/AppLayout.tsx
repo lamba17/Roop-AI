@@ -5,7 +5,8 @@ import { useTheme } from '../context/ThemeContext';
 
 const TOP_NAV = [
   { label: 'DASHBOARD', path: '/dashboard' },
-  { label: 'ANALYSIS', path: '/scan' },
+  { label: 'SKIN SCAN', path: '/scan' },
+  { label: 'GLAM SCAN', path: '/glam' },
   { label: 'PRODUCTS', path: '/products' },
   { label: 'ROUTINE', path: '/routine' },
   { label: 'SPECIALISTS', path: '/specialists' },
@@ -52,13 +53,12 @@ const MOBILE_NAV = [
     ),
   },
   {
-    label: 'Doctors',
-    path: '/specialists',
+    label: 'Glam',
+    path: '/glam',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        <path d="M12 22c-1 0-2-.4-2.7-1.1L3.1 14.7A4 4 0 0 1 2 12V7a2 2 0 0 1 2-2l5-1.5a2 2 0 0 1 1 0L15 5a2 2 0 0 1 2 2v5a4 4 0 0 1-1.2 2.8L14.7 20.9A3.7 3.7 0 0 1 12 22z"/>
+        <circle cx="12" cy="10" r="2"/>
       </svg>
     ),
   },
@@ -70,7 +70,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { theme, toggle } = useTheme();
 
   function isActive(path: string) {
+    if (path === '/glam') return location.pathname === '/glam-results';
     return location.pathname === path || location.pathname.startsWith(path + '/');
+  }
+
+  function handleTopNav(path: string) {
+    if (path === '/glam') navigate('/scan', { state: { mode: 'glam' } });
+    else navigate(path);
   }
 
   return (
@@ -101,8 +107,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {TOP_NAV.map(item => (
               <button
                 key={item.path}
-                onClick={() => navigate(item.path)}
-                className={`topnav-link ${isActive(item.path) ? 'active' : ''}`}
+                onClick={() => handleTopNav(item.path)}
+                className={`topnav-link ${isActive(item.path) ? 'active' : ''} ${item.path === '/glam' ? 'topnav-glam' : ''}`}
               >
                 {item.label}
               </button>
@@ -144,7 +150,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {MOBILE_NAV.map(item => (
           <button
             key={item.path}
-            onClick={() => navigate(item.path)}
+            onClick={() => handleTopNav(item.path)}
             className={`mobile-nav-item ${isActive(item.path) ? 'active' : ''}`}
           >
             <span className="mobile-nav-icon">{item.icon}</span>
