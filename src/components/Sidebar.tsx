@@ -1,5 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, signOut } from '../lib/supabase';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import type { AppMode } from '../types/analysis';
 
 const NAV_ITEMS = [
   {
@@ -100,6 +102,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const [scoreMode] = useLocalStorage<AppMode | null>('roop_score_mode', null);
 
   async function handleSignOut() {
     try {
@@ -115,17 +118,25 @@ export default function Sidebar() {
     ?? 'Guest';
 
   function isActive(path: string) {
-    if (path === '/glam') return location.pathname === '/glam-results';
-    if (path === '/scan') return location.pathname === '/scan';
+    if (path === '/scan') return location.pathname === '/scan' || location.pathname === '/results';
+    if (path === '/glam') return location.pathname === '/scan' || location.pathname === '/glam-results';
     return location.pathname === path || location.pathname.startsWith(path + '/');
   }
 
   function handleNavClick(path: string) {
     if (path === '/glam') {
-      navigate('/scan', { state: { mode: 'glam' } });
+      navigate('/scan');
     } else {
       navigate(path);
     }
+  }
+
+  // Hide scan items that don't match the user's chosen mode
+  function isHidden(id: string) {
+    if (!scoreMode) return false;
+    if (id === 'analysis' && scoreMode === 'glam') return true;
+    if (id === 'glam' && scoreMode === 'glow') return true;
+    return false;
   }
 
   return (
@@ -153,7 +164,7 @@ export default function Sidebar() {
 
       {/* Nav Items */}
       <nav className="sidebar-nav">
-        {NAV_ITEMS.map(item => (
+        {NAV_ITEMS.filter(item => !isHidden(item.id)).map(item => (
           <button
             key={item.id}
             onClick={() => handleNavClick(item.path)}

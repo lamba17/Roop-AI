@@ -423,7 +423,6 @@ export default function Dashboard() {
   const [showPremium, setShowPremium] = useState(false);
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
   const [glamHistory] = useLocalStorage<GlamHistoryEntry[]>('roop_glam_history', []);
-  const [dashTab, setDashTab] = useState<'glow' | 'glam'>('glow');
 
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
     ?? user?.email?.split('@')[0]
@@ -432,6 +431,7 @@ export default function Dashboard() {
   const latest = history[0];
   const score  = latest?.analysis.glowScore ?? null;
   const latestGlam = glamHistory[0];
+  const activeMode: 'glow' | 'glam' = latestGlam ? 'glam' : 'glow';
 
   return (
     <AppLayout>
@@ -456,27 +456,23 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* ── Mode Tabs ── */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-          {([
-            { id: 'glow', icon: '🌿', label: 'Glow Score' },
-            { id: 'glam', icon: '💄', label: 'Glam Score' },
-          ] as const).map(tab => (
-            <button key={tab.id} onClick={() => setDashTab(tab.id)} style={{
-              display: 'flex', alignItems: 'center', gap: 7, padding: '9px 20px', borderRadius: 50, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, transition: 'all 0.2s',
-              background: dashTab === tab.id ? BRAND : 'var(--bg-card)',
-              color: dashTab === tab.id ? '#fff' : 'var(--text-muted)',
-              boxShadow: dashTab === tab.id ? '0 4px 14px rgba(124,58,237,0.35)' : '0 1px 4px rgba(0,0,0,0.08)',
-            }}>
-              <span>{tab.icon}</span>{tab.label}
-            </button>
-          ))}
+        {/* Active scan type badge */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', borderRadius: 50, border: `1px solid ${activeMode === 'glam' ? 'rgba(236,72,153,0.35)' : 'rgba(168,85,247,0.35)'}`, background: activeMode === 'glam' ? 'rgba(236,72,153,0.08)' : 'rgba(168,85,247,0.08)' }}>
+            <span>{activeMode === 'glam' ? '💄' : '🌿'}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: activeMode === 'glam' ? '#ec4899' : '#a855f7', letterSpacing: 0.5 }}>
+              {activeMode === 'glam' ? 'GLAM SCORE' : 'GLOW SCORE'}
+            </span>
+            <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>
+              {activeMode === 'glam' ? '· Makeup analysis active' : '· Skin analysis active'}
+            </span>
+          </div>
         </div>
 
         {!hasFullAccess ? (
           <div className="locked-section" style={{ minHeight: 'calc(100vh - 320px)' }}>
             <div className="locked-blur-preview" aria-hidden="true">
-              {dashTab === 'glow'
+              {activeMode === 'glow'
                 ? <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
                 : <GlamDashboardContent latestGlam={latestGlam} navigate={navigate} />}
             </div>
@@ -485,7 +481,7 @@ export default function Dashboard() {
                 <div style={{ fontSize: 44, marginBottom: 12 }}>🔒</div>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-primary)' }}>Unlock Your Dashboard</h3>
                 <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.6, maxWidth: 280 }}>
-                  View your Glow Score, skin metrics, daily routine, and full scan history — all personalised to your skin.
+                  View your {activeMode === 'glam' ? 'Glam Score, look analysis, and makeup corrections' : 'Glow Score, skin metrics, daily routine, and full scan history'} — all personalised to you.
                 </p>
                 <button onClick={() => setShowPremium(true)} className="btn-glow" style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}>
                   🚀 Try Full Access — ₹25 for 7 days
@@ -494,7 +490,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        ) : dashTab === 'glow' ? (
+        ) : activeMode === 'glow' ? (
           <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
         ) : (
           <GlamDashboardContent latestGlam={latestGlam} navigate={navigate} />
