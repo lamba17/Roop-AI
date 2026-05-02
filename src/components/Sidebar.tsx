@@ -133,11 +133,14 @@ export default function Sidebar() {
 
   // Hide nav items that don't apply to the user's chosen mode
   function isHidden(id: string) {
-    if (!scoreMode) return false;
-    if (id === 'analysis' && scoreMode === 'glam') return true;   // hide Skin Analysis for glam users
-    if (id === 'glam' && scoreMode === 'glow') return true;       // hide Makeup Analysis for glow users
-    if (id === 'specialists' && scoreMode === 'glam') return true; // hide Specialists for glam users
-    if (id === 'makeup-artists' && scoreMode === 'glow') return true; // hide Makeup Artists for glow users
+    if (!scoreMode) {
+      // No mode chosen yet — hide all mode-specific items until user picks on Dashboard
+      return id === 'analysis' || id === 'glam' || id === 'specialists' || id === 'makeup-artists';
+    }
+    if (id === 'analysis' && scoreMode === 'glam') return true;
+    if (id === 'glam' && scoreMode === 'glow') return true;
+    if (id === 'specialists' && scoreMode === 'glam') return true;
+    if (id === 'makeup-artists' && scoreMode === 'glow') return true;
     return false;
   }
 
@@ -195,10 +198,10 @@ export default function Sidebar() {
           </div>
         </div>
         <button
-          onClick={() => navigate('/scan')}
+          onClick={() => scoreMode ? navigate('/scan') : navigate('/dashboard')}
           className="sidebar-cta"
         >
-          + New Scan
+          {scoreMode === 'glam' ? '💄 New Glam Scan' : scoreMode === 'glow' ? '🌿 New Skin Scan' : '+ Choose Score'}
         </button>
         <button
           onClick={handleSignOut}

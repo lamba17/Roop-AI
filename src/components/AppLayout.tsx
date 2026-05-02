@@ -2,15 +2,18 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import UserMenu from './UserMenu';
 import { useTheme } from '../context/ThemeContext';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import type { AppMode } from '../types/analysis';
 
-const TOP_NAV = [
-  { label: 'DASHBOARD', path: '/dashboard' },
-  { label: 'SKIN SCAN', path: '/scan' },
-  { label: 'GLAM SCAN', path: '/glam' },
-  { label: 'PRODUCTS', path: '/products' },
-  { label: 'ROUTINE', path: '/routine' },
-  { label: 'SPECIALISTS', path: '/specialists' },
-];
+const ALL_TOP_NAV = [
+  { label: 'DASHBOARD',   path: '/dashboard',  mode: null       },
+  { label: 'SKIN SCAN',   path: '/scan',        mode: 'glow'    },
+  { label: 'GLAM SCAN',   path: '/glam',        mode: 'glam'    },
+  { label: 'PRODUCTS',    path: '/products',    mode: null       },
+  { label: 'ROUTINE',     path: '/routine',     mode: null       },
+  { label: 'SPECIALISTS', path: '/specialists', mode: 'glow'    },
+  { label: 'ARTISTS',     path: '/makeup-artists', mode: 'glam' },
+] as const;
 
 const MOBILE_NAV = [
   {
@@ -68,6 +71,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggle } = useTheme();
+  const [scoreMode] = useLocalStorage<AppMode | null>('roop_score_mode', null);
+
+  // Show nav items that are mode-neutral OR match the chosen mode
+  const topNav = ALL_TOP_NAV.filter(item =>
+    item.mode === null || !scoreMode || item.mode === scoreMode
+  );
 
   function isActive(path: string) {
     if (path === '/glam') return location.pathname === '/glam-results';
@@ -104,7 +113,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <nav className="app-topnav">
-            {TOP_NAV.map(item => (
+            {topNav.map(item => (
               <button
                 key={item.path}
                 onClick={() => handleTopNav(item.path)}

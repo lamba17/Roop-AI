@@ -8,29 +8,30 @@ type Theme = 'dark' | 'light';
 function tok(t: Theme) {
   const d = t === 'dark';
   return {
-    surface:         d ? '#171020' : '#f4f0ff',
-    surfaceLow:      d ? '#201829' : '#e8e0f8',
-    surfaceContainer:d ? '#241c2d' : '#ddd5f5',
-    surfaceHigh:     d ? '#2f2738' : '#ccc0ee',
-    surfaceHighest:  d ? '#3a3143' : '#b8a8e4',
-    onSurface:       d ? '#ebdef5' : '#1a0a3a',
-    onSurfaceVar:    d ? '#ccc3d8' : '#5a4a7a',
-    primary:         d ? '#d2bbff' : '#7c3aed',
-    primaryContainer:'#7c3aed',
-    secondary:       d ? '#ffb1c7' : '#be0062',
+    surface:          d ? '#171020' : '#f4f0ff',
+    surfaceLow:       d ? '#201829' : '#e8e0f8',
+    surfaceContainer: d ? '#241c2d' : '#ddd5f5',
+    surfaceHigh:      d ? '#2f2738' : '#ccc0ee',
+    surfaceHighest:   d ? '#3a3143' : '#b8a8e4',
+    onSurface:        d ? '#ebdef5' : '#1a0a3a',
+    onSurfaceVar:     d ? '#ccc3d8' : '#5a4a7a',
+    primary:          d ? '#d2bbff' : '#7c3aed',
+    primaryContainer: '#7c3aed',
+    secondary:        d ? '#ffb1c7' : '#be0062',
     secondaryContainer:'#be0062',
-    tertiary:        d ? '#ffb95f' : '#b45309',
-    outlineVar:      d ? 'rgba(74,68,85,0.4)' : 'rgba(124,58,237,0.15)',
-    navShadow:       d ? 'rgba(19,12,28,0.5)' : 'rgba(100,50,180,0.08)',
-    glowPurple:      d ? 'rgba(124,58,237,0.2)' : 'rgba(124,58,237,0.1)',
-    glowPink:        d ? 'rgba(190,0,98,0.12)' : 'rgba(190,0,98,0.07)',
-    glassBg:         d ? 'rgba(47,39,56,0.45)' : 'rgba(255,255,255,0.65)',
-    white:           '#ffffff',
-    shadow:          d ? 'rgba(19,12,28,0.45)' : 'rgba(80,40,160,0.12)',
+    tertiary:         d ? '#ffb95f' : '#b45309',
+    outlineVar:       d ? 'rgba(74,68,85,0.4)' : 'rgba(124,58,237,0.15)',
+    navShadow:        d ? 'rgba(19,12,28,0.5)' : 'rgba(100,50,180,0.08)',
+    glowPurple:       d ? 'rgba(124,58,237,0.2)' : 'rgba(124,58,237,0.1)',
+    glowPink:         d ? 'rgba(190,0,98,0.12)' : 'rgba(190,0,98,0.07)',
+    glassBg:          d ? 'rgba(47,39,56,0.45)' : 'rgba(255,255,255,0.65)',
+    white:            '#ffffff',
+    shadow:           d ? 'rgba(19,12,28,0.45)' : 'rgba(80,40,160,0.12)',
   };
 }
 
 const BRAND_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #be0062 100%)';
+const GLAM_GRADIENT  = 'linear-gradient(135deg, #be0062 0%, #ec4899 100%)';
 const TEXT_GRADIENT  = 'linear-gradient(135deg, #d2bbff 0%, #ffb1c7 100%)';
 
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
@@ -85,10 +86,10 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
           ...(mode === 'signup' && { data: {
-          full_name: name.trim(),
-          first_name: name.trim().split(' ')[0],
-          phone: phone ? `+91${phone}` : null,
-        } }),
+            full_name: name.trim(),
+            first_name: name.trim().split(' ')[0],
+            phone: phone ? `+91${phone}` : null,
+          }}),
         },
       });
       if (e) throw new Error(e.message);
@@ -108,7 +109,6 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
 
         <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 20, background: 'none', border: 'none', fontSize: 24, color: c.onSurfaceVar, cursor: 'pointer', lineHeight: 1, padding: 4 }}>×</button>
 
-        {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 16 }}>
             <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 32, height: 32, objectFit: 'contain' }} />
@@ -118,32 +118,28 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
             {isSignup ? 'Create Your Account' : 'Welcome Back'}
           </h2>
           <p style={{ fontSize: 13, color: c.onSurfaceVar, margin: 0, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>
-            {isSignup ? 'Join the Ethereal Clinic and start your skin journey.' : 'Sign in to access your personalised skin profile.'}
+            {isSignup ? 'Join the Ethereal Clinic — skin health & beauty in one.' : 'Sign in to access your personalised beauty profile.'}
           </p>
         </div>
 
-        {/* Error */}
         {error && (
           <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(147,0,10,0.15)', borderRadius: 14, border: '1px solid rgba(255,180,171,0.2)' }}>
             <p style={{ margin: 0, fontSize: 13, color: '#ffb4ab', fontFamily: "'Manrope', sans-serif" }}>{error}</p>
           </div>
         )}
 
-        {/* Google */}
         <button onClick={handleGoogle} disabled={gLoading}
           style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '14px 20px', background: '#fff', color: '#1a1a2e', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: gLoading ? 'not-allowed' : 'pointer', opacity: gLoading ? 0.7 : 1, boxShadow: `0 4px 20px ${c.shadow}`, marginBottom: 20 }}>
           {gLoading ? <Spinner size={18} /> : <GoogleIcon />}
           {gLoading ? 'Connecting…' : isSignup ? 'Sign up with Google' : 'Continue with Google'}
         </button>
 
-        {/* Divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{ flex: 1, height: 1, background: c.outlineVar }} />
           <span style={{ fontSize: 11, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", letterSpacing: 0.5 }}>or {isSignup ? 'sign up' : 'sign in'} with email</span>
           <div style={{ flex: 1, height: 1, background: c.outlineVar }} />
         </div>
 
-        {/* Success state */}
         {sent ? (
           <div style={{ padding: '20px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 16, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>📬</div>
@@ -151,15 +147,13 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
             <p style={{ margin: 0, fontSize: 13, color: c.onSurfaceVar, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>
               Magic link sent to <strong style={{ color: c.onSurface }}>{email}</strong>. Click it to {isSignup ? 'activate your account' : 'sign in'} instantly.
             </p>
-            <button
-              style={{ marginTop: 14, background: 'none', border: 'none', color: c.onSurfaceVar, fontSize: 12, fontFamily: "'Manrope', sans-serif", cursor: 'pointer', textDecoration: 'underline' }}
+            <button style={{ marginTop: 14, background: 'none', border: 'none', color: c.onSurfaceVar, fontSize: 12, fontFamily: "'Manrope', sans-serif", cursor: 'pointer', textDecoration: 'underline' }}
               onClick={() => { setSent(false); setEmail(''); setName(''); setPhone(''); }}>
               Use a different email
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            {/* Name field — signup only */}
             {isSignup && (
               <input type="text" value={name} onChange={e => setName(e.target.value)}
                 placeholder="Your full name" required style={inputStyle}
@@ -170,29 +164,13 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
               onFocus={focusIn} onBlur={focusOut} />
             {isSignup && (
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-                {/* +91 prefix */}
-                <span style={{
-                  position: 'absolute', left: 14, fontSize: 14, fontWeight: 600,
-                  color: c.onSurfaceVar, fontFamily: "'Manrope', sans-serif",
-                  pointerEvents: 'none', userSelect: 'none',
-                }}>+91</span>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={e => {
-                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                    setPhone(val);
-                  }}
-                  placeholder="WhatsApp number (optional)"
-                  maxLength={10}
+                <span style={{ position: 'absolute', left: 14, fontSize: 14, fontWeight: 600, color: c.onSurfaceVar, fontFamily: "'Manrope', sans-serif", pointerEvents: 'none', userSelect: 'none' }}>+91</span>
+                <input type="tel" value={phone}
+                  onChange={e => { const val = e.target.value.replace(/\D/g, '').slice(0, 10); setPhone(val); }}
+                  placeholder="WhatsApp number (optional)" maxLength={10}
                   style={{ ...inputStyle, paddingLeft: 48, paddingRight: 80, marginBottom: 0 }}
-                  onFocus={focusIn} onBlur={focusOut}
-                />
-                <span style={{
-                  position: 'absolute', right: 14, fontSize: 10, color: c.onSurfaceVar,
-                  fontFamily: "'Inter', sans-serif", background: c.surfaceHigh,
-                  padding: '2px 8px', borderRadius: 20, pointerEvents: 'none',
-                }}>optional</span>
+                  onFocus={focusIn} onBlur={focusOut} />
+                <span style={{ position: 'absolute', right: 14, fontSize: 10, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", background: c.surfaceHigh, padding: '2px 8px', borderRadius: 20, pointerEvents: 'none' }}>optional</span>
               </div>
             )}
             <button type="submit" disabled={eLoading || !canSubmit}
@@ -214,7 +192,6 @@ export default function SignIn() {
   const [theme, setTheme]         = useState<Theme>('light');
   const [modalMode, setModalMode] = useState<'login' | 'signup' | null>(null);
 
-  // Force light theme whenever the landing page is mounted (covers SPA navigation too)
   useEffect(() => { forceTheme('light'); }, []);
   const c = tok(theme);
   const d = theme === 'dark';
@@ -223,14 +200,27 @@ export default function SignIn() {
 
   const STEPS = [
     { n: '01', title: 'Upload a Selfie', desc: 'Take a clear, natural-light selfie and upload it in seconds from any device.' },
-    { n: '02', title: 'Receive Your Glow Score', desc: 'AI analyses your skin across 5 clinical dimensions in real time.' },
-    { n: '03', title: 'Follow Your Ritual', desc: 'A personalised morning & evening routine, product picks, and specialist access.' },
+    { n: '02', title: 'Get Your AI Score', desc: 'Choose Glow Score for skin health or Glam Score for makeup analysis — AI delivers results in real time.' },
+    { n: '03', title: 'Follow Your Ritual', desc: 'A personalised morning & evening routine, product picks, shade matches, and specialist access.' },
   ];
 
   const SCIENCE = [
     { icon: '✦', title: 'Optical Luminosity', desc: 'Measuring light refraction and skin transparency to determine inner vibrance levels.' },
     { icon: '⬡', title: 'Surface Homogeneity', desc: 'Detecting micro-irregularities and texture patterns for refined clinical smoothness.' },
     { icon: '◎', title: 'Hydration Integrity', desc: 'Evaluating moisture retention and barrier strength at a microscopic cellular level.' },
+  ];
+
+  const GLAM_METRICS = [
+    { icon: '👁️', label: 'Eyes', score: 92, color: '#7c3aed', insight: 'Exceptional blending and symmetry. Consider a sharper wing for more definition.' },
+    { icon: '🫧', label: 'Skin', score: 78, color: '#be0062', insight: 'Good coverage, but high forehead luminosity detected. Use setting powder.' },
+    { icon: '💋', label: 'Lips', score: 85, color: '#ec4899', insight: 'Color harmony matches skin tone perfectly. Overlining is balanced.' },
+  ];
+
+  const ARTISTS = [
+    { name: 'Elena Vance',   spec: 'Bridal & Editorial Expert',  img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBjpNfsTrKbRLkWIFQcMSI9xRoTa88vd9L6YLc7hxuEp_dvjclgH4nca5XJo9ACWX0SC5FehpUsc2iPtlRTgyefrBf4C27TDs802nxvD-tEK6uk37qOi51HTZAQS94fOYVvVHutEex5rqDnZODwYekYcc-gW972k6a_TlIyaNsTq29Pb6YytXIvYttj6xRpCMDyoiHsJ6OJuahYCxq7oGSz5P6x-AAnZhYtG9G0harmtgPufLRGJIKfrFv5ryjJV9HhXdVzozw-mFA', offset: 0 },
+    { name: 'Marcus Thorne', spec: 'SFX & High Fashion',         img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC1Rqi0XwDJFmaMZejt9JIhez4T4fIwXi5il6fGAE25ZpL-CWzRBciMqISm5_Wr6-O2D9vLMN4rWXliF7rrQh54i_xvy4E8Iiovpa_TW_D6qiPjViZg9GsDOBPFGrEkjTwvfs-GRvfRxfwwHSTSPvR3yqy0NO11Uh9b2vJusHoVtcDzoXJbzgMqcX2zM99t7u_E-Kh9AaYdt27izHNZZ_nlmtN2SQGmhUvvQowDGaAwt7zTBiQWPOzjC_K0n9zpfOKEbSbKV-movwg', offset: 24 },
+    { name: 'Sofia Chen',    spec: 'Natural Beauty Coach',       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBt0PTEqPSaqSKB8yC0-bFl14MNq60GWdPA2XY1r-j8-RIex4d1xkRbihfQURjxLPyHZRvHemmFcrED-dNAggN4zdZorUdqokyIKTjMhLMI11c4umjsQdkBBl5qorWAKjadakUdnbbbXyRKUeQNon3wjdGtA06EIyMhjecVdILnoWAL4nzAqiGYVNa73SR8GCIvAe8iE6hfIrmfCtjH70SKpTjRE060J3Zg620cZrdJmQ6YIE96mFVVV0mfmCt6baKO5toZ_uZBy60', offset: 0 },
+    { name: 'Jordan Lee',    spec: 'Color Theory Specialist',    img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA6hnbgsMPntzahFIn-BvaPsQ7vTHbC-cerU08bE8AIIxMeZ8juMsIUmejof5mtDq58DuO1e9Cqf4cPDQLTcvPXiKiBO6cVWsNXUhQcoe16wPEMp-AkhyDOa8K47vwHiY-WJAAbN2GofYpcX50LgRrEQjGb2Yetg6BzFkb8EGNYBKLWMp6egjrgeI7lbPA7g46bhmL4pGpRLFCiEubJt3QKqSPqu5EM0HfO4ficJEnFM9jvu40-fnoYWse4B8KmRz1Ta-o91-VMg', offset: 24 },
   ];
 
   const DOCTORS = [
@@ -247,20 +237,35 @@ export default function SignIn() {
         @import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800&family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
         .brand-btn { background: ${BRAND_GRADIENT}; color: #fff; padding: 12px 28px; border-radius: 9999px; font-family: 'Epilogue', sans-serif; font-weight: 700; font-size: 14px; border: none; cursor: pointer; box-shadow: 0 0 24px rgba(124,58,237,0.3); transition: transform 0.2s, box-shadow 0.2s; letter-spacing: -0.01em; white-space: nowrap; }
         .brand-btn:hover { transform: scale(1.03); box-shadow: 0 0 40px rgba(124,58,237,0.5); }
+        .glam-btn { background: ${GLAM_GRADIENT}; color: #fff; padding: 12px 28px; border-radius: 9999px; font-family: 'Epilogue', sans-serif; font-weight: 700; font-size: 14px; border: none; cursor: pointer; box-shadow: 0 0 24px rgba(190,0,98,0.3); transition: transform 0.2s, box-shadow 0.2s; letter-spacing: -0.01em; white-space: nowrap; }
+        .glam-btn:hover { transform: scale(1.03); box-shadow: 0 0 40px rgba(190,0,98,0.5); }
         .ghost-btn { background: ${c.glassBg}; backdrop-filter: blur(20px); color: ${c.onSurface}; padding: 16px 36px; border-radius: 9999px; font-family: 'Epilogue', sans-serif; font-weight: 700; font-size: 15px; border: 1px solid ${c.outlineVar}; cursor: pointer; transition: all 0.2s; }
         .ghost-btn:hover { border-color: rgba(124,58,237,0.5); }
         .text-grad { background: ${TEXT_GRADIENT}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .glam-grad { background: ${GLAM_GRADIENT}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .nav-link { color: ${c.onSurfaceVar}; text-decoration: none; font-family: 'Epilogue', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: -0.01em; transition: color 0.2s; cursor: pointer; white-space: nowrap; }
         .nav-link:hover { color: ${c.onSurface}; }
+        .metric-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .metric-card:hover { transform: translateY(-3px); }
+        .artist-card-img { filter: grayscale(100%); transition: filter 0.6s ease; }
+        .artist-card:hover .artist-card-img { filter: grayscale(0%); }
+        .artist-card-btn { transition: background 0.3s, color 0.3s; }
+        .artist-card:hover .artist-card-btn { background: #7c3aed !important; color: #fff !important; }
         @keyframes fadeInUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
         @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        @keyframes scanPulse { 0%,100% { opacity:0.5; } 50% { opacity:1; } }
         .float-card { animation: float 4s ease-in-out infinite; }
         .float-card-2 { animation: float 5s ease-in-out infinite 1s; }
+        .float-card-3 { animation: float 4.5s ease-in-out infinite 0.5s; }
+        .scan-dot { animation: scanPulse 1.5s ease-in-out infinite; }
         @media (max-width: 768px) {
           .hero-grid { grid-template-columns: 1fr !important; }
           .nav-links { display: none !important; }
           .step-grid { grid-template-columns: 1fr !important; }
           .science-grid { flex-direction: column !important; }
+          .glam-section-grid { flex-direction: column !important; }
+          .choose-grid { grid-template-columns: 1fr !important; }
+          .artists-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .specialist-cascade { margin-left: 0 !important; }
           .theme-toggle-btn { width: 32px !important; height: 32px !important; font-size: 14px !important; }
           .nav-login-btn { padding: 6px 10px !important; font-size: 12px !important; }
@@ -270,43 +275,39 @@ export default function SignIn() {
           .hero-inner { padding: 80px 20px 40px !important; }
           .hero-stats { gap: 24px !important; flex-wrap: wrap !important; }
           .section-padded { padding: 80px 20px !important; }
-          .specialist-cascade { width: 100% !important; }
           .specialist-cascade > div { margin-left: 0 !important; }
+          .cta-box { padding: 60px 28px !important; border-radius: 32px !important; }
         }
       `}</style>
 
       {/* ── Navbar ── */}
       <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, ...glass, borderBottom: `1px solid ${c.outlineVar}`, boxShadow: `0 20px 40px ${c.navShadow}` }}>
         <nav className="landing-nav" style={{ width: '100%', padding: '0 40px', height: 72, display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', boxSizing: 'border-box' }}>
-          {/* Logo — far left */}
+          {/* Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <img src="/Face 1 Purple.png" alt="ROOP AI" style={{ width: 32, height: 32, objectFit: 'contain', display: 'block' }} />
             <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 19, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1, background: BRAND_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>ROOP AI</span>
           </div>
 
-          {/* Nav links — true center */}
-          <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
+          {/* Nav links */}
+          <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
             {[
-              { label: 'Glow Score',    id: 'glow-score'    },
-              { label: 'How It Works',  id: 'products'      },
-              { label: 'Specialists',   id: 'specialists'   },
-              { label: 'Testimonials',  id: 'testimonials'  },
-              { label: 'The Clinic',    id: 'clinic'        },
+              { label: 'Glow Score',   id: 'glow-score'   },
+              { label: 'Glam Score',   id: 'glam-score'   },
+              { label: 'How It Works', id: 'how-it-works'  },
+              { label: 'Specialists',  id: 'specialists'   },
+              { label: 'Artists',      id: 'artists'       },
+              { label: 'Testimonials', id: 'testimonials'  },
             ].map(({ label, id }) => (
-              <a
-                key={label}
-                href={`#${id}`}
-                className="nav-link"
-                onClick={e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }}
-              >
+              <a key={label} href={`#${id}`} className="nav-link"
+                onClick={e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }}>
                 {label}
               </a>
             ))}
           </div>
 
-          {/* Auth buttons — far right */}
+          {/* Auth */}
           <div className="nav-auth-right" style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
-            {/* Theme toggle — icon only */}
             <button className="theme-toggle-btn" onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
               title={d ? 'Switch to Light' : 'Switch to Dark'}
               style={{ width: 36, height: 36, borderRadius: '50%', background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -323,9 +324,10 @@ export default function SignIn() {
         </nav>
       </header>
 
-      {/* ── Hero ── */}
+      {/* ══════════════════════════════════════════════════════════════════════
+          HERO — dual skin & makeup
+      ══════════════════════════════════════════════════════════════════════ */}
       <section style={{ paddingTop: 72, minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
-        {/* Background glows */}
         <div style={{ position: 'absolute', top: '20%', right: '-10%', width: 700, height: 700, borderRadius: '50%', background: `radial-gradient(circle, ${c.glowPurple} 0%, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: '10%', left: '-10%', width: 500, height: 500, borderRadius: '50%', background: `radial-gradient(circle, ${c.glowPink} 0%, transparent 70%)`, pointerEvents: 'none' }} />
 
@@ -335,21 +337,24 @@ export default function SignIn() {
           <div style={{ animation: 'fadeInUp 0.7s ease both' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 50, background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, marginBottom: 32 }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }} />
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, color: c.onSurfaceVar, letterSpacing: 2, textTransform: 'uppercase' }}>Real-time Analysis</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, color: c.onSurfaceVar, letterSpacing: 2, textTransform: 'uppercase' }}>Real-time AI Analysis</span>
             </div>
 
-            <h1 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(3rem, 6vw, 5.5rem)', fontWeight: 800, lineHeight: 0.95, letterSpacing: '-0.04em', margin: '0 0 24px', color: c.onSurface }}>
-              Master Your<br /><span className="text-grad">Skin's Story</span>
+            <h1 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2.8rem, 5.5vw, 5rem)', fontWeight: 800, lineHeight: 0.95, letterSpacing: '-0.04em', margin: '0 0 24px', color: c.onSurface }}>
+              Your AI Coach<br />for Skin &amp; <span className="text-grad">Makeup</span>
             </h1>
 
-            <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 18, color: c.onSurfaceVar, lineHeight: 1.75, margin: '0 0 40px', maxWidth: 480 }}>
-              Precision AI dermatology meets the ethereal human touch. Discover your Glow Score and enter a new era of clinical-grade skincare personalisation.
+            <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 17, color: c.onSurfaceVar, lineHeight: 1.75, margin: '0 0 36px', maxWidth: 480 }}>
+              The only AI that analyses both your skin health and makeup. Get your <strong style={{ color: c.primary }}>Glow Score</strong> for bare skin or your <strong style={{ color: c.secondary }}>Glam Score</strong> for makeup — clinical-grade results in seconds.
             </p>
 
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 56 }}>
-              <button className="brand-btn" onClick={() => setModalMode("signup")}>Get Your Glow Score</button>
-              <button className="ghost-btn" onClick={() => document.getElementById('specialists')?.scrollIntoView({ behavior: 'smooth' })}>
-                Free Specialist Network
+            {/* Dual CTA buttons */}
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 56 }}>
+              <button className="brand-btn" style={{ padding: '15px 28px', fontSize: 14 }} onClick={() => setModalMode('signup')}>
+                🌿 Get Glow Score
+              </button>
+              <button className="glam-btn" style={{ padding: '15px 28px', fontSize: 14 }} onClick={() => setModalMode('signup')}>
+                💄 Get Glam Score
               </button>
             </div>
 
@@ -364,68 +369,125 @@ export default function SignIn() {
             </div>
           </div>
 
-          {/* Right — Hero image card */}
+          {/* Right — Hero image + floating badges */}
           <div style={{ position: 'relative', animation: 'fadeInUp 0.7s ease 0.15s both' }}>
-            {/* Decorative border frame */}
             <div style={{ position: 'absolute', inset: 0, border: `1px solid rgba(124,58,237,0.2)`, borderRadius: 48, transform: 'translate(16px, 16px)', zIndex: 0 }} />
 
-            {/* Main image container */}
             <div style={{ position: 'relative', zIndex: 1, borderRadius: 48, overflow: 'hidden', boxShadow: `0 32px 80px ${c.shadow}` }}>
               <img
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQuuIGcMrWFEVZVWi0qkeyE64WyZPx3WVNxKRk5J9YFuzkbbkejYHsU72_PEbzqEBBhMHB-4hLXl4ohMqHzrGwPDhToHJuTrJAYBnVc4e7uyhAqU2PaQkOLB6TIzAqnBN-IXxkkAUOwkf0QmqoHrVGEAsExT8L-1XV6Lybg1Vn-o2R8hLjk6WQBTaLemqIXkNnRXFbEiHBRHBaWhpwP64d8rSr22DKdzJolBc5OqFXFeALXmvaJNM7s4jrZO9eJ9QclVZS5XVXcB4"
                 alt="Radiant skin close-up"
                 style={{ width: '100%', aspectRatio: '4/5', objectFit: 'cover', display: 'block' }}
-                onError={e => {
-                  const img = e.currentTarget;
-                  img.style.display = 'none';
-                  const parent = img.parentElement;
-                  if (parent) {
-                    parent.style.background = d
-                      ? 'linear-gradient(145deg, #2a0a4a, #1a1a3a, #0d1a2e)'
-                      : 'linear-gradient(145deg, #ede0ff, #fce4f5, #e8d5ff)';
-                    parent.style.minHeight = '480px';
-                    parent.style.display = 'flex';
-                    parent.style.alignItems = 'center';
-                    parent.style.justifyContent = 'center';
-                    const fallback = document.createElement('div');
-                    fallback.style.cssText = 'font-size: 120px; opacity: 0.3;';
-                    fallback.textContent = '✨';
-                    parent.appendChild(fallback);
-                  }
-                }}
               />
-              {/* Gradient overlay at bottom */}
               <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to top, ${c.surface} 0%, transparent 50%)` }} />
 
-              {/* Floating glass card — Optimal Clarity */}
-              <div className="float-card" style={{ position: 'absolute', bottom: 32, left: 24, right: 24, ...glass, border: `1px solid rgba(255,255,255,0.1)`, borderRadius: 24, padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, textTransform: 'uppercase', letterSpacing: 2, color: c.secondary, fontWeight: 700, margin: '0 0 4px' }}>Luminosity detected</p>
-                  <h4 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 22, fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.02em' }}>Optimal Clarity</h4>
+              {/* Bottom live-scan card */}
+              <div className="float-card" style={{ position: 'absolute', bottom: 32, left: 24, right: 24, ...glass, border: `1px solid rgba(255,255,255,0.1)`, borderRadius: 24, padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg,rgba(124,58,237,0.3),rgba(190,0,98,0.3))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>🤖</div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, textTransform: 'uppercase', letterSpacing: 2, color: c.secondary, fontWeight: 700, margin: '0 0 2px' }}>AI Analysis · Live</p>
+                  <h4 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 16, fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.02em' }}>Scanning Skin & Makeup…</h4>
                 </div>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', border: `2px solid ${c.secondary}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: c.secondary, fontSize: 20, fontWeight: 700 }}>✓</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span className="scan-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 700, color: '#22c55e' }}>Live</span>
                 </div>
               </div>
             </div>
 
-            {/* Floating score badge */}
-            <div className="float-card-2" style={{ position: 'absolute', top: 32, right: -24, ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 20, padding: '16px 20px', boxShadow: `0 16px 40px ${c.shadow}`, minWidth: 120, textAlign: 'center', zIndex: 2 }}>
-              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: c.onSurfaceVar, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 }}>Glow Score</div>
-              <div style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 36, fontWeight: 800, color: '#22c55e', lineHeight: 1, letterSpacing: '-0.04em' }}>87</div>
-              <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: 11, color: c.primary, marginTop: 4, fontWeight: 600 }}>Radiant State ✦</div>
+            {/* Floating Glow Score badge — top right */}
+            <div className="float-card-2" style={{ position: 'absolute', top: 32, right: -24, ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 20, padding: '14px 18px', boxShadow: `0 16px 40px ${c.shadow}`, minWidth: 110, textAlign: 'center', zIndex: 2 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: c.onSurfaceVar, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 2 }}>Glow Score</div>
+              <div style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 34, fontWeight: 800, color: '#22c55e', lineHeight: 1, letterSpacing: '-0.04em' }}>87</div>
+              <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: 10, color: c.primary, marginTop: 3, fontWeight: 600 }}>🌿 Radiant State</div>
+            </div>
+
+            {/* Floating Glam Score badge — top left */}
+            <div className="float-card-3" style={{ position: 'absolute', top: 32, left: -24, ...glass, border: `1px solid rgba(190,0,98,0.3)`, borderRadius: 20, padding: '14px 18px', boxShadow: `0 16px 40px rgba(190,0,98,0.15)`, minWidth: 110, textAlign: 'center', zIndex: 2 }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, color: c.onSurfaceVar, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 2 }}>Glam Score</div>
+              <div style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 34, fontWeight: 800, color: c.secondary, lineHeight: 1, letterSpacing: '-0.04em' }}>85</div>
+              <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: 10, color: c.secondary, marginTop: 3, fontWeight: 600 }}>💄 Platinum Look</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Glow Score Science ── */}
-      <section id="glow-score" style={{ padding: '120px 40px', background: c.surfaceLow }}>
+      {/* ══════════════════════════════════════════════════════════════════════
+          CHOOSE YOUR SCORE — dual card picker
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section id="choose-score" style={{ padding: '120px 40px', background: c.surfaceLow, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 800, height: 800, background: `radial-gradient(ellipse, ${c.glowPurple} 0%, transparent 65%)`, pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: c.primary, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2 }}>One App, Two Superpowers</span>
+            <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 3.5vw, 3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', color: c.onSurface, margin: '12px 0 16px', lineHeight: 1.05 }}>
+              Two AI Scores, <span className="text-grad">One Platform</span>
+            </h2>
+            <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 16, color: c.onSurfaceVar, maxWidth: 520, margin: '0 auto', lineHeight: 1.8 }}>
+              Choose what you want to analyse. Switch between modes anytime — your results stay saved.
+            </p>
+          </div>
+
+          <div className="choose-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            {/* Glow Score card */}
+            <div style={{ ...glass, border: `1px solid rgba(124,58,237,0.35)`, borderRadius: 36, padding: '48px 40px', position: 'relative', overflow: 'hidden', boxShadow: `0 0 40px rgba(124,58,237,0.1)` }}>
+              <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              <div style={{ width: 56, height: 56, borderRadius: 18, background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, marginBottom: 20 }}>🌿</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 700, color: c.primary, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>Glow Score</div>
+              <h3 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 26, fontWeight: 800, color: c.onSurface, margin: '0 0 12px', letterSpacing: '-0.03em' }}>Skin Health Intelligence</h3>
+              <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 14, color: c.onSurfaceVar, lineHeight: 1.75, margin: '0 0 28px' }}>
+                Upload a bare-face selfie. Our AI evaluates 5 clinical dimensions and creates a complete skincare ritual just for you.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 32 }}>
+                {['Acne & texture analysis', 'Personalised daily routine', 'Product recommendations', 'Dermatologist match', 'Weekly mask plan'].map(f => (
+                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(124,58,237,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: 10, color: c.primary }}>✓</span>
+                    </div>
+                    <span style={{ fontFamily: "'Manrope', sans-serif", fontSize: 14, color: c.onSurfaceVar }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <button className="brand-btn" style={{ width: '100%', justifyContent: 'center', padding: '14px' }} onClick={() => setModalMode('signup')}>
+                Get My Glow Score →
+              </button>
+            </div>
+
+            {/* Glam Score card */}
+            <div style={{ ...glass, border: `1px solid rgba(190,0,98,0.35)`, borderRadius: 36, padding: '48px 40px', position: 'relative', overflow: 'hidden', boxShadow: `0 0 40px rgba(190,0,98,0.1)` }}>
+              <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, background: 'radial-gradient(circle, rgba(190,0,98,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              <div style={{ width: 56, height: 56, borderRadius: 18, background: 'rgba(190,0,98,0.15)', border: '1px solid rgba(190,0,98,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, marginBottom: 20 }}>💄</div>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 700, color: c.secondary, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>Glam Score</div>
+              <h3 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 26, fontWeight: 800, color: c.onSurface, margin: '0 0 12px', letterSpacing: '-0.03em' }}>Makeup AI Coach</h3>
+              <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 14, color: c.onSurfaceVar, lineHeight: 1.75, margin: '0 0 28px' }}>
+                Upload a makeup selfie. AI scores your eyes, skin, and lips — then suggests missing products and expert corrections.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 32 }}>
+                {['Eyes, skin & lips scoring', 'Foundation shade match', 'Missing product detection', 'Color palette analysis', 'Pro artist correction tips'].map(f => (
+                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(190,0,98,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: 10, color: c.secondary }}>✓</span>
+                    </div>
+                    <span style={{ fontFamily: "'Manrope', sans-serif", fontSize: 14, color: c.onSurfaceVar }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <button className="glam-btn" style={{ width: '100%', justifyContent: 'center', padding: '14px' }} onClick={() => setModalMode('signup')}>
+                Get My Glam Score →
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          GLOW SCORE SCIENCE
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section id="glow-score" style={{ padding: '120px 40px', background: c.surface }}>
         <div className="science-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', gap: 80, alignItems: 'center' }}>
-          {/* Score ring */}
           <div style={{ flexShrink: 0, display: 'flex', justifyContent: 'center', width: 340 }}>
             <div style={{ position: 'relative', width: 320, height: 320 }}>
-              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(190,0,98,0.2) 0%, transparent 70%)' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(124,58,237,0.2) 0%, transparent 70%)' }} />
               <div style={{ ...glass, width: 320, height: 320, borderRadius: '50%', border: `1px solid rgba(255,255,255,0.08)`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 32 }}>
                 <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, textTransform: 'uppercase', letterSpacing: 2, color: c.onSurfaceVar, fontWeight: 600, margin: '0 0 8px' }}>Skin Vitality Index</p>
                 <span style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 96, fontWeight: 800, color: c.onSurface, lineHeight: 1, letterSpacing: '-0.05em' }}>85</span>
@@ -437,8 +499,8 @@ export default function SignIn() {
             </div>
           </div>
 
-          {/* Science copy */}
           <div style={{ flex: 1 }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#22c55e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, display: 'block', marginBottom: 16 }}>🌿 Glow Score</span>
             <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 3.5vw, 3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 20px', color: c.onSurface }}>
               The Science of<br />The Ethereal Glow
             </h2>
@@ -462,12 +524,85 @@ export default function SignIn() {
         </div>
       </section>
 
-      {/* ── How it works ── */}
-      <section id="products" style={{ padding: '120px 40px', background: c.surface }}>
+      {/* ══════════════════════════════════════════════════════════════════════
+          GLAM SCORE — makeup analysis preview
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section id="glam-score" style={{ padding: '120px 40px', background: c.surfaceLow, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '30%', right: '-5%', width: 500, height: 500, background: `radial-gradient(circle, rgba(190,0,98,0.12) 0%, transparent 65%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '20%', left: '-5%', width: 400, height: 400, background: `radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 65%)`, pointerEvents: 'none' }} />
+
+        <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: c.secondary, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, display: 'block', marginBottom: 16 }}>💄 Glam Score</span>
+            <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 3.5vw, 3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', color: c.onSurface, margin: '0 0 16px', lineHeight: 1.05 }}>
+              Decode Your <span className="glam-grad">Radiance</span>
+            </h2>
+            <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 16, color: c.onSurfaceVar, maxWidth: 520, margin: '0 auto', lineHeight: 1.8 }}>
+              Our AI evaluates your makeup application against professional standards across three core dimensions — and tells you exactly what to fix.
+            </p>
+          </div>
+
+          <div className="glam-section-grid" style={{ display: 'flex', gap: 32, alignItems: 'stretch' }}>
+            {/* Left — metric cards */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {GLAM_METRICS.map(m => (
+                <div key={m.label} className="metric-card" style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 24, padding: '28px 32px', display: 'flex', alignItems: 'center', gap: 24, boxShadow: `0 4px 20px ${c.shadow}` }}>
+                  <div style={{ width: 52, height: 52, borderRadius: 16, background: `${m.color}18`, border: `1px solid ${m.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+                    {m.icon}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <h4 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 18, fontWeight: 700, color: c.onSurface, margin: 0, letterSpacing: '-0.02em' }}>{m.label}</h4>
+                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 700, color: m.color }}>{m.score}%</span>
+                    </div>
+                    {/* Score bar */}
+                    <div style={{ height: 5, background: c.surfaceHighest, borderRadius: 4, marginBottom: 10 }}>
+                      <div style={{ height: '100%', width: `${m.score}%`, background: `linear-gradient(90deg, ${m.color}99, ${m.color})`, borderRadius: 4, transition: 'width 1.2s ease' }} />
+                    </div>
+                    <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 12, color: c.onSurfaceVar, margin: 0, lineHeight: 1.6 }}>{m.insight}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Right — Glam Score display */}
+            <div style={{ width: 340, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Main score card */}
+              <div style={{ flex: 1, ...glass, border: `1px solid rgba(190,0,98,0.25)`, borderRadius: 36, padding: '48px 32px', textAlign: 'center', position: 'relative', overflow: 'hidden', boxShadow: `0 0 40px rgba(190,0,98,0.12)` }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 60%, rgba(190,0,98,0.15) 0%, transparent 65%)', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, textTransform: 'uppercase', letterSpacing: 2.5, color: c.onSurfaceVar, fontWeight: 600, margin: '0 0 8px' }}>Your AI Result</p>
+                  <div style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 110, fontWeight: 800, lineHeight: 1, letterSpacing: '-0.06em', background: GLAM_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>85</div>
+                  <p style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 16, fontWeight: 700, color: c.onSurface, letterSpacing: '-0.02em', margin: '0 0 20px' }}>GLAM SCORE</p>
+                  <div style={{ display: 'inline-block', padding: '8px 20px', borderRadius: 50, border: `1px solid rgba(190,0,98,0.35)`, background: 'rgba(190,0,98,0.1)' }}>
+                    <span style={{ fontFamily: "'Manrope', sans-serif", fontSize: 13, fontWeight: 600, color: c.secondary }}>💎 Platinum Status Reached</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating palette card */}
+              <div style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 20, padding: '18px 22px' }}>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: c.onSurfaceVar, textTransform: 'uppercase', letterSpacing: 1.5, margin: '0 0 12px', fontWeight: 600 }}>Detected Color Palette</p>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  {['#E8D9C5', '#7C3AED', '#DB2777', '#F59E0B', '#1a1a2e'].map((clr, i) => (
+                    <div key={i} style={{ width: 28, height: 28, borderRadius: '50%', background: clr, border: '2px solid rgba(255,255,255,0.15)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', flexShrink: 0 }} />
+                  ))}
+                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: c.onSurfaceVar, marginLeft: 4 }}>98% match</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          HOW IT WORKS
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section id="how-it-works" style={{ padding: '120px 40px', background: c.surface }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 72 }}>
             <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: c.primary, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2 }}>Simple Process</span>
-            <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 3.5vw, 3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', color: c.onSurface, margin: '12px 0 0' }}>
+            <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 3.5vw, 3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', color: c.onSurface, margin: '12px 0 0', lineHeight: 1.05 }}>
               Medical-Grade <span className="text-grad">Curation</span>
             </h2>
           </div>
@@ -483,11 +618,14 @@ export default function SignIn() {
         </div>
       </section>
 
-      {/* ── Specialists ── */}
+      {/* ══════════════════════════════════════════════════════════════════════
+          SPECIALISTS — dermatologists
+      ══════════════════════════════════════════════════════════════════════ */}
       <section id="specialists" style={{ padding: '120px 40px', background: c.surfaceLow, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: 0, right: 0, width: 800, height: 800, background: `radial-gradient(circle, ${c.glowPurple} 0%, transparent 60%)`, transform: 'translate(30%, -30%)', pointerEvents: 'none' }} />
         <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 80, alignItems: 'center' }}>
           <div>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#22c55e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, display: 'block', marginBottom: 20 }}>🌿 Glow Score · Specialist Access</span>
             <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 3.5vw, 3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 24px', color: c.onSurface }}>
               Elite Access<br />To Board-Certified<br /><span className="text-grad">Clinical Minds</span>
             </h2>
@@ -502,14 +640,13 @@ export default function SignIn() {
                 </div>
               ))}
             </div>
-            <button onClick={() => setModalMode("signup")}
+            <button onClick={() => setModalMode('signup')}
               style={{ display: 'flex', alignItems: 'center', gap: 16, background: 'none', border: 'none', color: c.onSurface, fontFamily: "'Epilogue', sans-serif", fontWeight: 700, fontSize: 16, cursor: 'pointer', letterSpacing: '-0.01em' }}>
               Explore Specialist Directory
               <span style={{ width: 44, height: 44, borderRadius: '50%', border: `1px solid ${c.outlineVar}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>→</span>
             </button>
           </div>
 
-          {/* Cascading doctor cards */}
           <div className="specialist-cascade" style={{ display: 'flex', flexDirection: 'column', gap: 20, marginLeft: 24 }}>
             {DOCTORS.map((doc) => (
               <div key={doc.name} style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 28, padding: '24px 28px', display: 'flex', gap: 20, alignItems: 'center', marginLeft: doc.offset }}>
@@ -531,23 +668,68 @@ export default function SignIn() {
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
+      {/* ══════════════════════════════════════════════════════════════════════
+          MAKEUP ARTISTS
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section id="artists" style={{ padding: '120px 40px', background: c.surface, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 900, height: 400, background: `radial-gradient(ellipse, rgba(190,0,98,0.08) 0%, transparent 65%)`, pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: c.secondary, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, display: 'block', marginBottom: 16 }}>💄 Glam Score · Artist Network</span>
+            <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 3.5vw, 3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', color: c.onSurface, margin: '0 0 16px', lineHeight: 1.05 }}>
+              Connect With <span className="glam-grad">Expert Artists</span>
+            </h2>
+            <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 16, color: c.onSurfaceVar, maxWidth: 520, margin: '0 auto', lineHeight: 1.8 }}>
+              The AI provides the science; our elite artists provide the soul. Book a virtual or in-person session with the world's best makeup professionals.
+            </p>
+          </div>
+
+          <div className="artists-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+            {ARTISTS.map((a, idx) => (
+              <div key={a.name} className="artist-card" style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 28, overflow: 'hidden', transition: 'border-color 0.3s, box-shadow 0.3s', cursor: 'pointer', marginTop: idx % 2 === 1 ? 24 : 0 }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(190,0,98,0.4)'; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 30px rgba(190,0,98,0.12)`; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = c.outlineVar; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}>
+                <div style={{ aspectRatio: '4/5', overflow: 'hidden', position: 'relative' }}>
+                  <img src={a.img} alt={a.name} className="artist-card-img"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={e => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
+                  />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(23,16,32,0.7) 0%, transparent 50%)' }} />
+                </div>
+                <div style={{ padding: '20px 22px' }}>
+                  <h4 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 18, fontWeight: 700, color: c.onSurface, margin: '0 0 4px', letterSpacing: '-0.02em' }}>{a.name}</h4>
+                  <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 12, color: c.secondary, fontWeight: 600, margin: '0 0 14px' }}>{a.spec}</p>
+                  <button className="artist-card-btn"
+                    onClick={() => setModalMode('signup')}
+                    style={{ width: '100%', padding: '10px', borderRadius: 14, background: c.surfaceHigh, border: `1px solid ${c.outlineVar}`, color: c.onSurface, fontFamily: "'Epilogue', sans-serif", fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                    Book Consultation
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          TESTIMONIALS — skin + makeup mixed
+      ══════════════════════════════════════════════════════════════════════ */}
       <section id="testimonials" style={{ padding: '120px 40px', background: c.surfaceLow, overflow: 'hidden' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', color: c.primary, marginBottom: 16 }}>Real Results</p>
             <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1, color: c.onSurface, margin: 0 }}>
-              Skin that <span className="text-grad">speaks for itself</span>
+              Skin &amp; Makeup that <span className="text-grad">speaks for itself</span>
             </h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
             {[
-              { name: 'Priya Mehta', city: 'Mumbai', score: 84, avatar: 'PM', quote: 'I was skeptical at first, but after my first scan ROOP AI caught my dehydration pattern instantly. My skin cleared up in 3 weeks just following the routine.', tag: 'Oily + Acne-prone', color: '#7C3AED' },
-              { name: 'Arjun Kapoor', city: 'Delhi', score: 91, avatar: 'AK', quote: 'The Glow Score actually motivated me to be consistent. Went from a 67 to 91 in 6 weeks. The product picks were spot on — nothing generic.', tag: 'Combination skin', color: '#BE0062' },
-              { name: 'Sneha Iyer', city: 'Bangalore', score: 78, avatar: 'SI', quote: 'Tried 4 apps before this. ROOP AI is the only one that felt like a real dermatologist was looking at my face. The dark circle analysis was scarily accurate.', tag: 'Dry + Sensitive', color: '#7C3AED' },
-              { name: 'Rahul Sharma', city: 'Pune', score: 88, avatar: 'RS', quote: 'As a guy I never paid attention to skincare. ROOP AI made it dead simple — 3 steps morning, 3 evening. My confidence is completely different now.', tag: 'Normal skin', color: '#BE0062' },
-              { name: 'Ananya Singh', city: 'Chennai', score: 76, avatar: 'AS', quote: 'The specialist recommendations led me to a dermatologist who finally diagnosed my rosacea. I had been treating it wrong for years.', tag: 'Rosacea-prone', color: '#7C3AED' },
-              { name: 'Vikram Nair', city: 'Hyderabad', score: 93, avatar: 'VN', quote: 'I travel constantly and my skin was suffering. The weekly mask plan adjusted to my skin type each scan. It is like having a skin coach in my pocket.', tag: 'Combination skin', color: '#BE0062' },
+              { name: 'Priya Mehta',   city: 'Mumbai',    score: 84, avatar: 'PM', quote: 'I was skeptical at first, but after my first scan ROOP AI caught my dehydration pattern instantly. My skin cleared up in 3 weeks just following the routine.', tag: '🌿 Oily + Acne-prone', color: '#7C3AED' },
+              { name: 'Arjun Kapoor',  city: 'Delhi',     score: 91, avatar: 'AK', quote: 'The Glow Score actually motivated me to be consistent. Went from a 67 to 91 in 6 weeks. The product picks were spot on — nothing generic.', tag: '🌿 Combination skin', color: '#BE0062' },
+              { name: 'Neha Sharma',   city: 'Mumbai',    score: 88, avatar: 'NS', quote: 'The Glam Score changed how I apply makeup. AI told me my foundation oxidised and suggested the right shade. I\'ve never had so many compliments on my base.', tag: '💄 Glam Score user', color: '#7C3AED' },
+              { name: 'Rahul Sharma',  city: 'Pune',      score: 88, avatar: 'RS', quote: 'As a guy I never paid attention to skincare. ROOP AI made it dead simple — 3 steps morning, 3 evening. My confidence is completely different now.', tag: '🌿 Normal skin', color: '#BE0062' },
+              { name: 'Divya Kapoor',  city: 'Bangalore', score: 82, avatar: 'DK', quote: 'I\'m a makeup artist and the Glam Score is genuinely impressive. It caught over-blending on my client\'s eyes and flagged a mismatch in highlighter placement.', tag: '💄 Pro MUA · Glam Score', color: '#7C3AED' },
+              { name: 'Vikram Nair',   city: 'Hyderabad', score: 93, avatar: 'VN', quote: 'I travel constantly and my skin was suffering. The weekly mask plan adjusted to my skin type each scan. It is like having a skin coach in my pocket.', tag: '🌿 Combination skin', color: '#BE0062' },
             ].map((t, i) => (
               <div key={t.name} style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 28, padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 20, transform: i % 2 === 1 ? 'translateY(20px)' : 'none' }}>
                 <div style={{ display: 'flex', gap: 6 }}>
@@ -568,21 +750,37 @@ export default function SignIn() {
         </div>
       </section>
 
-      {/* ── Final CTA ── */}
+      {/* ══════════════════════════════════════════════════════════════════════
+          FINAL CTA
+      ══════════════════════════════════════════════════════════════════════ */}
       <section id="clinic" style={{ padding: '120px 40px', background: c.surface }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 64, padding: '100px 60px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(190,0,98,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div className="cta-box" style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 64, padding: '100px 60px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 50%, rgba(124,58,237,0.1) 0%, transparent 55%), radial-gradient(circle at 70% 50%, rgba(190,0,98,0.1) 0%, transparent 55%)', pointerEvents: 'none' }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
+              {/* Dual score badges */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 32 }}>
+                <div style={{ padding: '8px 20px', borderRadius: 50, background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.3)', fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 700, color: c.primary, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  🌿 Glow Score
+                </div>
+                <div style={{ padding: '8px 20px', borderRadius: 50, background: 'rgba(190,0,98,0.12)', border: '1px solid rgba(190,0,98,0.3)', fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 700, color: c.secondary, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  💄 Glam Score
+                </div>
+              </div>
               <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2.5rem, 6vw, 5rem)', fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 0.95, margin: '0 0 24px', color: c.onSurface }}>
-                Join the Ethereal Clinic<br /><span className="text-grad">of Skin Health</span>
+                Join the Ethereal Clinic<br /><span className="text-grad">of Skin &amp; Style</span>
               </h2>
               <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 18, color: c.onSurfaceVar, maxWidth: 560, margin: '0 auto 48px', lineHeight: 1.75 }}>
-                Step into the future of precision dermatology. Your personalised skin journey starts with a single scan.
+                Step into the future of beauty intelligence. Your personalised skin health and makeup journey starts with a single scan.
               </p>
-              <button className="brand-btn" style={{ fontSize: 18, padding: '20px 52px' }} onClick={() => setModalMode("signup")}>
-                Begin Your Analysis
-              </button>
+              <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button className="brand-btn" style={{ fontSize: 16, padding: '18px 44px' }} onClick={() => setModalMode('signup')}>
+                  🌿 Begin Skin Analysis
+                </button>
+                <button className="glam-btn" style={{ fontSize: 16, padding: '18px 44px' }} onClick={() => setModalMode('signup')}>
+                  💄 Start Glam Analysis
+                </button>
+              </div>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: c.onSurfaceVar, marginTop: 20 }}>Free to start · No credit card · 60-second analysis</p>
             </div>
           </div>
@@ -598,7 +796,7 @@ export default function SignIn() {
             <span style={{ fontFamily: "'Manrope', sans-serif", fontSize: 12, color: c.onSurfaceVar, marginLeft: 4 }}>© 2026 The Ethereal Clinic.</span>
           </div>
           <div style={{ display: 'flex', gap: 32 }}>
-            {['Scientific Protocol', 'Privacy', 'Terms', 'Membership'].map(l => (
+            {['Glow Score', 'Glam Score', 'Artist Network', 'Privacy', 'Terms'].map(l => (
               <a key={l} href="#" style={{ fontFamily: "'Manrope', sans-serif", fontSize: 13, color: c.onSurfaceVar, textDecoration: 'none', transition: 'color 0.2s' }}>{l}</a>
             ))}
           </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/supabase';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { HistoryEntry, GlamHistoryEntry } from '../types/analysis';
+import type { HistoryEntry, GlamHistoryEntry, AppMode } from '../types/analysis';
 import AppLayout from '../components/AppLayout';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
@@ -413,6 +413,101 @@ function GlamDashboardContent({ latestGlam, navigate }: { latestGlam: GlamHistor
   );
 }
 
+/* ── Mode Picker (shown on first login before mode is chosen) ─────────────── */
+function DashboardModePicker({ firstName, onPick }: { firstName: string; onPick: (m: AppMode) => void }) {
+  const [hovered, setHovered] = useState<AppMode | null>(null);
+
+  return (
+    <div style={{ maxWidth: 680, margin: '0 auto', padding: '32px 0' }}>
+      {/* Welcome */}
+      <div style={{ marginBottom: 40 }}>
+        <h1 style={{ fontFamily: 'system-ui', fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
+          Welcome{firstName ? `, ` : ''}{firstName
+            ? <span style={{ background: BRAND, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{firstName}.</span>
+            : '.'}
+        </h1>
+        <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
+          Choose your analysis mode to get started. This sets up your personalised dashboard.
+        </p>
+      </div>
+
+      {/* Mode cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+
+        {/* Glow Score */}
+        <button
+          onClick={() => onPick('glow')}
+          onMouseEnter={() => setHovered('glow')}
+          onMouseLeave={() => setHovered(null)}
+          style={{
+            background: hovered === 'glow' ? 'rgba(168,85,247,0.08)' : 'var(--bg-card)',
+            border: `2px solid ${hovered === 'glow' ? 'rgba(168,85,247,0.55)' : 'rgba(168,85,247,0.2)'}`,
+            borderRadius: 24, padding: '32px 24px', cursor: 'pointer', textAlign: 'left',
+            transition: 'all 0.2s', display: 'flex', flexDirection: 'column', gap: 16,
+            boxShadow: hovered === 'glow' ? '0 8px 32px rgba(168,85,247,0.15)' : 'none',
+            transform: hovered === 'glow' ? 'translateY(-3px)' : 'none',
+          }}
+        >
+          <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>🌿</div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#a855f7', letterSpacing: 0.5, marginBottom: 4, textTransform: 'uppercase' }}>Glow Score</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Skin Health Intelligence</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>Upload a bare-face selfie. Get skin analysis, daily routine, product picks, and dermatologist advice.</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {['Acne & texture analysis', 'Personalised daily routine', 'Product recommendations', 'Specialist access'].map(f => (
+              <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#a855f7', flexShrink: 0 }} />
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{f}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 4, padding: '10px 0', borderRadius: 50, background: 'linear-gradient(135deg, #a855f7, #7c3aed)', color: '#fff', fontSize: 13, fontWeight: 700, letterSpacing: 0.5, textAlign: 'center' }}>
+            Start with Glow Score →
+          </div>
+        </button>
+
+        {/* Glam Score */}
+        <button
+          onClick={() => onPick('glam')}
+          onMouseEnter={() => setHovered('glam')}
+          onMouseLeave={() => setHovered(null)}
+          style={{
+            background: hovered === 'glam' ? 'rgba(236,72,153,0.08)' : 'var(--bg-card)',
+            border: `2px solid ${hovered === 'glam' ? 'rgba(236,72,153,0.55)' : 'rgba(236,72,153,0.2)'}`,
+            borderRadius: 24, padding: '32px 24px', cursor: 'pointer', textAlign: 'left',
+            transition: 'all 0.2s', display: 'flex', flexDirection: 'column', gap: 16,
+            boxShadow: hovered === 'glam' ? '0 8px 32px rgba(236,72,153,0.15)' : 'none',
+            transform: hovered === 'glam' ? 'translateY(-3px)' : 'none',
+          }}
+        >
+          <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(236,72,153,0.12)', border: '1px solid rgba(236,72,153,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>💄</div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#ec4899', letterSpacing: 0.5, marginBottom: 4, textTransform: 'uppercase' }}>Glam Score</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Makeup AI Coach</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>Upload a makeup selfie. Get scored on eyes, skin, and lips — plus shade match, missing products, and pro tips.</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {['Eyes, skin & lips scoring', 'Foundation shade match', 'Missing product detection', 'Artist consultation'].map(f => (
+              <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#ec4899', flexShrink: 0 }} />
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{f}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 4, padding: '10px 0', borderRadius: 50, background: 'linear-gradient(135deg, #ec4899, #a855f7)', color: '#fff', fontSize: 13, fontWeight: 700, letterSpacing: 0.5, textAlign: 'center' }}>
+            Start with Glam Score →
+          </div>
+        </button>
+      </div>
+
+      <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-hint)', marginTop: 20 }}>
+        You can switch modes anytime from your profile settings.
+      </p>
+    </div>
+  );
+}
+
 /* ── Page ─────────────────────────────────────────────────────────────────── */
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -421,17 +516,19 @@ export default function Dashboard() {
   const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
   const hasFullAccess = isAdmin || premium;
   const [showPremium, setShowPremium] = useState(false);
+  const [scoreMode, setScoreMode] = useLocalStorage<AppMode | null>('roop_score_mode', null);
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
   const [glamHistory] = useLocalStorage<GlamHistoryEntry[]>('roop_glam_history', []);
 
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
     ?? user?.email?.split('@')[0]
-    ?? 'there';
+    ?? '';
 
   const latest = history[0];
   const score  = latest?.analysis.glowScore ?? null;
   const latestGlam = glamHistory[0];
-  const activeMode: 'glow' | 'glam' = latestGlam ? 'glam' : 'glow';
+  // Use explicitly chosen mode — don't infer from history
+  const activeMode: AppMode = scoreMode ?? 'glow';
 
   return (
     <AppLayout>
@@ -444,56 +541,70 @@ export default function Dashboard() {
       )}
 
       <div className="page-dashboard">
-        {/* Welcome Header */}
-        <div style={{ marginBottom: 24 }}>
-          <h1 style={{ fontFamily: 'system-ui', fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
-            Welcome back, <span style={{ background: BRAND, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{firstName}.</span>
-          </h1>
-          <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
-            {latest
-              ? `Your ethereal skin journey is progressing. Last analysis: ${new Date(latest.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}`
-              : 'Start your skin analysis journey today.'}
-          </p>
-        </div>
 
-        {/* Active scan type badge */}
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', borderRadius: 50, border: `1px solid ${activeMode === 'glam' ? 'rgba(236,72,153,0.35)' : 'rgba(168,85,247,0.35)'}`, background: activeMode === 'glam' ? 'rgba(236,72,153,0.08)' : 'rgba(168,85,247,0.08)' }}>
-            <span>{activeMode === 'glam' ? '💄' : '🌿'}</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: activeMode === 'glam' ? '#ec4899' : '#a855f7', letterSpacing: 0.5 }}>
-              {activeMode === 'glam' ? 'GLAM SCORE' : 'GLOW SCORE'}
-            </span>
-            <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>
-              {activeMode === 'glam' ? '· Makeup analysis active' : '· Skin analysis active'}
-            </span>
-          </div>
-        </div>
-
-        {!hasFullAccess ? (
-          <div className="locked-section" style={{ minHeight: 'calc(100vh - 320px)' }}>
-            <div className="locked-blur-preview" aria-hidden="true">
-              {activeMode === 'glow'
-                ? <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
-                : <GlamDashboardContent latestGlam={latestGlam} navigate={navigate} />}
-            </div>
-            <div className="locked-overlay">
-              <div className="locked-overlay-inner">
-                <div style={{ fontSize: 44, marginBottom: 12 }}>🔒</div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-primary)' }}>Unlock Your Dashboard</h3>
-                <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.6, maxWidth: 280 }}>
-                  View your {activeMode === 'glam' ? 'Glam Score, look analysis, and makeup corrections' : 'Glow Score, skin metrics, daily routine, and full scan history'} — all personalised to you.
-                </p>
-                <button onClick={() => setShowPremium(true)} className="btn-glow" style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}>
-                  🚀 Try Full Access — ₹25 for 7 days
-                </button>
-                <p style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 10 }}>Then just ₹49/month · Cancel anytime · No surprises</p>
-              </div>
-            </div>
-          </div>
-        ) : activeMode === 'glow' ? (
-          <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
+        {/* ── Mode not chosen yet: show picker ── */}
+        {!scoreMode ? (
+          <DashboardModePicker firstName={firstName} onPick={m => setScoreMode(m)} />
         ) : (
-          <GlamDashboardContent latestGlam={latestGlam} navigate={navigate} />
+          <>
+            {/* Welcome Header */}
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontFamily: 'system-ui', fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
+                Welcome back, <span style={{ background: BRAND, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{firstName}.</span>
+              </h1>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
+                {activeMode === 'glow'
+                  ? (latest ? `Your skin journey is progressing. Last analysis: ${new Date(latest.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}` : 'Start your first skin scan to unlock your Glow Score.')
+                  : (latestGlam ? `Your makeup journey is progressing. Last scan: ${new Date(latestGlam.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}` : 'Start your first glam scan to unlock your Glam Score.')}
+              </p>
+            </div>
+
+            {/* Active mode badge + switch link */}
+            <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', borderRadius: 50, border: `1px solid ${activeMode === 'glam' ? 'rgba(236,72,153,0.35)' : 'rgba(168,85,247,0.35)'}`, background: activeMode === 'glam' ? 'rgba(236,72,153,0.08)' : 'rgba(168,85,247,0.08)' }}>
+                <span>{activeMode === 'glam' ? '💄' : '🌿'}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: activeMode === 'glam' ? '#ec4899' : '#a855f7', letterSpacing: 0.5 }}>
+                  {activeMode === 'glam' ? 'GLAM SCORE' : 'GLOW SCORE'}
+                </span>
+                <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>
+                  {activeMode === 'glam' ? '· Makeup analysis active' : '· Skin analysis active'}
+                </span>
+              </div>
+              <button
+                onClick={() => setScoreMode(null)}
+                style={{ background: 'none', border: 'none', fontSize: 11, color: 'var(--text-hint)', cursor: 'pointer', textDecoration: 'underline', padding: 0, fontFamily: "'DM Sans', system-ui, sans-serif" }}
+              >
+                Switch mode
+              </button>
+            </div>
+
+            {!hasFullAccess ? (
+              <div className="locked-section" style={{ minHeight: 'calc(100vh - 320px)' }}>
+                <div className="locked-blur-preview" aria-hidden="true">
+                  {activeMode === 'glow'
+                    ? <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
+                    : <GlamDashboardContent latestGlam={latestGlam} navigate={navigate} />}
+                </div>
+                <div className="locked-overlay">
+                  <div className="locked-overlay-inner">
+                    <div style={{ fontSize: 44, marginBottom: 12 }}>🔒</div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-primary)' }}>Unlock Your Dashboard</h3>
+                    <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.6, maxWidth: 280 }}>
+                      View your {activeMode === 'glam' ? 'Glam Score, look analysis, and makeup corrections' : 'Glow Score, skin metrics, daily routine, and full scan history'} — all personalised to you.
+                    </p>
+                    <button onClick={() => setShowPremium(true)} className="btn-glow" style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}>
+                      🚀 Try Full Access — ₹25 for 7 days
+                    </button>
+                    <p style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 10 }}>Then just ₹49/month · Cancel anytime · No surprises</p>
+                  </div>
+                </div>
+              </div>
+            ) : activeMode === 'glow' ? (
+              <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
+            ) : (
+              <GlamDashboardContent latestGlam={latestGlam} navigate={navigate} />
+            )}
+          </>
         )}
       </div>
     </AppLayout>
