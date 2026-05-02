@@ -18,9 +18,19 @@ import type { HistoryEntry, GlamHistoryEntry, AppMode } from '../types/analysis'
 
 const FREE_LIMIT = 9999; // unlimited on Testing branch
 
-const MODES: Array<{ id: AppMode; icon: string; label: string; sub: string; dual: boolean; premium?: boolean; heading: string; tagline: string }> = [
-  { id: 'glow', icon: '🌿', label: 'GLOW SCORE', sub: 'No makeup · Skin health',     dual: false, heading: 'Your AI-Powered Skin Coach',  tagline: 'Upload a bare-face selfie — get your Glow Score, daily routine, product picks, and dermatologist insights.' },
-  { id: 'glam', icon: '💄', label: 'GLAM SCORE', sub: 'Makeup selfie · Makeup coach', dual: false, heading: 'Your AI-Powered Makeup Coach', tagline: "Upload a makeup selfie — get your Glam Score, what's missing from your look, and expert correction tips." },
+const MODES: Array<{ id: AppMode; icon: string; label: string; sub: string; dual: boolean; premium?: boolean; heading: string; tagline: string; features: string[] }> = [
+  {
+    id: 'glow', icon: '🌿', label: 'GLOW SCORE', sub: 'No makeup · Skin health', dual: false,
+    heading: 'Your AI-Powered Skin Coach',
+    tagline: 'Upload a bare-face selfie — get your Glow Score, daily routine, product picks, and dermatologist insights.',
+    features: ['Glow Score', 'Skin Routine', 'Product Picks', 'Derm Advice'],
+  },
+  {
+    id: 'glam', icon: '💄', label: 'GLAM SCORE', sub: 'Makeup selfie · AI Coach', dual: false,
+    heading: 'Your AI-Powered Makeup Coach',
+    tagline: 'Upload a makeup selfie — get your Glam Score, foundation shade match, missing product picks, and expert correction tips.',
+    features: ['Glam Score', 'Shade Match', 'Look Analysis', 'Pro Tips'],
+  },
 ];
 
 const PARTICLES: Array<[number, number, number, number, string]> = [
@@ -157,28 +167,50 @@ export default function Home() {
 
           {/* Mode Selector */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20, animation: 'fadeInUp 0.6s ease 0.2s both' }}>
-            {MODES.map((m) => (
-              <button
-                key={m.id}
-                onClick={() => handleModeSelect(m.id)}
-                style={{
-                  background: mode === m.id ? 'rgba(168,85,247,0.15)' : tc.cardBg,
-                  border: `1.5px solid ${mode === m.id ? 'rgba(168,85,247,0.6)' : tc.cardBorder}`,
-                  borderRadius: 16, padding: '14px 12px', cursor: 'pointer',
-                  textAlign: 'left', transition: 'all 0.2s', position: 'relative',
-                  boxShadow: mode === m.id ? '0 0 20px rgba(168,85,247,0.15)' : 'none',
-                }}
-              >
-                {m.premium && (
-                  <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, fontWeight: 700, letterSpacing: 0.5, background: 'linear-gradient(135deg,#ec4899,#a855f7)', color: '#fff', padding: '2px 6px', borderRadius: 20 }}>
-                    PRO
-                  </span>
-                )}
-                <div style={{ fontSize: 22, marginBottom: 6 }}>{m.icon}</div>
-                <div style={{ fontSize: 12, fontWeight: 800, color: mode === m.id ? '#a855f7' : tc.textPrimary, letterSpacing: 0.5, marginBottom: 2 }}>{m.label}</div>
-                <div style={{ fontSize: 11, color: tc.textMuted, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4 }}>{m.sub}</div>
-              </button>
-            ))}
+            {MODES.map((m) => {
+              const isActive = mode === m.id;
+              const isGlam = m.id === 'glam';
+              const activeColor = isGlam ? '#ec4899' : '#a855f7';
+              const activeBg = isGlam ? 'rgba(236,72,153,0.12)' : 'rgba(168,85,247,0.12)';
+              const activeBorder = isGlam ? 'rgba(236,72,153,0.6)' : 'rgba(168,85,247,0.6)';
+              const activeGlow = isGlam ? '0 0 20px rgba(236,72,153,0.15)' : '0 0 20px rgba(168,85,247,0.15)';
+
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => handleModeSelect(m.id)}
+                  style={{
+                    background: isActive ? activeBg : tc.cardBg,
+                    border: `1.5px solid ${isActive ? activeBorder : tc.cardBorder}`,
+                    borderRadius: 16, padding: '14px 12px', cursor: 'pointer',
+                    textAlign: 'left', transition: 'all 0.2s', position: 'relative',
+                    boxShadow: isActive ? activeGlow : 'none',
+                  }}
+                >
+                  {m.premium && (
+                    <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, fontWeight: 700, letterSpacing: 0.5, background: 'linear-gradient(135deg,#ec4899,#a855f7)', color: '#fff', padding: '2px 6px', borderRadius: 20 }}>
+                      PRO
+                    </span>
+                  )}
+                  <div style={{ fontSize: 22, marginBottom: 6 }}>{m.icon}</div>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: isActive ? activeColor : tc.textPrimary, letterSpacing: 0.5, marginBottom: 2 }}>{m.label}</div>
+                  <div style={{ fontSize: 11, color: tc.textMuted, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4, marginBottom: isActive ? 8 : 0 }}>{m.sub}</div>
+                  {isActive && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
+                      {m.features.map(f => (
+                        <span key={f} style={{
+                          fontSize: 9, fontWeight: 700, letterSpacing: 0.3,
+                          padding: '2px 7px', borderRadius: 999,
+                          background: `${activeColor}18`,
+                          color: activeColor,
+                          border: `1px solid ${activeColor}30`,
+                        }}>{f}</span>
+                      ))}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Upload Card */}
@@ -258,7 +290,7 @@ export default function Home() {
                 onClick={handleGlamAnalyze}
                 disabled={!makeupFile || glamLoading}
                 className="btn-glow"
-                style={{ width: '100%', marginTop: 18, fontSize: 16, padding: '15px', justifyContent: 'center', background: 'linear-gradient(135deg, #db2777, #a855f7, #db2777)', backgroundSize: '200% auto' }}
+                style={{ width: '100%', marginTop: 18, fontSize: 16, padding: '15px', justifyContent: 'center', background: 'linear-gradient(135deg, #ec4899, #a855f7)', boxShadow: '0 4px 20px rgba(236,72,153,0.35)' }}
               >
                 {glamLoading ? (
                   <><span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} />Analysing&hellip;</>

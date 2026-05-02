@@ -5,6 +5,7 @@ import AppLayout from '../components/AppLayout';
 import { useAuth } from '../lib/supabase';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
+import MakeupArtistFinder from '../components/MakeupArtistFinder';
 
 const ADMIN_EMAILS = ['lamba.akash1994@gmail.com', 'varunvlamba@gmail.com'];
 
@@ -435,6 +436,7 @@ export default function Specialists() {
   const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
   const hasFullAccess = isAdmin || premium;
   const [showPremium, setShowPremium] = useState(false);
+  const [specialistTab, setSpecialistTab] = useState<'derm' | 'artist'>('derm');
 
   const cities = Object.keys(DERMATOLOGISTS);
   const [city, setCity] = useState('Delhi');
@@ -493,36 +495,76 @@ export default function Specialists() {
       )}
 
       <div className="page-specialists fade-in">
-        {/* Search */}
-        <div className="specialists-search-bar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search by name, clinic, specialty or city…"
-            className="specialists-search-input"
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className="specialists-search-clear">✕</button>
-          )}
+        {/* Search — dermatologists only */}
+        {specialistTab === 'derm' && (
+          <div className="specialists-search-bar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search by name, clinic, specialty or city…"
+              className="specialists-search-input"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="specialists-search-clear">✕</button>
+            )}
+          </div>
+        )}
+
+        {/* Tab switcher */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
+          <button
+            onClick={() => setSpecialistTab('derm')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer',
+              fontWeight: 600, fontSize: 13, transition: 'all 0.18s',
+              background: specialistTab === 'derm' ? '#a855f7' : 'var(--bg-elevated)',
+              color: specialistTab === 'derm' ? '#fff' : 'var(--text-muted)',
+              boxShadow: specialistTab === 'derm' ? '0 0 12px rgba(168,85,247,0.35)' : 'none',
+            }}
+          >
+            🩺 Dermatologists
+          </button>
+          <button
+            onClick={() => setSpecialistTab('artist')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer',
+              fontWeight: 600, fontSize: 13, transition: 'all 0.18s',
+              background: specialistTab === 'artist' ? '#ec4899' : 'var(--bg-elevated)',
+              color: specialistTab === 'artist' ? '#fff' : 'var(--text-muted)',
+              boxShadow: specialistTab === 'artist' ? '0 0 12px rgba(236,72,153,0.35)' : 'none',
+            }}
+          >
+            💄 Makeup Artists
+          </button>
         </div>
 
         {!hasFullAccess ? (
           <div className="locked-section">
             <div className="locked-blur-preview" aria-hidden="true">
-              <SpecialistsContent {...contentProps} />
+              {specialistTab === 'derm' ? (
+                <SpecialistsContent {...contentProps} />
+              ) : (
+                <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 20, padding: '24px 28px' }}>
+                  <MakeupArtistFinder />
+                </div>
+              )}
             </div>
             <div className="locked-overlay">
               <div className="locked-overlay-inner">
                 <div style={{ fontSize: 44, marginBottom: 12 }}>🔒</div>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-primary)' }}>
-                  Unlock Specialist Finder
+                  {specialistTab === 'artist' ? 'Unlock Makeup Artist Finder' : 'Unlock Specialist Finder'}
                 </h3>
                 <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.6, maxWidth: 280 }}>
-                  Find verified dermatologists near you, book consultations, and get expert skin care advice.
+                  {specialistTab === 'artist'
+                    ? 'Discover top-rated makeup artists near you for bridal, editorial, and everyday glam looks.'
+                    : 'Find verified dermatologists near you, book consultations, and get expert skin care advice.'}
                 </p>
                 <button onClick={() => setShowPremium(true)} className="btn-glow"
                   style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}>
@@ -535,7 +577,13 @@ export default function Specialists() {
             </div>
           </div>
         ) : (
-          <SpecialistsContent {...contentProps} />
+          specialistTab === 'derm' ? (
+            <SpecialistsContent {...contentProps} />
+          ) : (
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 20, padding: '24px 28px' }}>
+              <MakeupArtistFinder />
+            </div>
+          )
         )}
       </div>
     </AppLayout>
