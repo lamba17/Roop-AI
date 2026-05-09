@@ -372,7 +372,6 @@ export default function Dashboard() {
   const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email);
   const hasFullAccess = isAdmin || premium;
   const [showPremium, setShowPremium] = useState(false);
-  const [scoreMode, setScoreMode] = useLocalStorage<AppMode | null>('roop_score_mode', null);
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
 
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
@@ -396,7 +395,6 @@ export default function Dashboard() {
       <div className="page-dashboard">
 
         {/* ── Mode not chosen yet: show picker ── */}
-        {!scoreMode ? (
           <DashboardModePicker firstName={firstName} onPick={m => { setScoreMode(m); navigate('/scan'); }} />
         ) : (
           <>

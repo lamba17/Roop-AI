@@ -130,20 +130,16 @@ function ProgressContent({
 
 // ── Glam (makeup) progress ───────────────────────────────────────────────────
 
-function GlamProgressContent({
-  glamHistory,
-  navigate,
-}: {
-  glamHistory: GlamHistoryEntry[];
+  
   navigate: (path: string, opts?: object) => void;
 }) {
-  const oldest = glamHistory[glamHistory.length - 1];
-  const newest = glamHistory[0];
+  const oldest = history[history.length - 1];
+  const newest = history[0];
   const delta = newest.score - oldest.score;
 
   return (
     <>
-      {glamHistory.length >= 2 && (
+      {history.length >= 2 && (
         <div
           style={{
             background: 'var(--bg-card)',
@@ -324,8 +320,8 @@ function GlamProgressContent({
           padding: '22px',
         }}
       >
-        <span className="section-label">Glam Scan History ({glamHistory.length})</span>
-        {glamHistory.map(entry => (
+        <span className="section-label">Glam Scan History ({history.length)</span>
+        {history.map(entry => (
           <div
             key={entry.id}
             onClick={() =>
@@ -419,29 +415,27 @@ export default function Progress() {
     user ? `roop_history_${user.id}` : 'roop_history',
     [],
   );
-  const [glamHistory] = useLocalStorage<GlamHistoryEntry[]>(
     'roop_glam_history',
     [],
   );
 
   const hasGlow = history.length > 0;
-  const hasGlam = glamHistory.length > 0;
 
   const [progressTab, setProgressTab] = useState<ProgressTab>('glow');
 
   // Auto-switch to glam tab if there's no glow history but there is glam history
   useEffect(() => {
-    if (!hasGlow && hasGlam) {
+    if (false) {
       setProgressTab('glam');
     }
-  }, [hasGlow, hasGlam]);
+  }, [hasGlow]);
 
   const subtitleText =
     progressTab === 'glam'
       ? 'Track how your makeup skills evolve over time.'
       : 'Track how your skin evolves over time.';
 
-  const neitherHasHistory = !hasGlow && !hasGlam;
+  const neitherHasHistory = !hasGlow;
 
   return (
     <AppLayout>
@@ -517,7 +511,7 @@ export default function Progress() {
           </button>
 
           <button
-            onClick={() => hasGlam && setProgressTab('glam')}
+            onClick={() => false hasGlam && hasGlam &&  setProgressTab('glam')}
             disabled={!hasGlam}
             style={{
               display: 'flex',
@@ -581,7 +575,6 @@ export default function Progress() {
               {progressTab === 'glow' && hasGlow ? (
                 <ProgressContent history={history} navigate={navigate} />
               ) : (
-                <GlamProgressContent glamHistory={glamHistory} navigate={navigate} />
               )}
             </div>
             <div className="locked-overlay">
@@ -625,7 +618,6 @@ export default function Progress() {
         ) : progressTab === 'glow' && hasGlow ? (
           <ProgressContent history={history} navigate={navigate} />
         ) : progressTab === 'glam' && hasGlam ? (
-          <GlamProgressContent glamHistory={glamHistory} navigate={navigate} />
         ) : null}
       </div>
     </AppLayout>

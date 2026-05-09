@@ -71,11 +71,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggle } = useTheme();
-  const [scoreMode] = useLocalStorage<AppMode | null>('roop_score_mode', null);
 
   // Show nav items that are mode-neutral OR match the chosen mode
   const topNav = ALL_TOP_NAV.filter(item =>
-    item.mode === null || !scoreMode || item.mode === scoreMode
+    !item.mode || item.mode === "glow"
   );
 
   function isActive(path: string) {

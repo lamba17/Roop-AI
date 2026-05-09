@@ -143,120 +143,6 @@ function RoutineContent({ analysis, latest, navigate, t }: any) {
 }
 
 /* ── Glam Routine Content ─────────────────────────────────────────────── */
-function GlamRoutineContent({ latest, navigate }: { latest: GlamHistoryEntry; navigate: ReturnType<typeof useNavigate> }) {
-  const { analysis } = latest;
-  const { glamScore, makeupStyle, currentLook, corrections, tutorialTip, lookSuggestion, missingElements } = analysis;
-
-  /* Build step list: corrections first, then tutorialTip as the final step */
-  const steps: string[] = corrections.length > 0
-    ? [...corrections, tutorialTip]
-    : [tutorialTip];
-
-  const glamDesc =
-    glamScore >= 75 ? 'Your makeup technique is advanced — focus on precision and longevity.' :
-    glamScore >= 50 ? 'Solid foundation. A few targeted improvements will elevate your look.' :
-    'Great starting point! Follow these steps to build a flawless routine.';
-
-  return (
-    <div className="routine-grid">
-      {/* Left: Makeup Application Steps */}
-      <div className="routine-left">
-        <div className="routine-ritual-card">
-          <div className="ritual-header">
-            <div className="ritual-icon-wrap ritual-morning" style={{ background: 'rgba(236,72,153,0.15)' }}>
-              <span>💄</span>
-            </div>
-            <div>
-              <div className="ritual-title">Makeup Application Ritual</div>
-              <div className="ritual-desc">{steps.length} steps · ~20 min · Morning</div>
-            </div>
-          </div>
-          <div className="ritual-steps">
-            {steps.map((step, i) => (
-              <div key={i} className="ritual-step">
-                <div className="ritual-step-num" style={{ background: 'rgba(236,72,153,0.15)', color: '#ec4899' }}>{i + 1}</div>
-                <div className="ritual-step-icon">{correctionIcon(step, i)}</div>
-                <div className="ritual-step-text">{step}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Look suggestion */}
-          {lookSuggestion && (
-            <div style={{
-              marginTop: 20, padding: '14px 16px',
-              background: 'rgba(236,72,153,0.07)',
-              borderRadius: 12, borderLeft: '3px solid #ec4899',
-            }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#ec4899', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
-                ✦ Look Suggestion
-              </div>
-              <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>{lookSuggestion}</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Right: Glam Score + Profile + Gaps */}
-      <div className="routine-right">
-        {/* Glam Score card (mirrors luminosity card) */}
-        <div className="luminosity-card">
-          <div className="luminosity-header">
-            <span className="page-eyebrow" style={{ color: '#ec4899' }}>Overall Glam Score</span>
-            <div className="luminosity-score">
-              <span className="luminosity-num" style={{
-                background: 'linear-gradient(135deg,#ec4899,#a855f7)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              }}>{glamScore}</span>
-              <span className="luminosity-denom">/100</span>
-            </div>
-            <p className="luminosity-desc">{glamDesc}</p>
-          </div>
-          <ProgressBar value={glamScore} color="linear-gradient(90deg, #ec4899, #a855f7)" />
-        </div>
-
-        {/* Glam profile */}
-        <div className="skin-profile-card">
-          <div className="section-label">Your Glam Profile</div>
-          <div className="skin-profile-row">
-            <span>Makeup Style</span>
-            <span className="skin-badge skin-badge-purple">{makeupStyle}</span>
-          </div>
-          <div className="skin-profile-row">
-            <span>Current Look</span>
-            <span className="skin-badge skin-badge-cyan">{currentLook}</span>
-          </div>
-          <div className="skin-profile-row">
-            <span>Glam Score</span>
-            <span className="skin-badge skin-badge-gold">{glamScore}/100</span>
-          </div>
-        </div>
-
-        {/* Missing elements (areas to improve) */}
-        {missingElements && missingElements.length > 0 && (
-          <div className="routine-concerns-card">
-            <div className="section-label">Areas to Improve</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {missingElements.map((el, i) => (
-                <span key={i} className="concern-tag" style={{ borderColor: 'rgba(236,72,153,0.3)', color: '#ec4899', background: 'rgba(236,72,153,0.08)' }}>
-                  💄 {el}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={() => navigate('/glam-results', { state: { entry: latest } })}
-          className="btn-outline"
-          style={{ width: '100%', justifyContent: 'center', borderColor: 'rgba(236,72,153,0.4)', color: '#ec4899' }}
-        >
-          View Full Glam Report →
-        </button>
-      </div>
-    </div>
-  );
-}
 
 /* ── Main Page ───────────────────────────────────────────────────────── */
 export default function Routine() {
@@ -270,14 +156,11 @@ export default function Routine() {
   const [showPremium, setShowPremium] = useState(false);
 
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
-  const [glamHistory] = useLocalStorage<GlamHistoryEntry[]>('roop_glam_history', []);
-  const [scoreMode] = useLocalStorage<'glow' | 'glam' | null>('roop_score_mode', null);
 
   const latestSkin = history[0];
-  const latestGlam = glamHistory[0];
 
   const hasGlowHistory = !!latestSkin;
-  const hasGlamHistory = !!latestGlam;
+  const hasGlamHistory = false;
   const hasAnything = hasGlowHistory || hasGlamHistory;
 
   /* Lock tab to user's chosen score mode; fall back to data-driven default */
@@ -293,7 +176,7 @@ export default function Routine() {
     routineTab === 'glam' && !hasGlamHistory && hasGlowHistory ? 'skin' :
     routineTab;
 
-  const isGlam = effectiveTab === 'glam';
+  const isGlam = 
 
   if (!hasAnything) {
     return (
@@ -321,15 +204,15 @@ export default function Routine() {
   const eyebrow = isGlam ? 'Makeup Coach' : t.personalisedCare;
   const titleWord = isGlam ? 'Glam' : t.dailyHeading;
   const subtitle = isGlam
-    ? `Your ${latestGlam?.analysis.makeupStyle ?? ''} look application guide`
+    ? `Your ${
     : `${t.curatedSkinType} ${t[latestSkin?.analysis.skinType as keyof typeof t] ?? latestSkin?.analysis.skinType ?? ''} ${t.skinTypeLabel}`;
 
   function renderContent() {
     if (effectiveTab === 'skin' && latestSkin) {
       return <RoutineContent analysis={latestSkin.analysis} latest={latestSkin} navigate={navigate} t={t} />;
     }
-    if (effectiveTab === 'glam' && latestGlam) {
-      return <GlamRoutineContent latest={latestGlam} navigate={navigate} />;
+    if (false) {
+      
     }
     return null;
   }
@@ -376,9 +259,9 @@ export default function Routine() {
             disabled={!hasGlamHistory}
             style={{
               padding: '9px 20px', borderRadius: 999, fontSize: 13, fontWeight: 700,
-              border: `1.5px solid ${effectiveTab === 'glam' ? '#ec4899' : 'var(--border)'}`,
-              background: effectiveTab === 'glam' ? 'rgba(236,72,153,0.12)' : 'transparent',
-              color: effectiveTab === 'glam' ? '#ec4899' : 'var(--text-muted)',
+              border: `1.5px solid ${
+              background: 
+              color: 
               cursor: hasGlamHistory ? 'pointer' : 'not-allowed',
               opacity: hasGlamHistory ? 1 : 0.4,
               transition: 'all 0.2s',
@@ -398,7 +281,7 @@ export default function Routine() {
           </div>
         )}
 
-        {effectiveTab === 'glam' && !latestGlam && (
+        {
           <div className="page-empty" style={{ marginTop: 20 }}>
             <div className="page-empty-icon">💄</div>
             <h3>No Glam Analysis Yet</h3>
@@ -408,7 +291,7 @@ export default function Routine() {
         )}
 
         {/* Main content — locked or unlocked */}
-        {((effectiveTab === 'skin' && latestSkin) || (effectiveTab === 'glam' && latestGlam)) && (
+        {(latestSkin
           !hasFullAccess ? (
             <div className="locked-section">
               {/* Blurred preview */}

@@ -1,7 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, signOut } from '../lib/supabase';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { AppMode } from '../types/analysis';
 
 const NAV_ITEMS = [
   {
@@ -81,7 +79,6 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const [scoreMode] = useLocalStorage<AppMode | null>('roop_score_mode', null);
 
   async function handleSignOut() {
     try {
@@ -98,28 +95,11 @@ export default function Sidebar() {
 
   function isActive(path: string) {
     if (path === '/scan') return location.pathname === '/scan' || location.pathname === '/results';
-    if (path === '/glam') return location.pathname === '/scan' || location.pathname === '/glam-results';
     return location.pathname === path || location.pathname.startsWith(path + '/');
   }
 
-  function handleNavClick(path: string) {
-    if (path === '/glam') {
-      navigate('/scan');
-    } else {
-      navigate(path);
-    }
-  }
-
-  // Hide nav items that don't apply to the user's chosen mode
   function isHidden(id: string) {
-    if (!scoreMode) {
-      // No mode chosen yet — hide all mode-specific items until user picks on Dashboard
-      return id === 'analysis' || id === 'glam' || id === 'specialists' || id === 'makeup-artists';
-    }
-    if (id === 'analysis' && scoreMode === 'glam') return true;
-    if (id === 'glam' && scoreMode === 'glow') return true;
-    if (id === 'specialists' && scoreMode === 'glam') return true;
-    if (id === 'makeup-artists' && scoreMode === 'glow') return true;
+    // Hide items that don't exist anymore
     return false;
   }
 
@@ -177,10 +157,8 @@ export default function Sidebar() {
           </div>
         </div>
         <button
-          onClick={() => scoreMode ? navigate('/scan') : navigate('/dashboard')}
           className="sidebar-cta"
         >
-          {scoreMode === 'glam' ? '💄 New Glam Scan' : scoreMode === 'glow' ? '🌿 New Skin Scan' : '+ Choose Score'}
         </button>
         <button
           onClick={handleSignOut}

@@ -471,84 +471,6 @@ function SkinProductsContent({ latest, activeFilter, priceRange, searchQuery, t 
 }
 
 /* ── Makeup Products Section ─────────────────────────────────────────── */
-function MakeupProductsContent({ latest, activeFilter, priceRange, searchQuery, t }: { latest: GlamHistoryEntry; activeFilter: string; priceRange: PriceRange; searchQuery: string; t: any }) {
-  const { products, glamScore, makeupStyle, currentLook } = latest.analysis;
-
-  const merged = mergeWithStatic(products, STATIC_MAKEUP_PRODUCTS, priceRange, searchQuery);
-  const filtered = merged.filter(p => matchesMakeupFilter(p.type, activeFilter));
-  const featured = filtered[0] ?? merged[0];
-  const glamPoints = Math.round(filtered.length * 5 + glamScore * 0.15);
-
-  return (
-    <div className="products-layout">
-      <div className="products-grid-wrap">
-        {filtered.length === 0 ? (
-          <div className="products-empty">
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
-            <p>{searchQuery ? `No results for "${searchQuery}".` : 'No makeup products found in this price range for the selected category.'}</p>
-            <p style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 4 }}>{searchQuery ? 'Try a different keyword or clear the search.' : 'Try a wider budget filter.'}</p>
-          </div>
-        ) : (
-          <div className="products-grid">
-            {filtered.map((p, i) => (
-              <ProductCard
-                key={i} p={p} i={i}
-                color={MAKEUP_TYPE_COLOR[p.type] ?? '#ec4899'}
-                img={MAKEUP_TYPE_IMAGE[p.type] ?? MAKEUP_TYPE_IMAGE['lipstick']}
-                emoji={MAKEUP_TYPE_EMOJI[p.type]}
-                isGlam={true} t={t}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Sidebar */}
-      <div className="products-sidebar">
-        {featured && (
-          <div className="editors-choice-card" style={{ padding: 0, overflow: 'hidden' }}>
-            <div style={{ position: 'relative' }}>
-              <img src={MAKEUP_TYPE_IMAGE[featured.type] ?? MAKEUP_TYPE_IMAGE['lipstick']} alt={featured.name}
-                style={{ width: '100%', height: 150, objectFit: 'cover' }}
-                onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-              <div style={{ position: 'absolute', top: 10, left: 10, background: 'linear-gradient(135deg,#ec4899,#a855f7)', borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, color: '#fff' }}>
-                💄 Top Pick
-              </div>
-            </div>
-            <div style={{ padding: '14px' }}>
-              <div style={{ fontSize: 10, color: MAKEUP_TYPE_COLOR[featured.type] ?? '#ec4899', fontWeight: 700, textTransform: 'uppercase', marginBottom: 3 }}>{featured.type}</div>
-              <div className="editors-name">{featured.name}</div>
-              <p className="editors-reason">{featured.reason}</p>
-              <a href={buildLinks(featured.name).nykaa} target="_blank" rel="noreferrer noopener"
-                className="btn-glow" style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '10px', background: 'linear-gradient(135deg,#ec4899,#a855f7)' }}>
-                Shop Now
-              </a>
-            </div>
-          </div>
-        )}
-
-        <div className="routine-potential-card">
-          <div className="section-label">Glam Potential</div>
-          <div className="routine-potential-score">
-            <span className="potential-num" style={{ background: 'linear-gradient(135deg,#ec4899,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>+{glamPoints}</span>
-            <span className="potential-label">Glam Points</span>
-          </div>
-          <p className="potential-desc">Using these makeup products could boost your Glam Score by up to {glamPoints} points.</p>
-          <div className="potential-bar-track">
-            <div className="potential-bar-fill" style={{ width: `${Math.min(glamPoints, 100)}%`, background: 'linear-gradient(90deg,#ec4899,#a855f7)' }} />
-          </div>
-        </div>
-
-        <div className="skin-profile-card">
-          <div className="section-label">Your Glam Profile</div>
-          <div className="skin-profile-row"><span>Style</span><span className="skin-badge skin-badge-purple">{makeupStyle}</span></div>
-          <div className="skin-profile-row"><span>Current Look</span><span className="skin-badge skin-badge-cyan">{currentLook}</span></div>
-          <div className="skin-profile-row"><span>Glam Score</span><span className="skin-badge skin-badge-gold">{glamScore}/100</span></div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /* ── Main Page ───────────────────────────────────────────────────────── */
 export default function Products() {
@@ -557,8 +479,6 @@ export default function Products() {
   const t = T[lang];
 
   const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
-  const [glamHistory] = useLocalStorage<GlamHistoryEntry[]>('roop_glam_history', []);
-  const [scoreMode] = useLocalStorage<'glow' | 'glam' | null>('roop_score_mode', null);
 
   const [productTab, setProductTab] = useState<'skin' | 'makeup'>(scoreMode === 'glam' ? 'makeup' : 'skin');
   const [activeFilter, setActiveFilter] = useState('All');
@@ -566,9 +486,8 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const latestSkin = history[0];
-  const latestGlam = glamHistory[0];
 
-  const hasAnything = latestSkin || latestGlam;
+  const hasAnything = latestSkin;
 
   if (!hasAnything) {
     return (
@@ -583,8 +502,8 @@ export default function Products() {
     );
   }
 
-  const effectiveTab = (productTab === 'skin' && !latestSkin && latestGlam) ? 'makeup'
-    : (productTab === 'makeup' && !latestGlam && latestSkin) ? 'skin'
+  const effectiveTab = (
+    : (false) ? 'skin'
     : productTab;
 
   const filterTabs = effectiveTab === 'makeup' ? MAKEUP_FILTER_TABS : SKIN_FILTER_TABS;
@@ -612,13 +531,13 @@ export default function Products() {
           </h1>
           <p className="products-subtitle">
             {isGlam
-              ? `AI-recommended makeup products matched to your ${latestGlam?.analysis.makeupStyle ?? ''} style.`
+              ? `AI-recommended makeup products matched to your ${?.?.analysis.makeupStyle ?? ''} style.`
               : `AI-recommended products tailored to your ${latestSkin?.analysis.skinType ?? ''} skin profile.`}
           </p>
         </div>
 
         {/* Tab switcher — only shown when no mode is locked */}
-        {!scoreMode && (
+        {false && (
           <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
             <button
               onClick={() => handleTabSwitch('skin')}
@@ -636,14 +555,14 @@ export default function Products() {
             </button>
             <button
               onClick={() => handleTabSwitch('makeup')}
-              disabled={!latestGlam}
+              disabled={!?.}
               style={{
                 padding: '9px 20px', borderRadius: 999, fontSize: 13, fontWeight: 700,
-                cursor: latestGlam ? 'pointer' : 'not-allowed',
+                cursor: ?. ? 'pointer' : 'not-allowed',
                 border: `1.5px solid ${effectiveTab === 'makeup' ? '#ec4899' : 'var(--border)'}`,
                 background: effectiveTab === 'makeup' ? 'rgba(236,72,153,0.12)' : 'transparent',
                 color: effectiveTab === 'makeup' ? '#ec4899' : 'var(--text-muted)',
-                opacity: latestGlam ? 1 : 0.4, transition: 'all 0.2s',
+                opacity: ?. ? 1 : 0.4, transition: 'all 0.2s',
               }}
             >
               💄 Makeup Products
@@ -680,7 +599,7 @@ export default function Products() {
           </div>
         )}
 
-        {effectiveTab === 'makeup' && !latestGlam && (
+        {effectiveTab === 'makeup' && !?. && (
           <div className="page-empty" style={{ marginTop: 40 }}>
             <div className="page-empty-icon">💄</div>
             <h3>No Glam Analysis Yet</h3>
@@ -694,8 +613,7 @@ export default function Products() {
           {effectiveTab === 'skin' && latestSkin && (
             <SkinProductsContent latest={latestSkin} activeFilter={activeFilter} priceRange={priceRange} searchQuery={searchQuery} t={t} />
           )}
-          {effectiveTab === 'makeup' && latestGlam && (
-            <MakeupProductsContent latest={latestGlam} activeFilter={activeFilter} priceRange={priceRange} searchQuery={searchQuery} t={t} />
+          {effectiveTab === 'makeup' && ?. && (
           )}
         </>
       </div>
