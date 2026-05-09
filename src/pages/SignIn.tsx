@@ -250,7 +250,8 @@ export default function SignIn() {
             {[
               { label: 'How It Works', id: 'how-it-works' },
               { label: 'Specialists', id: 'specialists' },
-              { label: 'Science', id: 'science' }
+              { label: 'Reviews', id: 'reviews' },
+              { label: 'Get Started', id: 'get-started' }
             ].map(item => (
               <a key={item.id} href={`#${item.id}`} className="nav-link">{item.label}</a>
             ))}
@@ -391,7 +392,7 @@ export default function SignIn() {
       </section>
 
       {/* REVIEWS */}
-      <section style={{ padding: '120px 40px', background: c.surfaceLow, position: 'relative', overflow: 'hidden' }}>
+      <section id="reviews" style={{ padding: '120px 40px', background: c.surfaceLow, position: 'relative', overflow: 'hidden' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 80 }}>
             <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 24px', color: c.onSurface }}>
@@ -424,7 +425,7 @@ export default function SignIn() {
       </section>
 
       {/* FINAL CTA */}
-      <section id="science" style={{ padding: '120px 40px', background: c.surface }}>
+      <section id="get-started" style={{ padding: '120px 40px', background: c.surface }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div className="cta-box" style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 64, padding: '100px 60px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 50%, rgba(124,58,237,0.1) 0%, transparent 55%)', pointerEvents: 'none' }} />
