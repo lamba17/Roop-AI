@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, signOut } from '../lib/supabase';
+import PremiumModal from './PremiumModal';
 
 const NAV_ITEMS = [
   {
@@ -89,6 +91,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const [showPremium, setShowPremium] = useState(false);
 
   async function handleSignOut() {
     try {
@@ -166,8 +169,39 @@ export default function Sidebar() {
           </div>
         </div>
         <button
+          onClick={() => setShowPremium(true)}
           className="sidebar-cta"
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            padding: '10px 14px',
+            background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+            border: 'none',
+            borderRadius: 10,
+            color: '#ffffff',
+            fontSize: 13,
+            fontFamily: "'DM Sans', system-ui, sans-serif",
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.15s',
+            marginBottom: 8,
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.02)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 8px 20px rgba(168, 85, 247, 0.3)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+          }}
         >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          Upgrade
         </button>
         <button
           onClick={handleSignOut}
@@ -205,6 +239,14 @@ export default function Sidebar() {
           Sign Out
         </button>
       </div>
+
+      {showPremium && user && (
+        <PremiumModal
+          user={user}
+          onClose={() => setShowPremium(false)}
+          onUpgraded={() => setShowPremium(false)}
+        />
+      )}
     </aside>
   );
 }
