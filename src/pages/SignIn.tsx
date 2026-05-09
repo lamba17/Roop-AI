@@ -49,21 +49,7 @@ function Spinner({ size = 20 }: { size?: number }) {
 
 function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose: () => void; mode: 'login' | 'signup' }) {
   const [gLoading, setGLoading] = useState(false);
-  const [email, setEmail]       = useState('');
-  const [name, setName]         = useState('');
-  const [phone, setPhone]       = useState('');
-  const [eLoading, setELoading] = useState(false);
-  const [sent, setSent]         = useState(false);
-  const [error, setError]       = useState<string | null>(null);
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '14px 18px', background: c.surfaceLow,
-    border: `1px solid ${c.outlineVar}`, borderRadius: 14, color: c.onSurface,
-    fontSize: 14, fontFamily: "'Manrope', sans-serif", outline: 'none',
-    marginBottom: 10, boxSizing: 'border-box',
-  };
-  const focusIn  = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.5)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'; };
-  const focusOut = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = c.outlineVar; e.currentTarget.style.boxShadow = 'none'; };
+  const [error, setError] = useState<string | null>(null);
 
   async function handleGoogle() {
     setError(null); setGLoading(true);
@@ -71,32 +57,8 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
     catch (e) { setError(e instanceof Error ? e.message : 'Sign-in failed.'); setGLoading(false); }
   }
 
-  async function handleSubmit(ev: React.FormEvent) {
-    ev.preventDefault();
-    if (!email.trim()) return;
-    if (mode === 'signup' && !name.trim()) return;
-    setError(null); setELoading(true);
-    try {
-      const { error: e } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          ...(mode === 'signup' && { data: {
-            full_name: name.trim(),
-            first_name: name.trim().split(' ')[0],
-            phone: phone ? `+91${phone}` : null,
-          }}),
-        },
-      });
-      if (e) throw new Error(e.message);
-      setSent(true);
-    } catch (e) { setError(e instanceof Error ? e.message : 'Failed to send link.'); }
-    finally { setELoading(false); }
-  }
-
   const glass: React.CSSProperties = { background: c.glassBg, backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' };
   const isSignup = mode === 'signup';
-  const canSubmit = !!email.trim() && (!isSignup || !!name.trim());
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(23,16,32,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
@@ -129,52 +91,6 @@ function SignInModal({ c, onClose, mode }: { c: ReturnType<typeof tok>; onClose:
           {gLoading ? <Spinner size={18} /> : <GoogleIcon />}
           {gLoading ? 'Connecting…' : isSignup ? 'Sign up with Google' : 'Continue with Google'}
         </button>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-          <div style={{ flex: 1, height: 1, background: c.outlineVar }} />
-          <span style={{ fontSize: 11, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", letterSpacing: 0.5 }}>or {isSignup ? 'sign up' : 'sign in'} with email</span>
-          <div style={{ flex: 1, height: 1, background: c.outlineVar }} />
-        </div>
-
-        {sent ? (
-          <div style={{ padding: '20px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 16, textAlign: 'center' }}>
-            <div style={{ fontSize: 32, marginBottom: 10 }}>📬</div>
-            <p style={{ margin: '0 0 6px', fontSize: 14, fontWeight: 700, color: '#4ade80', fontFamily: "'Manrope', sans-serif" }}>Check your inbox</p>
-            <p style={{ margin: 0, fontSize: 13, color: c.onSurfaceVar, fontFamily: "'Manrope', sans-serif", lineHeight: 1.6 }}>
-              Magic link sent to <strong style={{ color: c.onSurface }}>{email}</strong>. Click it to {isSignup ? 'activate your account' : 'sign in'} instantly.
-            </p>
-            <button style={{ marginTop: 14, background: 'none', border: 'none', color: c.onSurfaceVar, fontSize: 12, fontFamily: "'Manrope', sans-serif", cursor: 'pointer', textDecoration: 'underline' }}
-              onClick={() => { setSent(false); setEmail(''); setName(''); setPhone(''); }}>
-              Use a different email
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            {isSignup && (
-              <input type="text" value={name} onChange={e => setName(e.target.value)}
-                placeholder="Your full name" required style={inputStyle}
-                onFocus={focusIn} onBlur={focusOut} />
-            )}
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-              placeholder="your@email.com" required style={inputStyle}
-              onFocus={focusIn} onBlur={focusOut} />
-            {isSignup && (
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-                <span style={{ position: 'absolute', left: 14, fontSize: 14, fontWeight: 600, color: c.onSurfaceVar, fontFamily: "'Manrope', sans-serif", pointerEvents: 'none', userSelect: 'none' }}>+91</span>
-                <input type="tel" value={phone}
-                  onChange={e => { const val = e.target.value.replace(/\D/g, '').slice(0, 10); setPhone(val); }}
-                  placeholder="WhatsApp number (optional)" maxLength={10}
-                  style={{ ...inputStyle, paddingLeft: 48, paddingRight: 80, marginBottom: 0 }}
-                  onFocus={focusIn} onBlur={focusOut} />
-                <span style={{ position: 'absolute', right: 14, fontSize: 10, color: c.onSurfaceVar, fontFamily: "'Inter', sans-serif", background: c.surfaceHigh, padding: '2px 8px', borderRadius: 20, pointerEvents: 'none' }}>optional</span>
-              </div>
-            )}
-            <button type="submit" disabled={eLoading || !canSubmit}
-              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px', background: BRAND_GRADIENT, color: '#fff', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 700, fontFamily: "'Manrope', sans-serif", cursor: eLoading || !canSubmit ? 'not-allowed' : 'pointer', opacity: eLoading || !canSubmit ? 0.6 : 1, boxShadow: '0 0 24px rgba(124,58,237,0.3)' }}>
-              {eLoading ? <><Spinner size={16} /> Sending…</> : isSignup ? '✨  Create Account' : '✉️  Send Magic Link'}
-            </button>
-          </form>
-        )}
 
         <p style={{ textAlign: 'center', fontSize: 11, color: c.onSurfaceVar, marginTop: 20, marginBottom: 0, fontFamily: "'Inter', sans-serif", letterSpacing: 0.3 }}>🔒 Encrypted · Free to start · No card needed</p>
       </div>
