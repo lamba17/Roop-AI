@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/supabase';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -197,16 +197,11 @@ export default function Dashboard() {
   }, [latest?.imageUrl]);
 
   if (!latest) {
-    return (
-      <AppLayout>
-        <div className="page-empty">
-          <div className="page-empty-icon">🌿</div>
-          <h3>Welcome to ROOP AI</h3>
-          <p>Run your first Glow Score scan to unlock your personalized dashboard.</p>
-          <button onClick={() => navigate('/scan')} className="btn-glow">Start Your First Scan</button>
-        </div>
-      </AppLayout>
-    );
+    // Auto-redirect to scan page if no analysis exists
+    React.useEffect(() => {
+      navigate('/scan', { replace: true });
+    }, [navigate]);
+    return null;
   }
 
   const { analysis } = latest;
