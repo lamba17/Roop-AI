@@ -238,97 +238,63 @@ export default function Routine() {
         </div>
 
         {/* Tab switcher — only shown when no mode is locked */}
-        {!scoreMode && <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-          <button
-            onClick={() => hasGlowHistory && setRoutineTab('skin')}
-            disabled={!hasGlowHistory}
-            style={{
-              padding: '9px 20px', borderRadius: 999, fontSize: 13, fontWeight: 700,
-              border: `1.5px solid ${effectiveTab === 'skin' ? '#a855f7' : 'var(--border)'}`,
-              background: effectiveTab === 'skin' ? 'rgba(168,85,247,0.12)' : 'transparent',
-              color: effectiveTab === 'skin' ? '#a855f7' : 'var(--text-muted)',
-              cursor: hasGlowHistory ? 'pointer' : 'not-allowed',
-              opacity: hasGlowHistory ? 1 : 0.4,
-              transition: 'all 0.2s',
-            }}
-          >
-            🌿 Skin Routine
-          </button>
-          <button
-            onClick={() => hasGlamHistory && setRoutineTab('glam')}
-            disabled={!hasGlamHistory}
-            style={{
-              padding: '9px 20px', borderRadius: 999, fontSize: 13, fontWeight: 700,
-              border: `1.5px solid ${
-              background: 
-              color: 
-              cursor: hasGlamHistory ? 'pointer' : 'not-allowed',
-              opacity: hasGlamHistory ? 1 : 0.4,
-              transition: 'all 0.2s',
-            }}
-          >
-            💄 Glam Routine
-          </button>
-        </div>}
 
-        {/* No-data-for-this-tab state */}
-        {effectiveTab === 'skin' && !latestSkin && (
-          <div className="page-empty" style={{ marginTop: 20 }}>
-            <div className="page-empty-icon">🌿</div>
-            <h3>No Skin Analysis Yet</h3>
-            <p>Run a Glow Score scan to see your personalised skincare routine.</p>
-            <button onClick={() => navigate('/scan')} className="btn-glow">Start Glow Scan</button>
-          </div>
-        )}
+  const { user } = useAuth();
+  const { premium: hasFullAccess } = usePremium(user);
+  const [showPremium, setShowPremium] = useState(false);
 
-        {
-          <div className="page-empty" style={{ marginTop: 20 }}>
-            <div className="page-empty-icon">💄</div>
-            <h3>No Glam Analysis Yet</h3>
-            <p>Run a Glam Score scan to see your personalised makeup application routine.</p>
-            <button onClick={() => navigate('/scan')} className="btn-glow">Start Glam Scan</button>
-          </div>
-        )}
+  const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const latest = history[0];
 
-        {/* Main content — locked or unlocked */}
-        {(latestSkin
-          !hasFullAccess ? (
-            <div className="locked-section">
-              {/* Blurred preview */}
-              <div className="locked-blur-preview" aria-hidden="true">
-                {renderContent()}
-              </div>
+  if (!latest) {
+    return (
+      <AppLayout>
+        <div className="page-empty" style={{ marginTop: 20 }}>
+          <div className="page-empty-icon">🌿</div>
+          <h3>No Skin Analysis Yet</h3>
+          <p>Run a Glow Score scan to see your personalized skincare routine.</p>
+          <button onClick={() => navigate('/scan')} className="btn-glow">Start Glow Scan</button>
+        </div>
+      </AppLayout>
+    );
+  }
 
-              {/* Lock overlay */}
-              <div className="locked-overlay">
-                <div className="locked-overlay-inner">
-                  <div style={{ fontSize: 44, marginBottom: 12 }}>🔒</div>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-primary)' }}>
-                    {isGlam ? 'Unlock Your Glam Routine' : 'Unlock Your Daily Routine'}
-                  </h3>
-                  <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.6, maxWidth: 280 }}>
-                    {isGlam
-                      ? 'Get your step-by-step makeup application ritual, glam score breakdown, and missing elements — tailored to your look.'
-                      : 'Get your personalised morning & night ritual, skin metrics, and concerns — all tailored to your skin.'}
-                  </p>
-                  <button
-                    onClick={() => setShowPremium(true)}
-                    className="btn-glow"
-                    style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}
-                  >
-                    🚀 Try Full Access — ₹25 for 7 days
-                  </button>
-                  <p style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 10 }}>
-                    Then just ₹49/month · Cancel anytime · No surprises
-                  </p>
-                </div>
+  return (
+    <AppLayout>
+      <div className="page-container">
+        <div className="page-hero">
+          <h1 className="page-title">Your Daily <span className="gradient-text">Routine</span></h1>
+          <p className="page-subtitle">Personalized AM/PM skincare ritual based on your Glow Score</p>
+        </div>
+
+        {!hasFullAccess ? (
+          <div className="locked-section">
+            <div className="locked-blur-preview" aria-hidden="true">
+              <RoutineContent analysis={latest.analysis} latest={latest} navigate={navigate} t={t} />
+            </div>
+            <div className="locked-overlay">
+              <div className="locked-overlay-inner">
+                <div style={{ fontSize: 44, marginBottom: 12 }}>🔒</div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-primary)' }}>
+                  Unlock Your Daily Routine
+                </h3>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.6, maxWidth: 280 }}>
+                  View your complete morning and evening skincare routine — all personalised to your Glow Score.
+                </p>
+                <button onClick={() => setShowPremium(true)} className="btn-glow" style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}>
+                  🚀 Try Full Access — ₹25 for 7 days
+                </button>
               </div>
             </div>
-          ) : (
-            renderContent()
-          )
+          </div>
+        ) : (
+          <RoutineContent analysis={latest.analysis} latest={latest} navigate={navigate} t={t} />
         )}
       </div>
+
+      {showPremium && user && (
+        <PremiumModal user={user} onClose={() => setShowPremium(false)} onUpgraded={() => { setShowPremium(false); }} />
+      )}
     </AppLayout>
   );
 }
