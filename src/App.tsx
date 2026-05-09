@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Results from './pages/Results';
+import SkinAnalysis from './pages/SkinAnalysis';
 import Routine from './pages/Routine';
 import Products from './pages/Products';
 import Specialists from './pages/Specialists';
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/" element={<SignIn />} />
           <Route path="/scan" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/analysis" element={<SkinAnalysis />} />
           <Route path="/results" element={<Results />} />
           <Route path="/routine" element={<Routine />} />
           <Route path="/products" element={<Products />} />
