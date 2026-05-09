@@ -13,7 +13,6 @@ function glowColor(score: number) {
   return '#ef4444';
 }
 
-
 function ScoreRing({ score }: { score: number }) {
   const [displayed, setDisplayed] = useState(0);
   const r = 54, size = 160, cx = 80, cy = 80;
@@ -35,9 +34,9 @@ function ScoreRing({ score }: { score: number }) {
 
   return (
     <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ position: 'absolute', width: 120, height: 120, borderRadius: '50%', background: `radial-gradient(circle, ${color}25 0%, transparent 70%)`, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', width: 120, height: 120, borderRadius: '50%', background: `radial-gradient(circle, ${color}15 0%, transparent 70%)`, pointerEvents: 'none' }} />
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'relative', zIndex: 1 }}>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={10} />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth={10} />
         <circle cx={cx} cy={cy} r={r} fill="none"
           stroke={color} strokeWidth={10} strokeLinecap="round"
           strokeDasharray={`${dash} ${circumference}`}
@@ -45,25 +44,8 @@ function ScoreRing({ score }: { score: number }) {
           style={{ transition: 'stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)', filter: `drop-shadow(0 0 6px ${color}88)` }}
         />
         <text x={cx} y={cy - 8} textAnchor="middle" fill={color} fontSize="48" fontWeight="800" fontFamily="system-ui">{displayed}</text>
-        <text x={cx} y={cy + 18} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="10" letterSpacing="1.5" fontFamily="system-ui">GLOW SCORE</text>
+        <text x={cx} y={cy + 18} textAnchor="middle" fill="rgba(0,0,0,0.4)" fontSize="10" letterSpacing="1.5" fontFamily="system-ui">GLOW SCORE</text>
       </svg>
-    </div>
-  );
-}
-
-function MetricCard({ icon, label, value, status, color }: { icon: string; label: string; value: string; status: string; color: string }) {
-  return (
-    <div style={{
-      background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16,
-      padding: '18px 20px', position: 'relative', overflow: 'hidden',
-    }}>
-      <div style={{ position: 'absolute', top: -15, right: -15, width: 60, height: 60, borderRadius: '50%', background: `${color}12`, pointerEvents: 'none' }} />
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, position: 'relative', zIndex: 1 }}>
-        <div style={{ fontSize: 18 }}>{icon}</div>
-        <span style={{ fontSize: 9, fontWeight: 700, color, background: `${color}18`, padding: '2px 8px', borderRadius: 12, letterSpacing: 0.5 }}>{status}</span>
-      </div>
-      <div style={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1, marginBottom: 4, letterSpacing: '-0.01em' }}>{value}</div>
-      <div style={{ fontSize: 10, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
     </div>
   );
 }
@@ -103,129 +85,168 @@ export default function Dashboard() {
         />
       )}
 
-      <div className="page-dashboard" style={{ padding: '32px 40px', maxWidth: 1400, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 32 }}>
+      <div style={{ padding: '40px', maxWidth: 1400, margin: '0 auto', background: '#f8f6fc', minHeight: '100vh' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 40 }}>
 
           {/* Main Content */}
           <div>
             {/* Daily Glow Score Card */}
             <div style={{
-              background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 24,
-              padding: 40, marginBottom: 32, position: 'relative', overflow: 'hidden',
-              textAlign: 'center'
+              background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 24,
+              padding: '48px 40px', marginBottom: 32, position: 'relative', overflow: 'hidden',
+              textAlign: 'center', boxShadow: '0 4px 12px rgba(124,58,237,0.08)'
             }}>
-              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 0%, rgba(168,85,247,0.12), transparent 60%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 0%, rgba(168,85,247,0.08), transparent 60%)', pointerEvents: 'none' }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 20 }}>Daily Glow Score</div>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#a885d1', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 24 }}>Daily Glow Score</div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
                   <ScoreRing score={score} />
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                <div style={{ fontSize: 14, color: '#666666', fontStyle: 'italic', lineHeight: 1.6 }}>
                   Your skin barrier is 12% more resilient than last Tuesday. Keep up the hydration routine.
                 </div>
               </div>
             </div>
 
-            {/* Comparison & Metrics Row */}
+            {/* Metrics Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 32 }}>
+              {/* Comparison Card */}
               <div style={{
-                background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16,
-                padding: '20px', position: 'relative', overflow: 'hidden'
+                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
+                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
               }}>
-                <div style={{ position: 'absolute', top: -12, right: -12, width: 50, height: 50, borderRadius: '50%', background: 'rgba(34,197,94,0.12)', pointerEvents: 'none' }} />
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4, position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: '#22c55e' }}>+5%</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>vs last scan</div>
+                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(34,197,94,0.1)', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#22c55e', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Stable</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: '#22c55e' }}>+5%</div>
+                    <div style={{ fontSize: 13, color: '#888888' }}>vs last scan</div>
+                  </div>
                 </div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', textTransform: 'uppercase', letterSpacing: 0.5 }}>Stable</div>
               </div>
 
-              <MetricCard icon="💧" label="Hydration Level" value="85%" status="Optimal" color="#06b6d4" />
+              {/* Hydration Card */}
+              <div style={{
+                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
+                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
+              }}>
+                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(6,182,212,0.1)', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Hydration Level</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                    <div style={{ fontSize: 32, fontWeight: 800, color: '#06b6d4' }}>85%</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#06b6d4', textTransform: 'uppercase', letterSpacing: 0.5 }}>Optimal</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 32 }}>
-              <MetricCard icon="😊" label="Sensitivity" value="Low" status="Improving" color="#f59e0b" />
-              <MetricCard icon="✨" label="Radiance Index" value="92%" status="Strong" color="#a855f7" />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 40 }}>
-              <MetricCard icon="🛡️" label="Barrier Strength" value="High" status="Strong" color="#22c55e" />
-              <MetricCard icon="🎯" label="Acne Control" value={String(analysis.scores.acne)} status={analysis.scores.acne >= 75 ? 'Clear' : 'In Progress'} color="#22c55e" />
-            </div>
-
-            {/* Today's Routine */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Today's Routine</h3>
-                <button
-                  onClick={() => navigate('/results', { state: { entry: latest } })}
-                  style={{
-                    background: 'none', border: 'none', color: '#a855f7', fontSize: 13,
-                    fontWeight: 600, cursor: 'pointer', textDecoration: 'none'
-                  }}
-                >
-                  View Full Protocol →
-                </button>
+              {/* Sensitivity Card */}
+              <div style={{
+                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
+                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
+              }}>
+                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(249,158,11,0.1)', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Sensitivity</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                    <div style={{ fontSize: 32, fontWeight: 800, color: '#f59e0b' }}>Low</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: 0.5 }}>Improving</div>
+                  </div>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {analysis.dailyRoutine.morning.slice(0, 3).map((step, i) => (
-                  <div key={i} style={{
-                    background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12,
-                    padding: '16px 18px', display: 'flex', alignItems: 'flex-start', gap: 14
-                  }}>
-                    <div style={{
-                      width: 36, height: 36, borderRadius: 10, background: 'rgba(168,85,247,0.1)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                      fontSize: 16, fontWeight: 700, color: '#a855f7'
-                    }}>
-                      {i + 1}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>AM PROTOCOL · STEP {i + 1}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>{step}</div>
-                    </div>
-                    <input type="checkbox" style={{ width: 20, height: 20, cursor: 'pointer', flexShrink: 0 }} />
+              {/* Radiance Card */}
+              <div style={{
+                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
+                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
+              }}>
+                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(168,85,247,0.1)', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Radiance Index</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                    <div style={{ fontSize: 32, fontWeight: 800, color: '#a855f7' }}>92%</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#a855f7', textTransform: 'uppercase', letterSpacing: 0.5 }}>Strong</div>
                   </div>
-                ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Barrier Strength & Acne Control */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+              {/* Barrier Card */}
+              <div style={{
+                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
+                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
+              }}>
+                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(34,197,94,0.1)', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Barrier Strength</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                    <div style={{ fontSize: 32, fontWeight: 800, color: '#22c55e' }}>High</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#22c55e', textTransform: 'uppercase', letterSpacing: 0.5 }}>Strong</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Acne Card */}
+              <div style={{
+                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
+                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
+              }}>
+                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(34,197,94,0.1)', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Acne Control</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                    <div style={{ fontSize: 32, fontWeight: 800, color: '#22c55e' }}>{analysis.scores.acne}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#22c55e', textTransform: 'uppercase', letterSpacing: 0.5 }}>Clear</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Scan History Sidebar */}
           <div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 16px' }}>Scan History</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', margin: '0 0 24px' }}>Scan History</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {history.slice(0, 5).map((entry, idx) => {
                 const date = new Date(entry.date);
-                const dateStr = `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${date.getFullYear().toString().slice(2)}`;
-                const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                 const status = entry.analysis.glowScore >= 75 ? 'Stable' : entry.analysis.glowScore >= 50 ? 'Dryness' : 'Improving';
-                const statusColor = entry.analysis.glowScore >= 75 ? '#22c55e' : entry.analysis.glowScore >= 50 ? '#ef4444' : '#f59e0b';
 
                 return (
                   <button
                     key={idx}
                     onClick={() => navigate('/results', { state: { entry } })}
                     style={{
-                      background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12,
-                      padding: '14px 16px', cursor: 'pointer', transition: 'border-color 0.2s',
-                      textAlign: 'left', display: 'flex', gap: 12, alignItems: 'center'
+                      background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 12,
+                      padding: '16px', cursor: 'pointer', transition: 'all 0.2s',
+                      textAlign: 'left', display: 'flex', gap: 12, alignItems: 'center',
+                      boxShadow: '0 2px 6px rgba(124,58,237,0.05)'
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--text-muted)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.borderColor = '#d8cce8';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,58,237,0.1)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.borderColor = '#e8e2f0';
+                      e.currentTarget.style.boxShadow = '0 2px 6px rgba(124,58,237,0.05)';
+                    }}
                   >
                     <div style={{
-                      width: 40, height: 40, borderRadius: 10, background: `linear-gradient(135deg, #a855f7, #ec4899)`,
+                      width: 48, height: 48, borderRadius: 12, background: `linear-gradient(135deg, #a855f7, #ec4899)`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                       fontSize: 18, fontWeight: 700, color: 'white'
                     }}>
                       {entry.analysis.glowScore}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>Scan #{idx + 1}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-hint)' }}>{dateStr} · {timeStr}</div>
-                      <div style={{ fontSize: 10, color: statusColor, fontWeight: 600, marginTop: 4 }}>{status}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 2 }}>Scan #{idx === 0 ? '#1' : `#${idx + 1}`}</div>
+                      <div style={{ fontSize: 12, color: '#888888', marginBottom: 4 }}>{dateStr} · {timeStr}</div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: status === 'Stable' ? '#22c55e' : status === 'Improving' ? '#f59e0b' : '#ef4444' }}>{status}</div>
                     </div>
                   </button>
                 );
