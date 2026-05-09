@@ -98,9 +98,12 @@ export default function Sidebar() {
     return location.pathname === path || location.pathname.startsWith(path + '/');
   }
 
-  function isHidden(id: string) {
-    // Hide items that don't exist anymore
+  function isHidden() {
     return false;
+  }
+
+  function handleNavClick(path: string) {
+    navigate(path);
   }
 
   return (
@@ -128,19 +131,14 @@ export default function Sidebar() {
 
       {/* Nav Items */}
       <nav className="sidebar-nav">
-        {NAV_ITEMS.filter(item => !isHidden(item.id)).map(item => (
+        {NAV_ITEMS.filter(() => !isHidden()).map(item => (
           <button
             key={item.id}
             onClick={() => handleNavClick(item.path)}
-            className={`sidebar-nav-item ${isActive(item.path) ? 'active' : ''} ${item.id === 'glam' ? 'sidebar-nav-glam' : ''}`}
+            className={`sidebar-nav-item ${isActive(item.path) ? 'active' : ''}`}
           >
             <span className="sidebar-nav-icon">{item.icon}</span>
             <span>{item.label}</span>
-            {item.id === 'glam' && (
-              <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 700, letterSpacing: 0.5, padding: '2px 6px', borderRadius: 20, background: 'linear-gradient(135deg,#ec4899,#a855f7)', color: '#fff', flexShrink: 0 }}>
-                AI
-              </span>
-            )}
           </button>
         ))}
       </nav>

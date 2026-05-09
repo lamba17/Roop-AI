@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { HistoryEntry } from '../types/analysis';
 import AppLayout from '../components/AppLayout';
-import { useLanguage } from '../context/LanguageContext';
-import { T } from '../data/translations';
 import { useAuth } from '../lib/supabase';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
@@ -20,7 +18,7 @@ function ProgressBar({ value, color = '#a855f7' }: { value: number; color?: stri
   );
 }
 
-function RoutineContent({ analysis, latest, navigate, t }: any) {
+function RoutineContent({ analysis, latest, navigate }: any) {
   const luminosity = analysis.scores.skinTone;
   const luminosityDesc =
     luminosity >= 75 ? 'Excellent' :
@@ -126,8 +124,6 @@ function RoutineContent({ analysis, latest, navigate, t }: any) {
 
 export default function Routine() {
   const navigate = useNavigate();
-  const { lang } = useLanguage();
-  const t = T[lang];
   const { user } = useAuth();
   const { premium } = usePremium(user ?? null);
   const hasFullAccess = premium;
@@ -171,7 +167,7 @@ export default function Routine() {
         {!hasFullAccess ? (
           <div className="locked-section">
             <div className="locked-blur-preview" aria-hidden="true">
-              <RoutineContent analysis={latest.analysis} latest={latest} navigate={navigate} t={t} />
+              <RoutineContent analysis={latest.analysis} latest={latest} navigate={navigate} />
             </div>
             <div className="locked-overlay">
               <div className="locked-overlay-inner">
@@ -189,7 +185,7 @@ export default function Routine() {
             </div>
           </div>
         ) : (
-          <RoutineContent analysis={latest.analysis} latest={latest} navigate={navigate} t={t} />
+          <RoutineContent analysis={latest.analysis} latest={latest} navigate={navigate} />
         )}
       </div>
     </AppLayout>

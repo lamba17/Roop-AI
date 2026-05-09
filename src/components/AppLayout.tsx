@@ -2,17 +2,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import UserMenu from './UserMenu';
 import { useTheme } from '../context/ThemeContext';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { AppMode } from '../types/analysis';
 
 const ALL_TOP_NAV = [
-  { label: 'DASHBOARD',   path: '/dashboard',  mode: null       },
-  { label: 'SKIN SCAN',   path: '/scan',        mode: 'glow'    },
-  { label: 'GLAM SCAN',   path: '/glam',        mode: 'glam'    },
-  { label: 'PRODUCTS',    path: '/products',    mode: null       },
-  { label: 'ROUTINE',     path: '/routine',     mode: null       },
-  { label: 'SPECIALISTS', path: '/specialists', mode: 'glow'    },
-  { label: 'ARTISTS',     path: '/makeup-artists', mode: 'glam' },
+  { label: 'DASHBOARD',   path: '/dashboard'  },
+  { label: 'SKIN SCAN',   path: '/scan'       },
+  { label: 'PRODUCTS',    path: '/products'   },
+  { label: 'ROUTINE',     path: '/routine'    },
+  { label: 'SPECIALISTS', path: '/specialists' },
 ] as const;
 
 const MOBILE_NAV = [
@@ -55,16 +51,6 @@ const MOBILE_NAV = [
       </svg>
     ),
   },
-  {
-    label: 'Glam',
-    path: '/glam',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22c-1 0-2-.4-2.7-1.1L3.1 14.7A4 4 0 0 1 2 12V7a2 2 0 0 1 2-2l5-1.5a2 2 0 0 1 1 0L15 5a2 2 0 0 1 2 2v5a4 4 0 0 1-1.2 2.8L14.7 20.9A3.7 3.7 0 0 1 12 22z"/>
-        <circle cx="12" cy="10" r="2"/>
-      </svg>
-    ),
-  },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -72,19 +58,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { theme, toggle } = useTheme();
 
-  // Show nav items that are mode-neutral OR match the chosen mode
-  const topNav = ALL_TOP_NAV.filter(item =>
-    !item.mode || item.mode === "glow"
-  );
 
   function isActive(path: string) {
-    if (path === '/glam') return location.pathname === '/glam-results';
     return location.pathname === path || location.pathname.startsWith(path + '/');
   }
 
   function handleTopNav(path: string) {
-    if (path === '/glam') navigate('/scan', { state: { mode: 'glam' } });
-    else navigate(path);
+    navigate(path);
   }
 
   return (
@@ -112,11 +92,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <nav className="app-topnav">
-            {topNav.map(item => (
+            {ALL_TOP_NAV.map(item => (
               <button
                 key={item.path}
                 onClick={() => handleTopNav(item.path)}
-                className={`topnav-link ${isActive(item.path) ? 'active' : ''} ${item.path === '/glam' ? 'topnav-glam' : ''}`}
+                className={`topnav-link ${isActive(item.path) ? 'active' : ''}`}
               >
                 {item.label}
               </button>
