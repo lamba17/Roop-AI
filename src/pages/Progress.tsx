@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { HistoryEntry, GlamHistoryEntry } from '../types/analysis';
+import type { HistoryEntry } from '../types/analysis';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
 import AppLayout from '../components/AppLayout';
 import { useAuth } from '../lib/supabase';

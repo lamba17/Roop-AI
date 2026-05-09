@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/supabase';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { HistoryEntry, GlamHistoryEntry, AppMode } from '../types/analysis';
+import type { HistoryEntry } from '../types/analysis';
 import AppLayout from '../components/AppLayout';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
@@ -267,151 +267,7 @@ function DashboardContent({ history, latest, score, navigate }: any) {
   );
 }
 
-/* ── Glam Score Ring (dashboard variant) ─────────────────────────────────── */
-function GlamScoreRing({ score }: { score: number }) {
-  const [displayed, setDisplayed] = useState(0);
-  const r = 70, size = 200, cx = 100, cy = 100;
-  const circ = 2 * Math.PI * r;
-  const dash = (displayed / 100) * circ;
 
-  useEffect(() => {
-    setDisplayed(0);
-    const start = Date.now();
-    const tick = setInterval(() => {
-      const p = Math.min((Date.now() - start) / 1400, 1);
-      const e = 1 - Math.pow(1 - p, 3);
-      setDisplayed(Math.round(e * score));
-      if (p >= 1) clearInterval(tick);
-    }, 16);
-    return () => clearInterval(tick);
-  }, [score]);
-
-  return (
-    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ position: 'absolute', width: 160, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(189,157,255,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'relative', zIndex: 1 }}>
-        <defs>
-          <linearGradient id="glamDashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#bd9dff" />
-            <stop offset="100%" stopColor="#ff6a9f" />
-          </linearGradient>
-        </defs>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--border)" strokeWidth={12} />
-        <circle cx={cx} cy={cy} r={r} fill="none"
-          stroke="url(#glamDashGrad)" strokeWidth={12} strokeLinecap="round"
-          strokeDasharray={`${dash} ${circ}`}
-          transform={`rotate(-90 ${cx} ${cy})`}
-          style={{ transition: 'stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)', filter: 'drop-shadow(0 0 8px rgba(189,157,255,0.5))' }}
-        />
-        <text x={cx} y={cy - 10} textAnchor="middle" fill="#bd9dff" fontSize="42" fontWeight="800" fontFamily="system-ui">{displayed}</text>
-        <text x={cx} y={cy + 16} textAnchor="middle" fill="var(--text-hint)" fontSize="11" letterSpacing="2" fontFamily="system-ui">GLAM SCORE</text>
-        <text x={cx} y={cy + 36} textAnchor="middle" fill="#ff6a9f" fontSize="13" fontWeight="700" letterSpacing="1.5" fontFamily="system-ui">
-          {score >= 80 ? 'ELITE' : score >= 65 ? 'PRO' : score >= 50 ? 'RISING' : 'DEVELOPING'}
-        </text>
-      </svg>
-    </div>
-  );
-}
-
-/* ── Glam Dashboard Content ───────────────────────────────────────────────── */
-function GlamDashboardContent({ latestGlam, navigate }: { latestGlam: GlamHistoryEntry | undefined; navigate: (p: string, o?: any) => void }) {
-  if (!latestGlam) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <div className="dash-row-1" style={{ display: 'grid', gap: 16, alignItems: 'start' }}>
-          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 24, padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 40%, rgba(189,157,255,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
-            <div style={{ fontSize: 10, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 2, alignSelf: 'flex-start' }}>Glam Score</div>
-            <div style={{ width: 200, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-              <div style={{ fontSize: 40 }}>💄</div>
-              <div style={{ fontSize: 13, color: 'var(--text-hint)', textAlign: 'center' }}>No glam scan yet</div>
-              <button onClick={() => navigate('/scan', { state: { mode: 'glam' } })} className="btn-glow" style={{ fontSize: 13, padding: '10px 20px' }}>
-                Start Glam Scan
-              </button>
-            </div>
-          </div>
-          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 24, padding: '40px 28px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            <div style={{ fontSize: 40 }}>✨</div>
-            <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>Upload a makeup selfie to get your Glam Score, look analysis, and expert correction tips.</p>
-            <button onClick={() => navigate('/scan', { state: { mode: 'glam' } })} className="btn-glow" style={{ fontSize: 13 }}>Analyse My Makeup</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const a = latestGlam.analysis;
-  const glamMetrics = [
-    { icon: '👁', label: 'Eye Makeup', value: `${Math.round((a.scores.eyeshadow + a.scores.eyeliner + a.scores.mascara) / 3)}%`, color: '#bd9dff', tag: a.scores.eyeshadow >= 75 ? 'Flawless' : undefined },
-    { icon: '✨', label: 'Face Makeup', value: `${Math.round((a.scores.foundation + a.scores.concealer + a.scores.blush) / 3)}%`, color: '#ff6a9f', tag: a.scores.foundation >= 75 ? 'Blended' : undefined },
-    { icon: '💋', label: 'Lip Products', value: `${Math.round((a.scores.lipstick + a.scores.gloss) / 2)}%`, color: '#f59e0b', tag: a.scores.lipstick >= 75 ? 'Perfect' : undefined },
-    { icon: '🎨', label: 'Overall Finish', value: `${a.scores.overall}%`, color: '#22c55e', tag: a.scores.overall >= 75 ? 'Polished' : undefined },
-  ];
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div className="dash-row-1" style={{ display: 'grid', gap: 16, alignItems: 'start' }}>
-        {/* Glam Score Card */}
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 24, padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 40%, rgba(189,157,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-          <div style={{ fontSize: 10, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 2, alignSelf: 'flex-start', position: 'relative', zIndex: 1 }}>Glam Score</div>
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <GlamScoreRing score={latestGlam.score} />
-          </div>
-          <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6, margin: '0 0 6px' }}>
-              <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{a.currentLook}</span> · {a.makeupStyle} style
-            </p>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6, margin: '0 0 14px' }}>{a.skinToneMatch}</p>
-            <button
-              onClick={() => navigate('/glam-results', { state: { analysis: a, imageUrl: latestGlam.imageUrl } })}
-              style={{ background: 'linear-gradient(135deg,#7c3aed,#be0062)', border: 'none', borderRadius: 50, padding: '10px 24px', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5 }}>
-              View Full Glam Report →
-            </button>
-          </div>
-        </div>
-
-        {/* Glam Metrics 2×2 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {glamMetrics.map(m => <MetricCard key={m.label} {...m} status={m.tag ?? 'Check'} />)}
-        </div>
-      </div>
-
-      {/* Missing elements + history row */}
-      <div className="dash-row-2" style={{ display: 'grid', gap: 16, alignItems: 'start' }}>
-        {/* Missing elements */}
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 24, padding: '24px' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Missing From Look</div>
-          {a.missingElements.length > 0 ? (
-            a.missingElements.slice(0, 3).map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: 12, padding: '10px 0', borderBottom: i < 2 ? '1px solid var(--border)' : 'none' }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(255,106,159,0.12)', border: '1px solid rgba(255,106,159,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#ff6a9f', flexShrink: 0 }}>✕</div>
-                <p style={{ margin: 0, fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.5 }}>{item}</p>
-              </div>
-            ))
-          ) : (
-            <p style={{ fontSize: 13, color: 'var(--text-hint)', marginTop: 8 }}>Your look is complete! 💄</p>
-          )}
-        </div>
-
-        {/* Glam scan history */}
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 24, padding: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: 1 }}>Glam History</div>
-            <button onClick={() => navigate('/scan', { state: { mode: 'glam' } })} style={{ background: 'none', border: 'none', color: '#a855f7', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: 0 }}>New Scan →</button>
-          </div>
-          <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0 0 10px', fontStyle: 'italic' }}>"{a.currentLook}" · {a.makeupStyle} style</p>
-          {a.corrections.slice(0, 2).map((c, i) => (
-            <div key={i} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: i < 1 ? '1px solid var(--border)' : 'none' }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(189,157,255,0.15)', border: '1px solid rgba(189,157,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: '#bd9dff', flexShrink: 0 }}>{i + 1}</div>
-              <p style={{ margin: 0, fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.4 }}>{c}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /* ── Mode Picker (shown on first login before mode is chosen) ─────────────── */
 function DashboardModePicker({ firstName, onPick }: { firstName: string; onPick: (m: AppMode) => void }) {
@@ -518,7 +374,6 @@ export default function Dashboard() {
   const [showPremium, setShowPremium] = useState(false);
   const [scoreMode, setScoreMode] = useLocalStorage<AppMode | null>('roop_score_mode', null);
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
-  const [glamHistory] = useLocalStorage<GlamHistoryEntry[]>('roop_glam_history', []);
 
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]
     ?? user?.email?.split('@')[0]
@@ -526,9 +381,7 @@ export default function Dashboard() {
 
   const latest = history[0];
   const score  = latest?.analysis.glowScore ?? null;
-  const latestGlam = glamHistory[0];
   // Use explicitly chosen mode — don't infer from history
-  const activeMode: AppMode = scoreMode ?? 'glow';
 
   return (
     <AppLayout>
@@ -553,56 +406,34 @@ export default function Dashboard() {
                 Welcome back, <span style={{ background: BRAND, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{firstName}.</span>
               </h1>
               <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
-                {activeMode === 'glow'
-                  ? (latest ? `Your skin journey is progressing. Last analysis: ${new Date(latest.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}` : 'Start your first skin scan to unlock your Glow Score.')
-                  : (latestGlam ? `Your makeup journey is progressing. Last scan: ${new Date(latestGlam.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}` : 'Start your first glam scan to unlock your Glam Score.')}
+                {latest ? `Your skin journey is progressing. Last analysis: ${new Date(latest.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}` : 'Start your first skin scan to unlock your Glow Score.'}
               </p>
             </div>
 
-            {/* Active mode badge + switch link */}
-            <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', borderRadius: 50, border: `1px solid ${activeMode === 'glam' ? 'rgba(236,72,153,0.35)' : 'rgba(168,85,247,0.35)'}`, background: activeMode === 'glam' ? 'rgba(236,72,153,0.08)' : 'rgba(168,85,247,0.08)' }}>
-                <span>{activeMode === 'glam' ? '💄' : '🌿'}</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: activeMode === 'glam' ? '#ec4899' : '#a855f7', letterSpacing: 0.5 }}>
-                  {activeMode === 'glam' ? 'GLAM SCORE' : 'GLOW SCORE'}
+            {/* Glow badge */}
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '7px 16px', borderRadius: 50, border: 'rgba(168,85,247,0.35)', background: 'rgba(168,85,247,0.08)' }}>
+                <span>🌿</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#a855f7', letterSpacing: 0.5 }}>
+                  GLOW SCORE
                 </span>
                 <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>
-                  {activeMode === 'glam' ? '· Makeup analysis active' : '· Skin analysis active'}
+                  · Skin analysis
                 </span>
               </div>
-              <button
-                onClick={() => setScoreMode(null)}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  background: 'rgba(124,58,237,0.10)', border: '1.5px solid rgba(124,58,237,0.35)',
-                  borderRadius: 50, padding: '6px 14px', cursor: 'pointer',
-                  fontSize: 12, fontWeight: 700, color: '#a855f7', letterSpacing: 0.3,
-                  fontFamily: "'DM Sans', system-ui, sans-serif",
-                  transition: 'background 0.18s, border-color 0.18s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.2)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.6)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.10)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.35)'; }}
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/>
-                </svg>
-                {activeMode === 'glam' ? '🌿 Switch to Glow Mode' : '💄 Switch to Glam Mode'}
-              </button>
             </div>
 
             {!hasFullAccess ? (
               <div className="locked-section" style={{ minHeight: 'calc(100vh - 320px)' }}>
                 <div className="locked-blur-preview" aria-hidden="true">
-                  {activeMode === 'glow'
-                    ? <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
-                    : <GlamDashboardContent latestGlam={latestGlam} navigate={navigate} />}
+                  <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
                 </div>
                 <div className="locked-overlay">
                   <div className="locked-overlay-inner">
                     <div style={{ fontSize: 44, marginBottom: 12 }}>🔒</div>
                     <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--text-primary)' }}>Unlock Your Dashboard</h3>
                     <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.6, maxWidth: 280 }}>
-                      View your {activeMode === 'glam' ? 'Glam Score, look analysis, and makeup corrections' : 'Glow Score, skin metrics, daily routine, and full scan history'} — all personalised to you.
+                      View your Glow Score, skin metrics, daily routine, and full scan history — all personalised to you.
                     </p>
                     <button onClick={() => setShowPremium(true)} className="btn-glow" style={{ justifyContent: 'center', fontSize: 14, padding: '12px 28px' }}>
                       🚀 Try Full Access — ₹25 for 7 days
@@ -611,10 +442,8 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            ) : activeMode === 'glow' ? (
-              <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
             ) : (
-              <GlamDashboardContent latestGlam={latestGlam} navigate={navigate} />
+              <DashboardContent history={history} latest={latest} score={score} navigate={navigate} />
             )}
           </>
         )}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { HistoryEntry, GlamHistoryEntry } from '../types/analysis';
+import type { HistoryEntry } from '../types/analysis';
 import AppLayout from '../components/AppLayout';
 import { useLanguage } from '../context/LanguageContext';
 import { T } from '../data/translations';
