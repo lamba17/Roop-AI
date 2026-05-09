@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../lib/supabase';
+import { useAuth, saveAnalysis } from '../lib/supabase';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { HistoryEntry } from '../types/analysis';
 import AppLayout from '../components/AppLayout';
@@ -9,6 +9,7 @@ import RoutineChecklist from '../components/RoutineChecklist';
 import MaskPlan from '../components/MaskPlan';
 import ProductCard from '../components/ProductCard';
 import DermatologistFinder from '../components/DermatologistFinder';
+import { selfieStore } from '../utils/selfieStore';
 
 function SectionHeading({ label, children }: { label: string; children?: React.ReactNode }) {
   return (
@@ -25,6 +26,17 @@ export default function SkinAnalysis() {
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
 
   const entry = history[0];
+  const localImageUrl = selfieStore.get() ?? (entry?.imageUrl || undefined);
+
+  if (entry && user) {
+    const { analysis } = entry;
+    saveAnalysis({
+      user_id: user.id,
+      glow_score: analysis.glowScore,
+      skin_type: analysis.skinType,
+      concerns: analysis.concerns,
+    }).catch(() => {});
+  }
 
   if (!entry) {
     return (
@@ -59,7 +71,7 @@ export default function SkinAnalysis() {
             {/* Selfie avatar */}
             <div className="results-selfie-wrap">
               <img
-                src={entry.imageUrl}
+                src={localImageUrl || entry.imageUrl}
                 alt="Selfie"
                 className="results-selfie"
               />
