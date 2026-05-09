@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { signInWithGoogle, supabase } from '../lib/supabase';
+import { signInWithGoogle } from '../lib/supabase';
 import { useTheme } from '../context/ThemeContext';
 
 type Theme = 'dark' | 'light';
