@@ -50,6 +50,24 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
+function MetricCardColored({ label, value, status, color, bgColor }: { label: string; value: string; status: string; color: string; bgColor: string }) {
+  return (
+    <div style={{
+      background: bgColor, border: '1px solid rgba(0,0,0,0.06)', borderRadius: 16,
+      padding: '28px 24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+    }}>
+      <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: `${color}08`, pointerEvents: 'none' }} />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 12 }}>{label}</div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+          <div style={{ fontSize: 32, fontWeight: 800, color, lineHeight: 1 }}>{value}</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: 0.5 }}>{status}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -85,154 +103,105 @@ export default function Dashboard() {
         />
       )}
 
-      <div style={{ padding: '40px', maxWidth: 1400, margin: '0 auto', background: '#f8f6fc', minHeight: '100vh' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 40 }}>
+      <div style={{ padding: '40px', maxWidth: 1400, margin: '0 auto', background: '#f5f2fa', minHeight: '100vh' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 32 }}>
 
           {/* Main Content */}
           <div>
             {/* Daily Glow Score Card */}
             <div style={{
-              background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 24,
-              padding: '48px 40px', marginBottom: 32, position: 'relative', overflow: 'hidden',
-              textAlign: 'center', boxShadow: '0 4px 12px rgba(124,58,237,0.08)'
+              background: '#ffffff', border: '1px solid #e5dff2', borderRadius: 28,
+              padding: '56px 48px', marginBottom: 28, position: 'relative', overflow: 'hidden',
+              textAlign: 'center', boxShadow: '0 4px 16px rgba(124,58,237,0.08)'
             }}>
-              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 0%, rgba(168,85,247,0.08), transparent 60%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 0%, rgba(168,85,247,0.06), transparent 60%)', pointerEvents: 'none' }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#a885d1', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 24 }}>Daily Glow Score</div>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#a885d1', textTransform: 'uppercase', letterSpacing: 2.2, marginBottom: 28 }}>Daily Glow Score</div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
                   <ScoreRing score={score} />
                 </div>
-                <div style={{ fontSize: 14, color: '#666666', fontStyle: 'italic', lineHeight: 1.6 }}>
+                <div style={{ fontSize: 15, color: '#666666', fontStyle: 'italic', lineHeight: 1.6, maxWidth: 520, margin: '0 auto' }}>
                   Your skin barrier is 12% more resilient than last Tuesday. Keep up the hydration routine.
                 </div>
               </div>
             </div>
 
-            {/* Metrics Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 32 }}>
-              {/* Comparison Card */}
-              <div style={{
-                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
-                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
-              }}>
-                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(34,197,94,0.1)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#22c55e', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Stable</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: '#22c55e' }}>+5%</div>
-                    <div style={{ fontSize: 13, color: '#888888' }}>vs last scan</div>
-                  </div>
-                </div>
-              </div>
+            {/* Metrics Grid - 2x3 */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18, marginBottom: 28 }}>
+              <MetricCardColored
+                label="Comparison"
+                value="+5%"
+                status="Stable"
+                color="#22c55e"
+                bgColor="#f0fdf4"
+              />
+              <MetricCardColored
+                label="Hydration Level"
+                value="85%"
+                status="Optimal"
+                color="#06b6d4"
+                bgColor="#f0f9fc"
+              />
 
-              {/* Hydration Card */}
-              <div style={{
-                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
-                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
-              }}>
-                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(6,182,212,0.1)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Hydration Level</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <div style={{ fontSize: 32, fontWeight: 800, color: '#06b6d4' }}>85%</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#06b6d4', textTransform: 'uppercase', letterSpacing: 0.5 }}>Optimal</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <MetricCardColored
+                label="Sensitivity"
+                value="Low"
+                status="Improving"
+                color="#f59e0b"
+                bgColor="#fffbf0"
+              />
+              <MetricCardColored
+                label="Radiance Index"
+                value="92%"
+                status="Strong"
+                color="#a855f7"
+                bgColor="#faf5ff"
+              />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 32 }}>
-              {/* Sensitivity Card */}
-              <div style={{
-                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
-                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
-              }}>
-                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(249,158,11,0.1)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Sensitivity</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <div style={{ fontSize: 32, fontWeight: 800, color: '#f59e0b' }}>Low</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: 0.5 }}>Improving</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Radiance Card */}
-              <div style={{
-                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
-                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
-              }}>
-                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(168,85,247,0.1)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Radiance Index</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <div style={{ fontSize: 32, fontWeight: 800, color: '#a855f7' }}>92%</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#a855f7', textTransform: 'uppercase', letterSpacing: 0.5 }}>Strong</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Barrier Strength & Acne Control */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
-              {/* Barrier Card */}
-              <div style={{
-                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
-                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
-              }}>
-                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(34,197,94,0.1)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Barrier Strength</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <div style={{ fontSize: 32, fontWeight: 800, color: '#22c55e' }}>High</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#22c55e', textTransform: 'uppercase', letterSpacing: 0.5 }}>Strong</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Acne Card */}
-              <div style={{
-                background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 16,
-                padding: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(124,58,237,0.06)'
-              }}>
-                <div style={{ position: 'absolute', top: -20, right: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(34,197,94,0.1)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Acne Control</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <div style={{ fontSize: 32, fontWeight: 800, color: '#22c55e' }}>{analysis.scores.acne}</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#22c55e', textTransform: 'uppercase', letterSpacing: 0.5 }}>Clear</div>
-                  </div>
-                </div>
-              </div>
+              <MetricCardColored
+                label="Barrier Strength"
+                value="High"
+                status="Strong"
+                color="#22c55e"
+                bgColor="#f0fdf4"
+              />
+              <MetricCardColored
+                label="Acne Control"
+                value={String(analysis.scores.acne)}
+                status={analysis.scores.acne >= 75 ? 'Clear' : 'In Progress'}
+                color="#22c55e"
+                bgColor="#f0fdf4"
+              />
             </div>
           </div>
 
           {/* Scan History Sidebar */}
           <div>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', margin: '0 0 24px' }}>Scan History</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', margin: '0 0 20px' }}>Scan History</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {history.slice(0, 5).map((entry, idx) => {
                 const date = new Date(entry.date);
                 const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                 const status = entry.analysis.glowScore >= 75 ? 'Stable' : entry.analysis.glowScore >= 50 ? 'Dryness' : 'Improving';
+                const statusColor = status === 'Stable' ? '#22c55e' : status === 'Improving' ? '#f59e0b' : '#ef4444';
 
                 return (
                   <button
                     key={idx}
                     onClick={() => navigate('/results', { state: { entry } })}
                     style={{
-                      background: '#ffffff', border: '1px solid #e8e2f0', borderRadius: 12,
+                      background: '#ffffff', border: '1px solid #e5dff2', borderRadius: 14,
                       padding: '16px', cursor: 'pointer', transition: 'all 0.2s',
                       textAlign: 'left', display: 'flex', gap: 12, alignItems: 'center',
                       boxShadow: '0 2px 6px rgba(124,58,237,0.05)'
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = '#d8cce8';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,58,237,0.1)';
+                      e.currentTarget.style.borderColor = '#d5cce6';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,58,237,0.12)';
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = '#e8e2f0';
+                      e.currentTarget.style.borderColor = '#e5dff2';
                       e.currentTarget.style.boxShadow = '0 2px 6px rgba(124,58,237,0.05)';
                     }}
                   >
@@ -244,9 +213,9 @@ export default function Dashboard() {
                       {entry.analysis.glowScore}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 2 }}>Scan #{idx === 0 ? '#1' : `#${idx + 1}`}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 3 }}>Scan #{idx === 0 ? '#1' : `#${idx + 1}`}</div>
                       <div style={{ fontSize: 12, color: '#888888', marginBottom: 4 }}>{dateStr} · {timeStr}</div>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: status === 'Stable' ? '#22c55e' : status === 'Improving' ? '#f59e0b' : '#ef4444' }}>{status}</div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: statusColor }}>{status}</div>
                     </div>
                   </button>
                 );
