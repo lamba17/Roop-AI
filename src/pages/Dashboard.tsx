@@ -8,33 +8,62 @@ import AppLayout from '../components/AppLayout';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
 
-function tok() {
-  return {
-    surface: '#171020',
-    surfaceContainerLow: '#201829',
-    surfaceContainerHigh: '#2f2738',
-    surfaceContainerHighest: '#3a3143',
-    outlineVariant: '#4A4455',
+function tok(isDark: boolean) {
+  if (isDark) {
+    return {
+      surface: '#171020',
+      surfaceContainerLow: '#201829',
+      surfaceContainerHigh: '#2f2738',
+      surfaceContainerHighest: '#3a3143',
+      outlineVariant: '#4A4455',
 
-    textPrimary: '#ebdef5',
-    textMuted: '#ccc3d8',
-    textHint: '#958da1',
+      textPrimary: '#ebdef5',
+      textMuted: '#ccc3d8',
+      textHint: '#958da1',
+
+      primary: '#7C3AED',
+      primaryContainer: '#7C3AED',
+      onPrimary: '#ffffff',
+
+      secondary: '#FFB1C7',
+      secondaryContainer: '#BE0062',
+
+      tertiary: '#FFB95F',
+
+      error: '#FFB4AB',
+      errorContainer: '#93000A',
+
+      success: '#22c55e',
+      info: '#06b6d4',
+      warning: '#f59e0b',
+    };
+  }
+  return {
+    surface: '#f5f2fa',
+    surfaceContainerLow: '#ede9fe',
+    surfaceContainerHigh: '#e9e5fd',
+    surfaceContainerHighest: '#ddd6fe',
+    outlineVariant: '#d0c5e8',
+
+    textPrimary: '#1a1630',
+    textMuted: '#55557a',
+    textHint: '#9090b8',
 
     primary: '#7C3AED',
     primaryContainer: '#7C3AED',
     onPrimary: '#ffffff',
 
-    secondary: '#FFB1C7',
-    secondaryContainer: '#BE0062',
+    secondary: '#db2777',
+    secondaryContainer: '#db2777',
 
     tertiary: '#FFB95F',
 
-    error: '#FFB4AB',
-    errorContainer: '#93000A',
+    error: '#dc2626',
+    errorContainer: '#fee2e2',
 
-    success: '#22c55e',
-    info: '#06b6d4',
-    warning: '#f59e0b',
+    success: '#16a34a',
+    info: '#0891b2',
+    warning: '#d97706',
   };
 }
 
@@ -44,9 +73,9 @@ function glowColor(score: number) {
   return '#ef4444';
 }
 
-function ScoreRing({ score }: { score: number }) {
+function ScoreRing({ score, isDark }: { score: number; isDark: boolean }) {
   const [displayed, setDisplayed] = useState(0);
-  const c = tok();
+  const c = tok(isDark);
   const r = 54, size = 160, cx = 80, cy = 80;
   const circumference = 2 * Math.PI * r;
   const dash = (displayed / 100) * circumference;
@@ -96,8 +125,8 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-function MetricCardColored({ label, value, status, color }: { label: string; value: string; status: string; color: string }) {
-  const c = tok();
+function MetricCardColored({ label, value, status, color, isDark }: { label: string; value: string; status: string; color: string; isDark: boolean }) {
+  const c = tok(isDark);
 
   return (
     <div style={{
@@ -149,12 +178,13 @@ function MetricCardColored({ label, value, status, color }: { label: string; val
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  useTheme();
+  const { theme } = useTheme();
   const { refresh: refreshPremium } = usePremium(user ?? null);
   const [showPremium, setShowPremium] = useState(false);
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
 
-  const c = tok();
+  const isDark = theme === 'dark';
+  const c = tok(isDark);
   const latest = history[0];
   const score = latest?.analysis.glowScore ?? null;
 
@@ -183,50 +213,48 @@ export default function Dashboard() {
         />
       )}
 
-      <div style={{ padding: '56px 40px', maxWidth: 1400, margin: '0 auto', background: c.surface, minHeight: '100vh' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 48 }}>
+      <div style={{ padding: '40px 24px', maxWidth: 1600, margin: '0 auto', background: c.surface, minHeight: '100vh' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 32 }}>
 
-          {/* Main Content */}
+          {/* Left Column: Glow Score + Today's Routine */}
           <div>
             {/* Daily Glow Score Card */}
             <div style={{
               background: c.surfaceContainerHigh,
               backdropFilter: 'blur(20px)',
-              borderRadius: 28,
-              padding: '64px 56px',
-              marginBottom: 48,
+              borderRadius: 24,
+              padding: '48px 40px',
+              marginBottom: 32,
               position: 'relative',
               overflow: 'hidden',
               textAlign: 'center',
-              border: `1px solid ${c.outlineVariant}22`,
-              boxShadow: '0 20px 40px rgba(13, 12, 28, 0.4)',
+              border: `1px solid ${isDark ? 'rgba(74,68,85,0.22)' : 'rgba(124,58,237,0.15)'}`,
+              boxShadow: isDark ? '0 20px 40px rgba(13, 12, 28, 0.4)' : '0 8px 24px rgba(124, 58, 237, 0.12)',
             }}>
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.15), transparent 60%)',
+                background: isDark ? 'radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.15), transparent 60%)' : 'radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.08), transparent 60%)',
                 pointerEvents: 'none',
               }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: 700,
                   color: c.primary,
                   textTransform: 'uppercase',
-                  letterSpacing: 2.4,
-                  marginBottom: 32,
+                  letterSpacing: 2.2,
+                  marginBottom: 24,
                   fontFamily: "'Inter', system-ui",
                 }}>Daily Glow Score</div>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
-                  <ScoreRing score={score} />
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+                  <ScoreRing score={score} isDark={isDark} />
                 </div>
                 <div style={{
-                  fontSize: 16,
+                  fontSize: 14,
                   color: c.textMuted,
                   fontStyle: 'italic',
-                  lineHeight: 1.7,
-                  maxWidth: 540,
-                  margin: '0 auto',
+                  lineHeight: 1.6,
                   fontFamily: "'Manrope', system-ui",
                 }}>
                   Your skin barrier is 12% more resilient than last Tuesday. Keep up the hydration routine.
@@ -234,19 +262,60 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* Today's Routine Card */}
+            <div style={{
+              background: c.surfaceContainerHigh,
+              backdropFilter: 'blur(20px)',
+              borderRadius: 24,
+              padding: '32px 24px',
+              position: 'relative',
+              overflow: 'hidden',
+              border: `1px solid ${isDark ? 'rgba(74,68,85,0.22)' : 'rgba(124,58,237,0.15)'}`,
+              boxShadow: isDark ? '0 8px 16px rgba(13, 12, 28, 0.3)' : '0 4px 12px rgba(124, 58, 237, 0.08)',
+            }}>
+              <h3 style={{
+                fontSize: 16,
+                fontWeight: 700,
+                color: c.textPrimary,
+                marginBottom: 20,
+                margin: '0 0 20px',
+                fontFamily: "'Epilogue', system-ui",
+              }}>Today's Routine</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {analysis.dailyRoutine.morning.map((step, i) => (
+                  <div key={i} style={{
+                    display: 'flex',
+                    gap: 12,
+                    alignItems: 'flex-start',
+                    fontSize: 13,
+                    color: c.textMuted,
+                    fontFamily: "'Manrope', system-ui",
+                  }}>
+                    <span style={{ fontSize: 16 }}>🌅</span>
+                    <span>{step}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Metrics + Scan History */}
+          <div>
             {/* Metrics Grid - 2x3 */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginBottom: 28 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 32 }}>
               <MetricCardColored
                 label="Comparison"
                 value="+5%"
                 status="Stable"
                 color={c.success}
+                isDark={isDark}
               />
               <MetricCardColored
                 label="Hydration Level"
                 value="85%"
                 status="Optimal"
                 color={c.info}
+                isDark={isDark}
               />
 
               <MetricCardColored
@@ -254,12 +323,14 @@ export default function Dashboard() {
                 value="Low"
                 status="Improving"
                 color={c.warning}
+                isDark={isDark}
               />
               <MetricCardColored
                 label="Radiance Index"
                 value="92%"
                 status="Strong"
                 color={c.primary}
+                isDark={isDark}
               />
 
               <MetricCardColored
@@ -267,102 +338,100 @@ export default function Dashboard() {
                 value="High"
                 status="Strong"
                 color={c.success}
+                isDark={isDark}
               />
               <MetricCardColored
                 label="Acne Control"
                 value={String(analysis.scores.acne)}
                 status={analysis.scores.acne >= 75 ? 'Clear' : 'In Progress'}
                 color={c.success}
+                isDark={isDark}
               />
             </div>
-          </div>
 
-          {/* Scan History Sidebar */}
-          <div>
-            <h3 style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: c.textPrimary,
-              margin: '0 0 24px',
-              fontFamily: "'Epilogue', system-ui",
-            }}>Scan History</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {history.slice(0, 5).map((entry, idx) => {
-                const date = new Date(entry.date);
-                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-                const status = entry.analysis.glowScore >= 75 ? 'Stable' : entry.analysis.glowScore >= 50 ? 'Dryness' : 'Improving';
-                const statusColor = status === 'Stable' ? c.success : status === 'Improving' ? c.warning : '#ef4444';
+            {/* Scan History */}
+            <div>
+              <h3 style={{
+                fontSize: 16,
+                fontWeight: 700,
+                color: c.textPrimary,
+                margin: '0 0 16px',
+                fontFamily: "'Epilogue', system-ui",
+              }}>Scan History</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {history.slice(0, 4).map((entry, idx) => {
+                  const date = new Date(entry.date);
+                  const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                  const status = entry.analysis.glowScore >= 75 ? 'Stable' : entry.analysis.glowScore >= 50 ? 'Dryness' : 'Improving';
+                  const statusColor = status === 'Stable' ? c.success : status === 'Improving' ? c.warning : '#ef4444';
 
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => navigate('/results', { state: { entry } })}
-                    style={{
-                      background: c.surfaceContainerHigh,
-                      backdropFilter: 'blur(20px)',
-                      borderRadius: 14,
-                      padding: '16px',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      textAlign: 'left',
-                      display: 'flex',
-                      gap: 12,
-                      alignItems: 'center',
-                      border: `1px solid ${c.outlineVariant}22`,
-                      boxShadow: '0 8px 16px rgba(13, 12, 28, 0.3)',
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.background = c.surfaceContainerHighest;
-                      e.currentTarget.style.boxShadow = '0 12px 24px rgba(13, 12, 28, 0.4)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.background = c.surfaceContainerHigh;
-                      e.currentTarget.style.boxShadow = '0 8px 16px rgba(13, 12, 28, 0.3)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                  >
-                    <div style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 12,
-                      background: `linear-gradient(135deg, ${c.primary}, ${c.secondary})`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                      fontSize: 18,
-                      fontWeight: 700,
-                      color: c.onPrimary,
-                      boxShadow: `0 8px 16px ${c.primary}40`,
-                    }}>
-                      {entry.analysis.glowScore}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => navigate('/results', { state: { entry } })}
+                      style={{
+                        background: c.surfaceContainerHigh,
+                        backdropFilter: 'blur(20px)',
+                        borderRadius: 12,
+                        padding: '12px 16px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        textAlign: 'left',
+                        display: 'flex',
+                        gap: 10,
+                        alignItems: 'center',
+                        border: `1px solid ${isDark ? 'rgba(74,68,85,0.22)' : 'rgba(124,58,237,0.15)'}`,
+                        boxShadow: isDark ? '0 4px 12px rgba(13, 12, 28, 0.2)' : '0 2px 8px rgba(124, 58, 237, 0.06)',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = c.surfaceContainerHighest;
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = c.surfaceContainerHigh;
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
                       <div style={{
-                        fontSize: 13,
+                        width: 40,
+                        height: 40,
+                        borderRadius: 8,
+                        background: `linear-gradient(135deg, ${c.primary}, ${c.secondary})`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        fontSize: 14,
                         fontWeight: 700,
-                        color: c.textPrimary,
-                        marginBottom: 4,
-                        fontFamily: "'Manrope', system-ui",
-                      }}>Scan #{idx === 0 ? '#1' : `#${idx + 1}`}</div>
+                        color: c.onPrimary,
+                      }}>
+                        {entry.analysis.glowScore}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: c.textPrimary,
+                          marginBottom: 2,
+                          fontFamily: "'Manrope', system-ui",
+                        }}>Scan #{idx === 0 ? '#0824' : `#${String(idx).padStart(4, '0')}`}</div>
+                        <div style={{
+                          fontSize: 11,
+                          color: c.textMuted,
+                          fontFamily: "'Inter', system-ui",
+                        }}>{dateStr} · {timeStr}</div>
+                      </div>
                       <div style={{
-                        fontSize: 12,
-                        color: c.textMuted,
-                        marginBottom: 4,
-                        fontFamily: "'Inter', system-ui",
-                      }}>{dateStr} · {timeStr}</div>
-                      <div style={{
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWeight: 700,
                         color: statusColor,
                         fontFamily: "'Inter', system-ui",
                       }}>{status}</div>
-                    </div>
-                  </button>
-                );
-              })}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
