@@ -216,8 +216,48 @@ export default function Dashboard() {
         />
       )}
 
-      <div style={{ padding: '40px 24px', maxWidth: 1600, margin: '0 auto', background: c.surface, minHeight: '100vh' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 32 }}>
+      <style>{`
+        @media (max-width: 1024px) {
+          .dashboard-container {
+            padding: 32px 20px !important;
+          }
+          .dashboard-grid {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+          .dashboard-metrics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .dashboard-container {
+            padding: 28px 16px !important;
+          }
+          .dashboard-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .dashboard-metrics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .dashboard-container {
+            padding: 24px 16px !important;
+          }
+          .dashboard-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .dashboard-metrics-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+        }
+      `}</style>
+
+      <div className="dashboard-container" style={{ padding: '40px 24px', maxWidth: 1600, margin: '0 auto', background: c.surface, minHeight: '100vh' }}>
+        <div className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 32 }}>
 
           {/* Left Column: Glow Score + Today's Routine */}
           <div>
@@ -305,7 +345,7 @@ export default function Dashboard() {
           {/* Right Column: Metrics + Scan History */}
           <div>
             {/* Metrics Grid - 2x3 */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 32 }}>
+            <div className="dashboard-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 32 }}>
               <MetricCardColored
                 label="Comparison"
                 value="+5%"
