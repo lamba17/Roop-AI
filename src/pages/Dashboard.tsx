@@ -188,6 +188,7 @@ export default function Dashboard() {
   const c = tok(isDark);
   const latest = history[0];
   const score = latest?.analysis.glowScore ?? null;
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     if (latest?.imageUrl) {
@@ -196,12 +197,32 @@ export default function Dashboard() {
     }
   }, [latest?.imageUrl]);
 
+  useEffect(() => {
+    if (!latest && !redirecting) {
+      setRedirecting(true);
+      const timer = setTimeout(() => {
+        navigate('/scan', { replace: true });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [latest, redirecting, navigate]);
+
   if (!latest) {
-    // Auto-redirect to scan page if no analysis exists
-    React.useEffect(() => {
-      navigate('/scan', { replace: true });
-    }, [navigate]);
-    return null;
+    return (
+      <AppLayout>
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: 16
+        }}>
+          <div style={{ fontSize: 28 }}>🔄</div>
+          <div style={{ color: c.textMuted, fontSize: 14 }}>Redirecting to scan...</div>
+        </div>
+      </AppLayout>
+    );
   }
 
   const { analysis } = latest;
