@@ -31,22 +31,46 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       id: string;
       email: string;
       created_at: string;
-      raw_user_meta_data?: { full_name?: string; avatar_url?: string };
+      raw_user_meta_data?: {
+        full_name?: string;
+        name?: string;
+        first_name?: string;
+        phone?: string;
+        avatar_url?: string;
+      };
     };
   };
 
   const email = record?.email ?? 'Unknown';
-  const name = record?.raw_user_meta_data?.full_name ?? 'Unknown';
+  const fullName = record?.raw_user_meta_data?.full_name ?? record?.raw_user_meta_data?.name;
+  const firstName = record?.raw_user_meta_data?.first_name;
+  const phone = record?.raw_user_meta_data?.phone;
+  const name = fullName ?? 'User';
   const signupTime = new Date(record?.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
   try {
+    // ── Sync to Brevo contacts list ──────────────────────────────────────
+    if (email && email !== 'Unknown') {
+      const baseUrl = 'https://www.roopai.co.in';
+      fetch(`${baseUrl}/api/sync-brevo-contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          fullName: fullName || undefined,
+          firstName: firstName || undefined,
+          phone: phone || undefined,
+        }),
+      }).catch(err => console.error('Brevo sync error:', err));
+    }
+
     // ── Welcome email to the new user ────────────────────────────────────
     if (email && email !== 'Unknown') {
       const baseUrl = 'https://www.roopai.co.in';
       fetch(`${baseUrl}/api/send-welcome-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name: name !== 'Unknown' ? name : undefined }),
+        body: JSON.stringify({ email, name: fullName || undefined }),
       }).catch(() => {});
     }
 

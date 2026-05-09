@@ -77,6 +77,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (userEmail) {
     const baseUrl = `https://www.roopai.co.in`;
+    // Sync to Brevo (update with premium status)
+    fetch(`${baseUrl}/api/sync-brevo-contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userEmail,
+        fullName: userName || undefined,
+      }),
+    }).catch(err => console.error('Brevo sync error:', err));
     // Welcome email to user
     fetch(`${baseUrl}/api/send-welcome-email`, {
       method: 'POST',
