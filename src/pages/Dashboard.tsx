@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/supabase';
 import { useLocalStorage } from '../hooks/useLocalStorage';
