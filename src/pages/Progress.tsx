@@ -155,7 +155,7 @@ export default function Progress() {
   const hasFullAccess = isAdmin || premium;
   const [showPremium, setShowPremium] = useState(false);
 
-  const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
   const neitherHasHistory = history.length === 0;
 
   if (neitherHasHistory) {

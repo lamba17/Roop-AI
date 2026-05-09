@@ -129,7 +129,7 @@ export default function Routine() {
   const hasFullAccess = premium;
   const [showPremium, setShowPremium] = useState(false);
 
-  const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
   const latest = history[0];
 
   if (!latest) {

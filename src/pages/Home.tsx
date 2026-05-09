@@ -31,8 +31,8 @@ export default function Home() {
   const [showPremium, setShowPremium] = useState(false);
 
   const { analyze: analyzeGlow, loading: glowLoading, error: glowError } = useSkinAnalysis();
-  const [history, setHistory] = useLocalStorage<HistoryEntry[]>('roop_history', []);
   const { user } = useAuth();
+  const [history, setHistory] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
   const { premium, refresh: refreshPremium } = usePremium(user);
 
   const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0]

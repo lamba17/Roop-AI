@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAuth } from '../lib/supabase';
 import type { HistoryEntry } from '../types/analysis';
 import AppLayout from '../components/AppLayout';
 
@@ -112,7 +113,8 @@ function ProductCard({ product }: { product: StaticProduct }) {
 }
 
 export default function Products() {
-  const [history] = useLocalStorage<HistoryEntry[]>('roop_history', []);
+  const { user } = useAuth();
+  const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
   const [activeFilter, setActiveFilter] = useState('All');
   const [priceRange, setPriceRange] = useState<PriceRange>('all');
   const [searchQuery, setSearchQuery] = useState('');
