@@ -26,7 +26,7 @@ export default function SkinAnalysis() {
   const [history] = useLocalStorage<HistoryEntry[]>(user ? `roop_history_${user.id}` : 'roop_history', []);
 
   const entry = history[0];
-  const localImageUrl = selfieStore.get() ?? (entry?.imageUrl || undefined);
+  const localImageUrl = selfieStore.get() ?? localStorage.getItem('roop_lastSelfie') ?? (entry?.imageUrl || undefined);
 
   if (entry && user) {
     const { analysis } = entry;

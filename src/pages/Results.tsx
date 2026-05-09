@@ -48,7 +48,11 @@ export default function Results() {
       skin_type: analysis.skinType,
       concerns: analysis.concerns,
     }).catch(() => {});
-  }, [entry, user]);
+    if (localImageUrl) {
+      selfieStore.set(localImageUrl);
+      localStorage.setItem('roop_lastSelfie', localImageUrl);
+    }
+  }, [entry, user, localImageUrl]);
 
   if (!entry) {
     return (

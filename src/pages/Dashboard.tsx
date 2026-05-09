@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/supabase';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useTheme } from '../context/ThemeContext';
+import { selfieStore } from '../utils/selfieStore';
 import type { HistoryEntry } from '../types/analysis';
 import AppLayout from '../components/AppLayout';
 import { usePremium } from '../hooks/usePremium';
@@ -187,6 +188,13 @@ export default function Dashboard() {
   const c = tok(isDark);
   const latest = history[0];
   const score = latest?.analysis.glowScore ?? null;
+
+  useEffect(() => {
+    if (latest?.imageUrl) {
+      selfieStore.set(latest.imageUrl);
+      localStorage.setItem('roop_lastSelfie', latest.imageUrl);
+    }
+  }, [latest?.imageUrl]);
 
   if (!latest) {
     return (

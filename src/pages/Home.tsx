@@ -11,6 +11,7 @@ import { useAuth, uploadSelfie } from '../lib/supabase';
 import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
 import { useThemeColors } from '../hooks/useTheme';
+import { selfieStore } from '../utils/selfieStore';
 import type { HistoryEntry } from '../types/analysis';
 
 const FREE_LIMIT = 9999;
@@ -52,6 +53,7 @@ export default function Home() {
     try { imageUrl = await uploadSelfie(user.id, skinFile); } catch { /* use empty */ }
     const entry: HistoryEntry = { id: Date.now().toString(), date: new Date().toISOString(), score: result.glowScore, imageUrl, analysis: result };
     setHistory([entry, ...history].slice(0, 10));
+    if (skinPreview) selfieStore.set(skinPreview);
     navigate('/results', { state: { entry, localImageUrl: skinPreview } });
   }
 
