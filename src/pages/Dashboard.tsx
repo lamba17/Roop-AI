@@ -188,7 +188,6 @@ export default function Dashboard() {
   const c = tok(isDark);
   const latest = history[0];
   const score = latest?.analysis.glowScore ?? null;
-  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     if (latest?.imageUrl) {
@@ -197,29 +196,14 @@ export default function Dashboard() {
     }
   }, [latest?.imageUrl]);
 
-  useEffect(() => {
-    if (!latest && !redirecting) {
-      setRedirecting(true);
-      const timer = setTimeout(() => {
-        navigate('/scan', { replace: true });
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [latest, redirecting, navigate]);
-
   if (!latest) {
     return (
       <AppLayout>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: 16
-        }}>
-          <div style={{ fontSize: 28 }}>🔄</div>
-          <div style={{ color: c.textMuted, fontSize: 14 }}>Redirecting to scan...</div>
+        <div className="page-empty">
+          <div className="page-empty-icon">🌿</div>
+          <h3>Welcome to ROOP AI</h3>
+          <p>Run your first Glow Score scan to unlock your personalized dashboard.</p>
+          <button onClick={() => navigate('/scan')} className="btn-glow">Start Your First Scan</button>
         </div>
       </AppLayout>
     );
