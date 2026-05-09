@@ -10,51 +10,67 @@ export default function AuthCallback() {
 
   useEffect(() => {
     async function handleCallback() {
-      // ── 1. Check for error params Supabase puts in the URL ──────────────
-      const params = new URLSearchParams(window.location.search);
-      const urlError = params.get('error');
-      const urlErrorDesc = params.get('error_description');
+      try {
+        // ── 1. Check for error params Supabase puts in the URL ──────────────
+        const params = new URLSearchParams(window.location.search);
+        const urlError = params.get('error');
+        const urlErrorDesc = params.get('error_description');
 
-      if (urlError) {
-        const msg = urlErrorDesc
-          ? decodeURIComponent(urlErrorDesc.replace(/\+/g, ' '))
-          : urlError;
-        setErrorMsg(msg);
-        return;
-      }
-
-      // ── 2. PKCE flow: ?code=... in query string ──────────────────────────
-      const code = params.get('code');
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(
-          window.location.href
-        );
-        if (error) {
-          setErrorMsg(error.message);
+        if (urlError) {
+          const msg = urlErrorDesc
+            ? decodeURIComponent(urlErrorDesc.replace(/\+/g, ' '))
+            : urlError;
+          console.error('Auth error:', msg);
+          setErrorMsg(msg);
           return;
         }
-        setTimeout(() => navigate('/dashboard', { replace: true }), 600);
-        return;
-      }
 
-      // ── 3. Implicit / magic-link flow: #access_token=... in hash ────────
-      const hash = window.location.hash;
-      if (hash && hash.includes('access_token')) {
-        // Supabase JS client picks up the fragment automatically via
-        // onAuthStateChange — just wait briefly then redirect.
-        setStatusText('Finalising your account…');
-        setTimeout(() => navigate('/dashboard', { replace: true }), 1000);
-        return;
-      }
+        // ── 2. PKCE flow: ?code=... in query string ──────────────────────────
+        const code = params.get('code');
+        if (code) {
+          setStatusText('Verifying your login…');
+          const { error } = await supabase.auth.exchangeCodeForSession(
+            window.location.href
+          );
+          if (error) {
+            console.error('Exchange code error:', error.message);
+            setErrorMsg(error.message);
+            return;
+          }
+          setStatusText('Finalising your account…');
+          setTimeout(() => navigate('/dashboard', { replace: true }), 800);
+          return;
+        }
 
-      // ── 4. Nothing in URL — session may already be active ───────────────
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        setTimeout(() => navigate('/dashboard', { replace: true }), 600);
-      } else {
-        setErrorMsg(
-          'The sign-in link has expired or is invalid. Please request a new one.'
-        );
+        // ── 3. Implicit / magic-link flow: #access_token=... in hash ────────
+        const hash = window.location.hash;
+        if (hash && hash.includes('access_token')) {
+          // Supabase JS client picks up the fragment automatically via
+          // onAuthStateChange — just wait briefly then redirect.
+          setStatusText('Finalising your account…');
+          setTimeout(() => navigate('/dashboard', { replace: true }), 1200);
+          return;
+        }
+
+        // ── 4. Nothing in URL — session may already be active ───────────────
+        const { data, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) {
+          console.error('Session error:', sessionError.message);
+          throw new Error(sessionError.message);
+        }
+
+        if (data.session) {
+          setStatusText('Welcome back…');
+          setTimeout(() => navigate('/dashboard', { replace: true }), 800);
+        } else {
+          console.error('No session found');
+          setErrorMsg(
+            'The sign-in link has expired or is invalid. Please request a new one.'
+          );
+        }
+      } catch (err) {
+        console.error('Auth callback error:', err);
+        setErrorMsg(err instanceof Error ? err.message : 'An error occurred during sign-in.');
       }
     }
 
