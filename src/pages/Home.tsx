@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UploadZone from '../components/UploadZone';
-import Logo from '../components/Logo';
-import UserMenu from '../components/UserMenu';
-import ThemeToggle from '../components/ThemeToggle';
 import { fileToBase64 } from '../utils/imageUtils';
 import { useSkinAnalysis } from '../hooks/useSkinAnalysis';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -12,6 +9,7 @@ import { usePremium } from '../hooks/usePremium';
 import PremiumModal from '../components/PremiumModal';
 import { useThemeColors } from '../hooks/useTheme';
 import { selfieStore } from '../utils/selfieStore';
+import AppLayout from '../components/AppLayout';
 import type { HistoryEntry } from '../types/analysis';
 
 const FREE_LIMIT = 9999;
@@ -58,28 +56,18 @@ export default function Home() {
   }
 
   return (
-    <div className="mesh-bg" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
-      {PARTICLES.map(([size, left, dur, delay, color], i) => (
-        <span key={i} className="particle" style={{ width: size, height: size, left: `${left}%`, bottom: '-10px', background: color, animationDuration: `${dur}s`, animationDelay: `${delay}s`, boxShadow: `0 0 ${size * 3}px ${color}` }} />
-      ))}
-      <div className="hero-glow" />
+    <AppLayout>
+      <div className="mesh-bg" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+        {PARTICLES.map(([size, left, dur, delay, color], i) => (
+          <span key={i} className="particle" style={{ width: size, height: size, left: `${left}%`, bottom: '-10px', background: color, animationDuration: `${dur}s`, animationDelay: `${delay}s`, boxShadow: `0 0 ${size * 3}px ${color}` }} />
+        ))}
+        <div className="hero-glow" />
 
-      {showPremium && user && (
-        <PremiumModal user={user} onClose={() => setShowPremium(false)} onUpgraded={() => { setShowPremium(false); refreshPremium(); }} />
-      )}
+        {showPremium && user && (
+          <PremiumModal user={user} onClose={() => setShowPremium(false)} onUpgraded={() => { setShowPremium(false); refreshPremium(); }} />
+        )}
 
-      <header className="header-glass" style={{ position: 'sticky', top: 0, zIndex: 40, padding: '0 24px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Logo size="sm" />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={() => navigate(-1)} className="btn-outline" style={{ fontSize: 13, padding: '8px 18px', gap: 6 }}>
-            <span style={{ fontSize: 15 }}>←</span>Back
-          </button>
-          <ThemeToggle />
-          <UserMenu />
-        </div>
-      </header>
-
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px 60px', position: 'relative', zIndex: 1 }}>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px 60px', position: 'relative', zIndex: 1 }}>
         <div style={{ maxWidth: 540, width: '100%' }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
             {firstName && (
@@ -168,6 +156,7 @@ export default function Home() {
           </p>
         </div>
       </main>
-    </div>
+      </div>
+    </AppLayout>
   );
 }
