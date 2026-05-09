@@ -247,8 +247,12 @@ export default function SignIn() {
           </div>
 
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-            {['How It Works', 'Specialists', 'Science'].map(label => (
-              <a key={label} href="#" className="nav-link">{label}</a>
+            {[
+              { label: 'How It Works', id: 'how-it-works' },
+              { label: 'Specialists', id: 'specialists' },
+              { label: 'Science', id: 'science' }
+            ].map(item => (
+              <a key={item.id} href={`#${item.id}`} className="nav-link">{item.label}</a>
             ))}
           </div>
 
@@ -386,8 +390,41 @@ export default function SignIn() {
         </div>
       </section>
 
+      {/* REVIEWS */}
+      <section style={{ padding: '120px 40px', background: c.surfaceLow, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 80 }}>
+            <h2 style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 24px', color: c.onSurface }}>
+              Join <span className="text-grad">10,000+ users</span> already glowing
+            </h2>
+            <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 17, color: c.onSurfaceVar, maxWidth: 580, margin: '0 auto' }}>
+              Real transformations from real people using the Glow Score
+            </p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+            {[
+              { name: 'Priya M.', role: 'Product Manager', text: 'My skin completely transformed in 3 months. The personalized routine from Glow Score made all the difference.' },
+              { name: 'Rajesh K.', role: 'Software Engineer', text: 'Finally understood my skin type. The dermatologist recommendations were spot-on.' },
+              { name: 'Aisha P.', role: 'Designer', text: 'The Glow Score analysis is incredibly accurate. It\'s like having a dermatologist in my pocket.' },
+              { name: 'Deepak S.', role: 'Student', text: 'Cleared my acne using the suggested routine. The daily checklist keeps me accountable.' }
+            ].map(review => (
+              <div key={review.name} style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 24, padding: 32 }}>
+                <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+                  {[1,2,3,4,5].map(i => <span key={i} style={{ fontSize: 16 }}>★</span>)}
+                </div>
+                <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 15, color: c.onSurfaceVar, margin: '0 0 24px', lineHeight: 1.7 }}>"{review.text}"</p>
+                <div>
+                  <p style={{ fontFamily: "'Epilogue', sans-serif", fontSize: 14, fontWeight: 700, color: c.onSurface, margin: 0 }}>{review.name}</p>
+                  <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: 12, color: c.onSurfaceVar, margin: '4px 0 0' }}>{review.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FINAL CTA */}
-      <section id="clinic" style={{ padding: '120px 40px', background: c.surface }}>
+      <section id="science" style={{ padding: '120px 40px', background: c.surface }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div className="cta-box" style={{ ...glass, border: `1px solid ${c.outlineVar}`, borderRadius: 64, padding: '100px 60px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 50%, rgba(124,58,237,0.1) 0%, transparent 55%)', pointerEvents: 'none' }} />
