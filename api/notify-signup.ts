@@ -11,6 +11,12 @@ const transporter = nodemailer.createTransport({
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  console.log('[notify-signup] Request received', {
+    method: req.method,
+    headers: req.headers,
+    bodyKeys: req.body ? Object.keys(req.body) : 'no body',
+  });
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-webhook-secret');
@@ -22,7 +28,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Verify this is from Supabase using a shared secret
   const secret = req.headers['x-webhook-secret'];
+  console.log('[notify-signup] Secret check', { received: secret, expected: process.env.SUPABASE_WEBHOOK_SECRET });
   if (secret !== process.env.SUPABASE_WEBHOOK_SECRET) {
+    console.error('[notify-signup] Unauthorized: secret mismatch');
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
@@ -75,6 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // ── Admin notification ────────────────────────────────────────────────
+    console.log('[notify-signup] Sending admin notification email', { email, name, to: process.env.GMAIL_FROM });
     await transporter.sendMail({
       from: `"ROOP AI" <${process.env.GMAIL_FROM}>`,
       to: process.env.GMAIL_FROM, // notify yourself
@@ -102,8 +111,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 </div>`,
     });
 
+    console.log('[notify-signup] Email sent successfully for', email);
     return res.status(200).json({ success: true });
   } catch (err: any) {
+    console.error('[notify-signup] Error:', err);
     return res.status(500).json({ error: err.message });
   }
 }
