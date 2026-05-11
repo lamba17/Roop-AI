@@ -69,20 +69,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: JSON.stringify(contactPayload),
     });
 
+    const result = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMsg = errorData?.message || `HTTP ${response.status}`;
+      const errorMsg = result?.message || `HTTP ${response.status}`;
 
       // 409 means contact exists, which is fine — it will be updated due to updateEnabled: true
       if (response.status === 409) {
         return res.status(200).json({ success: true, action: 'updated', email });
       }
 
-      console.error('Brevo API error:', errorMsg, errorData);
+      console.error('Brevo API error:', errorMsg, result);
       return res.status(response.status).json({ error: `Brevo sync failed: ${errorMsg}` });
     }
 
-    const result = await response.json();
     return res.status(200).json({
       success: true,
       action: result.id ? 'created' : 'updated',
