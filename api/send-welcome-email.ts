@@ -1,14 +1,4 @@
-import nodemailer from 'nodemailer';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  auth: {
-    user: process.env.BREVO_LOGIN!,       // a68786001@smtp-brevo.com
-    pass: process.env.BREVO_SMTP_KEY!,
-  },
-});
 
 function buildWelcomeHTML(name: string, plan?: string) {
   const isPremium = !!plan;
@@ -95,18 +85,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const displayName = name || email.split('@')[0];
   const isPremium = !!plan;
 
+  if (!process.env.BREVO_API_KEY) {
+    console.warn('[send-welcome-email] BREVO_API_KEY not configured');
+    return res.status(200).json({ success: true, skipped: true });
+  }
+
   try {
-    await transporter.sendMail({
-      from: `"ROOP AI" <${process.env.GMAIL_FROM}>`,
-      to: email,
-      subject: isPremium
-        ? `You're now a ROOP AI Premium member 🎉`
-        : `Welcome to ROOP AI ✨ – Your skin coach is ready`,
-      html: buildWelcomeHTML(displayName, plan),
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: {
+          name: 'ROOP AI',
+          email: process.env.GMAIL_FROM,
+        },
+        to: [{ email, name: displayName }],
+        subject: isPremium
+          ? `You're now a ROOP AI Premium member 🎉`
+          : `Welcome to ROOP AI ✨ – Your skin coach is ready`,
+        htmlContent: buildWelcomeHTML(displayName, plan),
+      }),
     });
 
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      console.error('[send-welcome-email] Brevo API error:', error);
+      return res.status(response.status).json({ error: error.message || 'Failed to send email' });
+    }
+
+    console.log('[send-welcome-email] Welcome email sent to', email);
     return res.status(200).json({ success: true });
   } catch (err: any) {
+    console.error('[send-welcome-email] Error:', err);
     return res.status(500).json({ error: err.message });
   }
 }
