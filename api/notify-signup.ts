@@ -1,14 +1,4 @@
-import nodemailer from 'nodemailer';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  auth: {
-    user: process.env.BREVO_LOGIN!,       // a68786001@smtp-brevo.com
-    pass: process.env.BREVO_SMTP_KEY!,
-  },
-});
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('[notify-signup] Request received', {
@@ -82,13 +72,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }).catch(() => {});
     }
 
-    // ── Admin notification ────────────────────────────────────────────────
-    console.log('[notify-signup] Sending admin notification email', { email, name, to: process.env.GMAIL_FROM });
-    await transporter.sendMail({
-      from: `"ROOP AI" <${process.env.GMAIL_FROM}>`,
-      to: process.env.GMAIL_FROM, // notify yourself
-      subject: `🎉 New user signed up on ROOP AI — ${name !== 'Unknown' ? name : email}`,
-      html: `
+    // ── Admin notification via Brevo API ────────────────────────────────────
+    if (process.env.BREVO_API_KEY) {
+      console.log('[notify-signup] Sending admin notification email via Brevo API', { email, name, to: process.env.GMAIL_FROM });
+      try {
+        await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'api-key': process.env.BREVO_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sender: {
+              name: 'ROOP AI',
+              email: process.env.GMAIL_FROM,
+            },
+            to: [
+              {
+                email: process.env.GMAIL_FROM,
+                name: 'Admin',
+              },
+            ],
+            subject: `🎉 New user signed up on ROOP AI — ${name !== 'Unknown' ? name : email}`,
+            htmlContent: `
 <div style="font-family: Arial, sans-serif; max-width: 480px; background: #080818; color: #e8e8f0; padding: 28px; border-radius: 14px;">
   <h2 style="color: #a855f7; margin: 0 0 20px;">New Sign Up on ROOP AI 🎉</h2>
   <table style="width:100%; border-collapse: collapse;">
@@ -109,9 +116,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     View all users in your <a href="https://supabase.com/dashboard" style="color: #a855f7;">Supabase Dashboard</a>
   </p>
 </div>`,
-    });
-
-    console.log('[notify-signup] Email sent successfully for', email);
+          }),
+        });
+        console.log('[notify-signup] Email sent successfully for', email);
+      } catch (emailErr) {
+        console.error('[notify-signup] Brevo email error:', emailErr);
+      }
+    } else {
+      console.warn('[notify-signup] BREVO_API_KEY not configured, skipping admin email');
+    }
     return res.status(200).json({ success: true });
   } catch (err: any) {
     console.error('[notify-signup] Error:', err);
