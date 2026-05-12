@@ -1,6 +1,31 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { SkinAnalysis } from '../src/types/analysis.js';
 
+const requestCounts = new Map<string, { count: number; resetTime: number }>();
+const MAX_REQUESTS_PER_DAY = 3;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function getClientId(req: VercelRequest): string {
+  return req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown';
+}
+
+function checkRateLimit(clientId: string): boolean {
+  const now = Date.now();
+  const current = requestCounts.get(clientId);
+
+  if (!current || now > current.resetTime) {
+    requestCounts.set(clientId, { count: 1, resetTime: now + DAY_MS });
+    return true;
+  }
+
+  if (current.count >= MAX_REQUESTS_PER_DAY) {
+    return false;
+  }
+
+  current.count++;
+  return true;
+}
+
 const SKIN_ANALYSIS_PROMPT_EN = `You are ROOP AI, a professional AI skin analysis coach. Analyze this selfie with clinical precision. Return ONLY a raw JSON object — no markdown, no backticks, no preamble.
 
 Required JSON structure:
@@ -69,6 +94,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const clientId = getClientId(req);
+  if (!checkRateLimit(clientId)) {
+    return res.status(429).json({ error: 'Rate limit exceeded. Max 3 analyses per day. Try again tomorrow.' });
   }
 
   const { base64, lang = 'en' } = req.body as { base64: string; lang?: string };
