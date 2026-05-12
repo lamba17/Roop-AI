@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import type { SkinAnalysis } from '../src/types/analysis';
+import type { SkinAnalysis } from '../src/types/analysis.js';
 
 const SKIN_ANALYSIS_PROMPT_EN = `You are ROOP AI, a professional AI skin analysis coach. Analyze this selfie with clinical precision. Return ONLY a raw JSON object — no markdown, no backticks, no preamble.
 
