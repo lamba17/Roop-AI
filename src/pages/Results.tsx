@@ -200,6 +200,56 @@ export default function Results() {
                 </div>
               </div>
 
+              {/* ── Disease Detection ──────────────────────────────────── */}
+              {analysis.diseaseDetection.detected && analysis.diseaseDetection.conditions.length > 0 && (
+                <div className="results-card results-card-red card-in card-in-3b">
+                  <SectionHeading label="⚠️ Skin Conditions Detected" />
+                  <div style={{ marginBottom: 14, padding: '12px', borderRadius: 10, background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                    <p style={{ margin: 0, fontSize: 12, color: '#dc2626', lineHeight: 1.6, fontFamily: 'var(--font-body, sans-serif)' }}>
+                      {analysis.diseaseDetection.disclaimer}
+                    </p>
+                  </div>
+                  {analysis.diseaseDetection.conditions.map((condition, i) => (
+                    <div key={i} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: i < analysis.diseaseDetection.conditions.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                        <span style={{ fontSize: 18 }}>🔍</span>
+                        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{condition.name}</span>
+                        <span style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          textTransform: 'uppercase',
+                          padding: '4px 8px',
+                          borderRadius: 4,
+                          background: condition.confidence === 'high' ? 'rgba(239, 68, 68, 0.15)' : condition.confidence === 'medium' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(107, 114, 128, 0.15)',
+                          color: condition.confidence === 'high' ? '#dc2626' : condition.confidence === 'medium' ? '#f59e0b' : '#6b7280'
+                        }}>
+                          {condition.confidence} Confidence
+                        </span>
+                        <span style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          textTransform: 'uppercase',
+                          padding: '4px 8px',
+                          borderRadius: 4,
+                          background: condition.severity === 'severe' ? 'rgba(239, 68, 68, 0.15)' : condition.severity === 'moderate' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+                          color: condition.severity === 'severe' ? '#dc2626' : condition.severity === 'moderate' ? '#f59e0b' : '#22c55e'
+                        }}>
+                          {condition.severity}
+                        </span>
+                      </div>
+                      <p style={{ margin: '8px 0', fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                        {condition.description}
+                      </p>
+                      <div style={{ padding: 10, borderRadius: 8, background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', marginTop: 8 }}>
+                        <p style={{ margin: 0, fontSize: 12, color: '#1e40af', lineHeight: 1.6, fontFamily: 'var(--font-body, sans-serif)' }}>
+                          <strong>💡 Recommendation:</strong> {condition.recommendation}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {/* ── Daily Routine ──────────────────────────────────────── */}
               <div className="results-card card-in card-in-4">
                 <SectionHeading label={t.dailyRoutine}>
