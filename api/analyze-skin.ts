@@ -53,7 +53,20 @@ Required JSON structure:
   ],
   "maskType": "<acne|dry|dark_circles|dull|oily> — choose based on primary concern",
   "groomingTip": "<1 sentence specific hairline/beard/grooming observation and tip>",
-  "doctorAdvice": "<specific, actionable advice on when/why to visit a dermatologist based on what you observed>"
+  "doctorAdvice": "<specific, actionable advice on when/why to visit a dermatologist based on what you observed>",
+  "diseaseDetection": {
+    "detected": <true if any skin conditions detected, false otherwise>,
+    "conditions": [
+      {
+        "name": "<condition name: acne, eczema, psoriasis, rosacea, dermatitis, fungal infection, melasma, vitiligo, etc.>",
+        "confidence": "<high|medium|low>",
+        "description": "<2-3 sentence clinical description of what you observe>",
+        "severity": "<mild|moderate|severe>",
+        "recommendation": "<specific action: e.g., 'Visit dermatologist for prescription treatment' or 'Use anti-fungal cream and keep area dry'>"
+      }
+    ],
+    "disclaimer": "This AI analysis is not a medical diagnosis. Always consult a dermatologist for accurate diagnosis and treatment."
+  }
 }`;
 
 const SKIN_ANALYSIS_PROMPT_HI = `आप ROOP AI हैं, एक पेशेवर AI त्वचा विश्लेषण कोच। इस सेल्फी का नैदानिक सटीकता के साथ विश्लेषण करें। केवल एक raw JSON object लौटाएं — कोई markdown, backticks या प्रस्तावना नहीं।
@@ -83,7 +96,20 @@ const SKIN_ANALYSIS_PROMPT_HI = `आप ROOP AI हैं, एक पेशे�
   ],
   "maskType": "<acne|dry|dark_circles|dull|oily> — प्राथमिक समस्या के आधार पर चुनें",
   "groomingTip": "<1 वाक्य में हेयरलाइन/दाढ़ी/ग्रूमिंग अवलोकन और सुझाव>",
-  "doctorAdvice": "<डर्मेटोलॉजिस्ट से कब और क्यों मिलें, इस पर विशिष्ट, कार्रवाई योग्य सलाह>"
+  "doctorAdvice": "<डर्मेटोलॉजिस्ट से कब और क्यों मिलें, इस पर विशिष्ट, कार्रवाई योग्य सलाह>",
+  "diseaseDetection": {
+    "detected": <यदि कोई त्वचा की स्थिति पाई गई तो true, अन्यथा false>,
+    "conditions": [
+      {
+        "name": "<त्वचा रोग का नाम: मुंहासे, एक्जिमा, सोरायसिस, गुलाबी मुंहासे, जिल्द की सूजन, फंगल संक्रमण, आदि>",
+        "confidence": "<high|medium|low>",
+        "description": "<2-3 वाक्य में आपके द्वारा देखे गए क्लिनिकल विवरण>",
+        "severity": "<mild|moderate|severe>",
+        "recommendation": "<विशिष्ट कार्रवाई: जैसे 'डर्मेटोलॉजिस्ट से मिलें' या 'एंटी-फंगल क्रीम लगाएं'>"
+      }
+    ],
+    "disclaimer": "यह AI विश्लेषण चिकित्सा निदान नहीं है। हमेशा सटीक निदान के लिए एक त्वचा रोग विशेषज्ञ से परामर्श लें।"
+  }
 }`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

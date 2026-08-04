@@ -2,6 +2,8 @@ export type SkinType = "dry" | "oily" | "combination" | "normal";
 export type OilinessLevel = "dry" | "normal" | "oily" | "combination";
 export type MaskType = "acne" | "dry" | "dark_circles" | "dull" | "oily";
 export type AppMode = "glow";
+export type ConfidenceLevel = "high" | "medium" | "low";
+export type SeverityLevel = "mild" | "moderate" | "severe";
 
 // ── GLOW (skin health) ────────────────────────────────────────────────────
 export interface GlowScores {
@@ -23,6 +25,20 @@ export interface DailyRoutine {
   evening: string[];
 }
 
+export interface DetectedCondition {
+  name: string;
+  confidence: ConfidenceLevel;
+  description: string;
+  severity: SeverityLevel;
+  recommendation: string;
+}
+
+export interface DiseaseDetection {
+  detected: boolean;
+  conditions: DetectedCondition[];
+  disclaimer: string;
+}
+
 export interface SkinAnalysis {
   glowScore: number;
   scores: GlowScores;
@@ -35,6 +51,7 @@ export interface SkinAnalysis {
   maskType: MaskType;
   groomingTip: string;
   doctorAdvice: string;
+  diseaseDetection: DiseaseDetection;
 }
 
 export interface HistoryEntry {
